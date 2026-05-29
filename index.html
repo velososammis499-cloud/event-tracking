@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Gadget — 零侵入自动埋点 + 智能分析</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#060b1f;--bg2:#0d1333;--bg3:#131a42;
+  --card:rgba(255,255,255,0.04);--card-hover:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.06);--border-active:rgba(0,229,255,0.3);
+  --cyan:#00e5ff;--red:#ff3d71;--gold:#ffaa00;--green:#00e096;--purple:#b388ff;--blue:#448aff;
+  --text:#e8eaf6;--text2:rgba(255,255,255,0.55);--text3:rgba(255,255,255,0.3);
+  --font-mono:'JetBrains Mono','Fira Code','SF Mono',monospace;
+  --font:'-apple-system','PingFang SC','Microsoft YaHei',sans-serif;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(0,229,255,0.05),transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(179,136,255,0.03),transparent 50%);pointer-events:none;z-index:0}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+
+/* ===== HERO ===== */
+.hero{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:60px 28px 80px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--cyan);border:1px solid rgba(0,229,255,0.25);border-radius:20px;padding:4px 14px;margin-bottom:28px;background:rgba(0,229,255,0.04);letter-spacing:0.5px}
+.hero-badge .dot{width:6px;height:6px;background:var(--cyan);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,229,255,0.4)}50%{opacity:.6;box-shadow:0 0 0 6px rgba(0,229,255,0)}}
+.hero h1{font-size:52px;font-weight:800;letter-spacing:-1px;margin-bottom:16px;background:linear-gradient(135deg,#fff 30%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1.15}
+.hero h1 span{display:block;font-size:28px;font-weight:400;-webkit-text-fill-color:var(--text2);margin-top:6px;letter-spacing:2px}
+.hero p{font-size:18px;color:var(--text2);max-width:640px;line-height:1.7;margin-bottom:36px}
+.hero-code{display:inline-flex;align-items:center;gap:10px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px 24px;font-family:var(--font-mono);font-size:14px;color:var(--text2);max-width:90%;overflow-x:auto;position:relative;cursor:pointer;transition:border-color .3s}
+.hero-code:hover{border-color:rgba(0,229,255,0.3)}
+.hero-code .tag{color:var(--purple)}
+.hero-code .attr{color:var(--gold)}
+.hero-code .val{color:var(--green)}
+.hero-code .copy-hint{position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--text3);opacity:0;transition:opacity .3s;font-family:var(--font)}
+.hero-code:hover .copy-hint{opacity:1}
+
+/* ===== SECTION COMMON ===== */
+.section{position:relative;z-index:1;padding:80px 28px;max-width:1200px;margin:0 auto}
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:3px;color:var(--cyan);margin-bottom:12px;font-weight:600}
+.section-title{font-size:32px;font-weight:700;margin-bottom:12px;line-height:1.3}
+.section-desc{font-size:16px;color:var(--text2);max-width:560px;line-height:1.7;margin-bottom:48px}
+
+/* ===== FEATURES ===== */
+.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.feat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px 24px;position:relative;overflow:hidden;transition:all .3s}
+.feat-card:hover{border-color:rgba(255,255,255,0.12);background:var(--card-hover);transform:translateY(-2px)}
+.feat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.feat-card.c1::after{background:linear-gradient(90deg,var(--cyan),transparent)}
+.feat-card.c2::after{background:linear-gradient(90deg,var(--gold),transparent)}
+.feat-card.c3::after{background:linear-gradient(90deg,var(--green),transparent)}
+.feat-card.c4::after{background:linear-gradient(90deg,var(--purple),transparent)}
+.feat-card.c5::after{background:linear-gradient(90deg,var(--red),transparent)}
+.feat-card.c6::after{background:linear-gradient(90deg,var(--blue),transparent)}
+.feat-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px}
+.feat-icon.i1{background:rgba(0,229,255,0.1);color:var(--cyan)}
+.feat-icon.i2{background:rgba(255,170,0,0.1);color:var(--gold)}
+.feat-icon.i3{background:rgba(0,224,150,0.1);color:var(--green)}
+.feat-icon.i4{background:rgba(179,136,255,0.1);color:var(--purple)}
+.feat-icon.i5{background:rgba(255,61,113,0.1);color:var(--red)}
+.feat-icon.i6{background:rgba(68,138,255,0.1);color:var(--blue)}
+.feat-card h3{font-size:16px;font-weight:600;margin-bottom:8px}
+.feat-card p{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* ===== SHOWCASE ===== */
+.showcase-row{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+.showcase-visual{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;position:relative}
+.showcase-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.showcase-dot{width:10px;height:10px;border-radius:50%}
+.showcase-dot.r{background:#ff5f57}.showcase-dot.y{background:#febc2e}.showcase-dot.g{background:#28c840}
+.showcase-url{font-size:11px;color:var(--text3);margin-left:8px;font-family:var(--font-mono)}
+.showcase-body{padding:24px}
+.showcase-kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.showcase-kpi-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 14px;text-align:center}
+.showcase-kpi-item .label{font-size:10px;color:var(--text3);margin-bottom:4px}
+.showcase-kpi-item .val{font-size:18px;font-weight:700;font-family:var(--font-mono)}
+.showcase-kpi-item .val.cyan{color:var(--cyan)}.showcase-kpi-item .val.gold{color:var(--gold)}.showcase-kpi-item .val.green{color:var(--green)}.showcase-kpi-item .val.purple{color:var(--purple)}
+.showcase-chart{height:120px;background:linear-gradient(180deg,rgba(0,229,255,0.08),transparent);border-radius:8px;position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:0 4px;gap:3px}
+.chart-bar{flex:1;border-radius:3px 3px 0 0;background:linear-gradient(180deg,var(--cyan),rgba(0,229,255,0.3));transition:height .6s ease;min-height:4px}
+.showcase-info h3{font-size:22px;font-weight:700;margin-bottom:16px}
+.showcase-info p{font-size:14px;color:var(--text2);line-height:1.8;margin-bottom:20px}
+.showcase-list{list-style:none}
+.showcase-list li{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2);line-height:1.6}
+.showcase-list li:last-child{border-bottom:none}
+.showcase-list .num{width:22px;height:22px;border-radius:6px;background:rgba(0,229,255,0.1);color:var(--cyan);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;font-family:var(--font-mono)}
+
+/* ===== EVENTS TABLE ===== */
+.events-section{margin-top:60px}
+.events-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.event-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 18px;text-align:center;transition:all .3s;position:relative;overflow:hidden}
+.event-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-2px)}
+.event-card .etype{font-family:var(--font-mono);font-size:13px;font-weight:600;color:var(--cyan);margin-bottom:8px}
+.event-card .ename{font-size:14px;font-weight:600;margin-bottom:6px}
+.event-card .edesc{font-size:11px;color:var(--text3);line-height:1.5}
+
+/* ===== HOW IT WORKS ===== */
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+.steps::before{content:'';position:absolute;top:36px;left:16.67%;right:16.67%;height:1px;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--green))}
+.step{text-align:center;padding:0 24px;position:relative}
+.step-num{width:72px;height:72px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;margin:0 auto 20px;font-family:var(--font-mono);position:relative;z-index:1}
+.step-num.s1{background:rgba(0,229,255,0.1);border:2px solid rgba(0,229,255,0.3);color:var(--cyan)}
+.step-num.s2{background:rgba(179,136,255,0.1);border:2px solid rgba(179,136,255,0.3);color:var(--purple)}
+.step-num.s3{background:rgba(0,224,150,0.1);border:2px solid rgba(0,224,150,0.3);color:var(--green)}
+.step h3{font-size:17px;font-weight:600;margin-bottom:8px}
+.step p{font-size:13px;color:var(--text2);line-height:1.7}
+
+/* ===== CODE BLOCK ===== */
+.code-section{margin-top:60px}
+.code-tabs{display:flex;gap:0;margin-bottom:0;border-bottom:1px solid var(--border)}
+.code-tab{padding:10px 20px;font-size:13px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;font-family:var(--font);transition:all .2s;border-bottom:2px solid transparent}
+.code-tab.active{color:var(--cyan);border-bottom-color:var(--cyan)}
+.code-tab:hover:not(.active){color:var(--text2)}
+.code-block{background:var(--bg2);border:1px solid var(--border);border-top:none;border-radius:0 0 12px 12px;padding:24px;font-family:var(--font-mono);font-size:13px;line-height:1.8;color:var(--text2);overflow-x:auto;display:none;position:relative}
+.code-block.active{display:block}
+.code-block .cm{color:var(--text3)}
+.code-block .tag{color:var(--purple)}
+.code-block .attr{color:var(--gold)}
+.code-block .str{color:var(--green)}
+.code-block .kw{color:var(--cyan)}
+.code-block .fn{color:var(--blue)}
+
+/* ===== ARCHITECTURE ===== */
+.arch-diagram{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:48px 32px;margin-top:40px;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:nowrap}
+.arch-node{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;text-align:center;min-width:200px;transition:all .3s}
+.arch-node:hover{border-color:rgba(255,255,255,0.12)}
+.arch-node .icon{font-size:32px;margin-bottom:10px}
+.arch-node .name{font-size:15px;font-weight:600;margin-bottom:4px}
+.arch-node .desc{font-size:11px;color:var(--text3)}
+.arch-arrow{display:flex;flex-direction:column;align-items:center;gap:4px;padding:0 12px;color:var(--text3);flex-shrink:0}
+.arch-arrow .line{width:60px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);position:relative}
+.arch-arrow .line::after{content:'';position:absolute;right:-1px;top:-3px;border:3px solid transparent;border-left-color:var(--cyan)}
+.arch-arrow span{font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* ===== DASHBOARD PREVIEW ===== */
+.dashboard-preview{margin-top:60px}
+.dash-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:32px}
+.dash-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:20px 18px;transition:all .3s;position:relative;overflow:hidden}
+.dash-card:hover{border-color:rgba(255,255,255,0.12);transform:translateY(-2px)}
+.dash-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.dash-card.d1::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+.dash-card.d2::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.dash-card.d3::before{background:linear-gradient(90deg,var(--gold),transparent)}
+.dash-card.d4::before{background:linear-gradient(90deg,var(--green),transparent)}
+.dash-card.d5::before{background:linear-gradient(90deg,var(--red),transparent)}
+.dash-card.d6::before{background:linear-gradient(90deg,var(--blue),transparent)}
+.dash-card.d7::before{background:linear-gradient(90deg,var(--cyan),transparent)}
+.dash-card.d8::before{background:linear-gradient(90deg,var(--purple),transparent)}
+.dash-card .dtitle{font-size:14px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.dash-card .dtitle .dicon{font-size:16px}
+.dash-card .ddesc{font-size:12px;color:var(--text3);line-height:1.6}
+
+/* ===== CTA ===== */
+.cta{position:relative;z-index:1;text-align:center;padding:80px 28px 100px}
+.cta-box{background:linear-gradient(135deg,rgba(0,229,255,0.06),rgba(179,136,255,0.04));border:1px solid rgba(0,229,255,0.15);border-radius:16px;padding:48px 40px;max-width:720px;margin:0 auto}
+.cta-box h2{font-size:28px;font-weight:700;margin-bottom:12px}
+.cta-box p{font-size:15px;color:var(--text2);margin-bottom:28px;line-height:1.7}
+.cta-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:8px;font-size:14px;font-weight:600;font-family:var(--font);cursor:pointer;transition:all .3s;border:none}
+.cta-btn.primary{background:rgba(0,229,255,0.15);color:var(--cyan);border:1px solid rgba(0,229,255,0.3)}
+.cta-btn.primary:hover{background:rgba(0,229,255,0.25);box-shadow:0 0 20px rgba(0,229,255,0.15)}
+.cta-btn.secondary{background:transparent;color:var(--text2);border:1px solid var(--border);margin-left:12px}
+.cta-btn.secondary:hover{border-color:rgba(255,255,255,0.2);color:var(--text)}
+
+/* ===== FOOTER ===== */
+.footer{position:relative;z-index:1;text-align:center;padding:24px 28px;border-top:1px solid var(--border);font-size:12px;color:var(--text3)}
+
+/* ===== DIVIDER ===== */
+.divider{position:relative;z-index:1;height:1px;max-width:1200px;margin:0 auto;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  .feat-grid{grid-template-columns:1fr 1fr}
+  .showcase-row{grid-template-columns:1fr}
+  .steps{grid-template-columns:1fr;gap:32px}
+  .steps::before{display:none}
+  .dash-grid{grid-template-columns:1fr 1fr}
+  .events-grid{grid-template-columns:repeat(2,1fr)}
+  .arch-diagram{flex-direction:column;gap:8px}
+  .arch-arrow{transform:rotate(90deg);padding:4px 0}
+  .hero h1{font-size:36px}
+  .hero h1 span{font-size:20px}
+}
+@media(max-width:600px){
+  .feat-grid{grid-template-columns:1fr}
+  .dash-grid{grid-template-columns:1fr}
+  .events-grid{grid-template-columns:1fr}
+  .showcase-kpi{grid-template-columns:repeat(2,1fr)}
+}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease}
+</style>
+</head>
+<body>
+
+<!-- ===== HERO ===== -->
+<div class="hero">
+  <div class="hero-badge"><span class="dot"></span>开源自动埋点工具</div>
+  <h1>Event Gadget<span>零侵入自动埋点 + 智能分析</span></h1>
+  <p>在任意网页中加入一行代码，自动采集用户点击、曝光、浏览、表单交互与停留时长，通过可视化看板与自然语言对话进行行为分析</p>
+  <div class="hero-code" onclick="copyCode()">
+    <span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="val">"http://your-server:3001/sg.js"</span> <span class="attr">data-app-id</span>=<span class="val">"my-app"</span><span class="tag">&gt;&lt;/script&gt;</span>
+    <span class="copy-hint">点击复制</span>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== CORE FEATURES ===== -->
+<div class="section">
+  <div class="section-label">Core Features</div>
+  <div class="section-title">一行代码，全量采集</div>
+  <div class="section-desc">不需要产品经理指定埋点，不需要前端研发写代码。接入后自动感知用户在页面上的所有行为。</div>
+  <div class="feat-grid">
+    <div class="feat-card c1">
+      <div class="feat-icon i1">&#9681;</div>
+      <h3>自动事件采集</h3>
+      <p>页面浏览、元素点击、模块曝光、表单交互、停留时长 — 五类事件全自动采集，零业务代码侵入</p>
+    </div>
+    <div class="feat-card c2">
+      <div class="feat-icon i2">&#9741;</div>
+      <h3>全链路来源追踪</h3>
+      <p>自动识别直接访问、外部跳转、站内导航，记录完整的用户导航链路，知道用户从哪来、去了哪</p>
+    </div>
+    <div class="feat-card c3">
+      <div class="feat-icon i3">&#9670;</div>
+      <h3>零侵入接入</h3>
+      <p>只需在页面中加入一个 &lt;script&gt; 标签，无需修改任何业务代码。支持纯 HTML、React、Vue 等所有框架</p>
+    </div>
+    <div class="feat-card c4">
+      <div class="feat-icon i4">&#9674;</div>
+      <h3>对话式分析</h3>
+      <p>内置自然语言分析引擎，支持中文提问：用户最常点击什么？从首页去了哪里？哪些功能被忽略了？</p>
+    </div>
+    <div class="feat-card c5">
+      <div class="feat-icon i5">&#9888;</div>
+      <h3>隐私安全</h3>
+      <p>自动过滤密码、信用卡、CVV、SSN 等敏感字段，确保用户隐私数据不会上报</p>
+    </div>
+    <div class="feat-card c6">
+      <div class="feat-icon i6">&#9881;</div>
+      <h3>开箱即用</h3>
+      <p>SQLite 零配置存储，npm run setup 一键初始化，无依赖外部数据库和中间件</p>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== AUTO COLLECTED EVENTS ===== -->
+<div class="section">
+  <div class="section-label">Auto Collected</div>
+  <div class="section-title">自动采集的五类事件</div>
+  <div class="section-desc">接入后自动运行五个采集器，覆盖用户在页面上的核心行为。</div>
+  <div class="events-grid">
+    <div class="event-card">
+      <div class="etype">pageview</div>
+      <div class="ename">页面浏览</div>
+      <div class="edesc">自动捕获页面加载与 SPA 路由切换，记录路径、标题、来源与触发方式</div>
+    </div>
+    <div class="event-card">
+      <div class="etype">click</div>
+      <div class="ename">元素点击</div>
+      <div class="edesc">自动捕获按钮、链接、可交互元素的点击，记录标签、文本、ID 和 data-track</div>
+    </div>
+    <div class="event-card">
+      <div class="etype">impression</div>
+      <div class="ename">元素曝光</div>
+      <div class="edesc">通过 IntersectionObserver 监听标记元素可见性，记录可见比例与可见时长</div>
+    </div>
+    <div class="event-card">
+      <div class="etype">form_interaction</div>
+      <div class="ename">表单交互</div>
+      <div class="edesc">自动捕获表单聚焦、修改、提交，记录字段名与类型，过滤敏感字段</div>
+    </div>
+    <div class="event-card">
+      <div class="etype">dwell</div>
+      <div class="ename">停留时长</div>
+      <div class="edesc">精确计算页面活跃停留时间，跨标签页切换自动暂停与恢复</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== SHOWCASE ===== -->
+<div class="section">
+  <div class="section-label">Dashboard</div>
+  <div class="section-title">科技感分析看板</div>
+  <div class="section-desc">8 大分析模块，从概览到细节，从路径到偏好，全方位洞察用户行为。</div>
+  <div class="showcase-row">
+    <div class="showcase-visual">
+      <div class="showcase-bar">
+        <span class="showcase-dot r"></span><span class="showcase-dot y"></span><span class="showcase-dot g"></span>
+        <span class="showcase-url">localhost:5173 — Event Gadget Dashboard</span>
+      </div>
+      <div class="showcase-body">
+        <div class="showcase-kpi">
+          <div class="showcase-kpi-item"><div class="label">页面浏览量</div><div class="val cyan">2,847</div></div>
+          <div class="showcase-kpi-item"><div class="label">会话数</div><div class="val gold">368</div></div>
+          <div class="showcase-kpi-item"><div class="label">用户数</div><div class="val green">142</div></div>
+          <div class="showcase-kpi-item"><div class="label">事件总数</div><div class="val purple">12,590</div></div>
+        </div>
+        <div class="showcase-chart" id="chartArea"></div>
+      </div>
+    </div>
+    <div class="showcase-info">
+      <h3>数据驱动，一目了然</h3>
+      <p>看板自动聚合采集数据，生成可视化图表与分析结论。产品经理不需要写 SQL，不需要指定从哪取数。</p>
+      <ul class="showcase-list">
+        <li><span class="num">1</span>输入 App ID 筛选不同业务系统数据</li>
+        <li><span class="num">2</span>一键切换时间范围：今日 / 7天 / 30天</li>
+        <li><span class="num">3</span>Sankey 流图直观展示用户跳转路径</li>
+        <li><span class="num">4</span>自然语言对话，直接问你想知道的</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== DASHBOARD MODULES ===== -->
+<div class="section">
+  <div class="section-label">8 Modules</div>
+  <div class="section-title">看板八大分析模块</div>
+  <div class="section-desc">每个模块解决一个核心问题，从宏观概览到微观行为全覆盖。</div>
+  <div class="dash-grid">
+    <div class="dash-card d1"><div class="dtitle"><span class="dicon">&#9673;</span>数据概览</div><div class="ddesc">页面浏览量、会话数、用户数、事件总量 + 趋势图 + 热门页面排行</div></div>
+    <div class="dash-card d2"><div class="dtitle"><span class="dicon">&#9676;</span>路径分析</div><div class="ddesc">Sankey 流图展示页面间跳转，来源类型分布，掉失漏斗，停留时长</div></div>
+    <div class="dash-card d3"><div class="dtitle"><span class="dicon">&#9733;</span>排行榜</div><div class="ddesc">点击 / 曝光排行热力图，页面互动深度对比</div></div>
+    <div class="dash-card d4"><div class="dtitle"><span class="dicon">&#9672;</span>导航链</div><div class="ddesc">会话级完整导航时间线，可视化还原用户操作轨迹</div></div>
+    <div class="dash-card d5"><div class="dtitle"><span class="dicon">&#9656;</span>事件</div><div class="ddesc">原始事件浏览器，支持按类型、路径、时间分页筛选</div></div>
+    <div class="dash-card d6"><div class="dtitle"><span class="dicon">&#9678;</span>行为</div><div class="ddesc">行为路径分析，来源渠道分布，跳出点识别，入口/出口统计</div></div>
+    <div class="dash-card d7"><div class="dtitle"><span class="dicon">&#9830;</span>偏好</div><div class="ddesc">点击热力图，注意力雷达，操作模式序列，功能使用趋势</div></div>
+    <div class="dash-card d8"><div class="dtitle"><span class="dicon">&#9998;</span>对话分析</div><div class="ddesc">自然语言提问，如"用户最常点击什么""从首页去了哪里"</div></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== HOW IT WORKS ===== -->
+<div class="section">
+  <div class="section-label">How It Works</div>
+  <div class="section-title">三步接入，即刻生效</div>
+  <div class="section-desc">从零到数据可视化，最快只需要 5 分钟。</div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num s1">1</div>
+      <h3>部署服务</h3>
+      <p>克隆项目，运行 npm run setup 初始化，npm run dev 启动后端和看板</p>
+    </div>
+    <div class="step">
+      <div class="step-num s2">2</div>
+      <h3>接入页面</h3>
+      <p>在目标 HTML 中加入一行 &lt;script&gt; 标签，指定服务器地址和 App ID</p>
+    </div>
+    <div class="step">
+      <div class="step-num s3">3</div>
+      <h3>查看分析</h3>
+      <p>打开看板输入 App ID，实时查看用户行为数据和对话分析结果</p>
+    </div>
+  </div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <button class="code-tab active" onclick="switchCodeTab(0)">1. 安装 & 启动</button>
+      <button class="code-tab" onclick="switchCodeTab(1)">2. 接入 HTML 页面</button>
+      <button class="code-tab" onclick="switchCodeTab(2)">2. 接入 React / Vue</button>
+      <button class="code-tab" onclick="switchCodeTab(3)">3. 查看看板</button>
+    </div>
+    <div class="code-block active" id="codeBlock0"><span class="cm"># 克隆项目</span>
+git clone https://github.com/velososammis499-cloud/event-tracking.git
+cd event-tracking
+
+<span class="cm"># 一键安装依赖 + 构建追踪器 + 初始化数据库</span>
+npm run setup
+
+<span class="cm"># 启动服务（同时启动后端 :3001 + 看板 :5173）</span>
+npm run dev</div>
+    <div class="code-block" id="codeBlock1"><span class="cm">&lt;!-- 在页面 &lt;/body&gt; 前加入这一行 --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"http://your-server:3001/sg.js"</span>
+        <span class="attr">data-app-id</span>=<span class="str">"my-app"</span>
+        <span class="attr">data-debug</span>=<span class="str">"true"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="cm">&lt;!-- 可选：标记重点追踪元素 --&gt;</span>
+<span class="tag">&lt;button</span> <span class="attr">data-track</span>=<span class="str">"btn-submit"</span><span class="tag">&gt;</span>提交<span class="tag">&lt;/button&gt;</span>
+<span class="tag">&lt;div</span> <span class="attr">data-track-impression</span>=<span class="str">"card-stats"</span><span class="tag">&gt;</span>统计卡片<span class="tag">&lt;/div&gt;</span></div>
+    <div class="code-block" id="codeBlock2"><span class="cm">&lt;!-- 在 index.html 的 &lt;head&gt; 中加入 --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="str">"http://your-server:3001/sg.js"</span>
+        <span class="attr">data-app-id</span>=<span class="str">"my-spa-app"</span><span class="tag">&gt;&lt;/script&gt;</span>
+
+<span class="cm">&lt;!-- Tracker 自动监听 history.pushState 和 popstate --&gt;</span>
+<span class="cm">&lt;!-- SPA 路由切换无需额外配置 --&gt;</span></div>
+    <div class="code-block" id="codeBlock3"><span class="cm"># 打开浏览器访问看板</span>
+http://localhost:5173
+
+<span class="cm"># 在 App ID 输入框填入你的 data-app-id</span>
+<span class="cm"># 点击「30天」时间范围按钮</span>
+<span class="cm"># 数据即会展示在各分析页面中</span>
+
+<span class="cm"># 或在对话分析页直接提问：</span>
+<span class="str">"用户最常点击什么？"</span>
+<span class="str">"从首页去了哪里？"</span>
+<span class="str">"哪个页面停留最久？"</span></div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== ARCHITECTURE ===== -->
+<div class="section">
+  <div class="section-label">Architecture</div>
+  <div class="section-title">系统架构</div>
+  <div class="section-desc">三个模块协同工作：Tracker 在浏览器端采集，Server 接收与存储，Dashboard 可视化分析。</div>
+  <div class="arch-diagram">
+    <div class="arch-node">
+      <div class="icon">&#9672;</div>
+      <div class="name">目标网页</div>
+      <div class="desc">sg.js + Tracker SDK</div>
+    </div>
+    <div class="arch-arrow">
+      <div class="line"></div>
+      <span>事件上报</span>
+    </div>
+    <div class="arch-node">
+      <div class="icon">&#9881;</div>
+      <div class="name">Server :3001</div>
+      <div class="desc">数据接收 + SQLite</div>
+    </div>
+    <div class="arch-arrow">
+      <div class="line"></div>
+      <span>查询 API</span>
+    </div>
+    <div class="arch-node">
+      <div class="icon">&#9673;</div>
+      <div class="name">Dashboard :5173</div>
+      <div class="desc">可视化分析看板</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ===== CTA ===== -->
+<div class="cta">
+  <div class="cta-box">
+    <h2>开始使用 Event Gadget</h2>
+    <p>开源免费，5 分钟接入，让你的产品拥有企业级用户行为分析能力</p>
+    <a href="https://github.com/velososammis499-cloud/event-tracking" target="_blank" class="cta-btn primary">GitHub 仓库</a>
+    <a href="#hero" class="cta-btn secondary">回到顶部</a>
+  </div>
+</div>
+
+<div class="footer">
+  Event Gadget &mdash; 零侵入自动埋点 + 智能分析 &nbsp;|&nbsp; MIT License
+</div>
+
+<script>
+// Chart bars animation
+(function(){
+  const chart = document.getElementById('chartArea');
+  const heights = [35,55,42,68,80,72,90,85,60,45,70,95,78,65,50,88,92,75,58,82];
+  heights.forEach((h,i)=>{
+    const bar = document.createElement('div');
+    bar.className = 'chart-bar';
+    bar.style.height = '4px';
+    chart.appendChild(bar);
+    setTimeout(()=>{ bar.style.height = h + '%'; }, 300 + i * 40);
+  });
+})();
+
+// Code tabs
+function switchCodeTab(idx){
+  document.querySelectorAll('.code-tab').forEach((t,i)=>t.classList.toggle('active',i===idx));
+  document.querySelectorAll('.code-block').forEach((b,i)=>b.classList.toggle('active',i===idx));
+}
+
+// Copy code
+function copyCode(){
+  const code = '<script src="http://your-server:3001/sg.js" data-app-id="my-app" data-debug="true"><\/script>';
+  navigator.clipboard.writeText(code).then(()=>{
+    const hint = document.querySelector('.copy-hint');
+    hint.textContent = '已复制!';
+    hint.style.color = 'var(--green)';
+    setTimeout(()=>{ hint.textContent = '点击复制'; hint.style.color = ''; }, 2000);
+  });
+}
+</script>
+</body>
+</html>
