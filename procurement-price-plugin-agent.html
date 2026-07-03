@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>供应链Agent · 采购价插件</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:-apple-system,"PingFang SC","Microsoft YaHei",sans-serif; background:#f5f6fa; color:#1f2329; display:flex; height:100vh; overflow:hidden; }
+
+/* 左侧导航 */
+.sidebar { width:250px; background:#fff; border-right:1px solid #eceef1; display:flex; flex-direction:column; flex-shrink:0; padding:18px 14px; }
+.brand { display:flex; align-items:center; gap:10px; padding:4px 6px 18px; }
+.brand-logo { width:32px; height:32px; border-radius:9px; background:linear-gradient(135deg,#ff4d4f,#e01c1c); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; font-weight:800; font-size:12px; line-height:1; }
+.brand-logo small { font-size:5px; margin-top:1px; letter-spacing:1px; }
+.brand-title { font-size:17px; font-weight:700; }
+.brand-icons { margin-left:auto; display:flex; gap:9px; color:#8a9099; font-size:15px; }
+.collab-btn { border:1px solid #e3e6eb; border-radius:10px; padding:10px; text-align:center; color:#6b46f5; font-weight:600; font-size:14px; margin-bottom:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+.collab-btn:hover { background:#f8f7ff; }
+.nav-item { display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:10px; cursor:pointer; font-size:15px; color:#3d424b; margin-bottom:2px; }
+.nav-item .ico { font-size:15px; width:18px; text-align:center; }
+.nav-item:hover { background:#f5f6fa; }
+.nav-divider { height:1px; background:#eceef1; margin:14px 6px; }
+.recent-head { display:flex; align-items:center; font-weight:700; font-size:15px; padding:0 8px 6px; }
+.recent-head .caret { margin-left:6px; color:#8a9099; font-size:12px; }
+.recent-day { display:flex; align-items:center; justify-content:space-between; padding:6px 8px; color:#8a9099; font-size:13px; }
+.recent-day .badge { background:#f0f1f3; border-radius:10px; padding:1px 8px; font-size:12px; }
+.recent-task { display:flex; align-items:center; justify-content:space-between; padding:8px; font-size:14px; cursor:pointer; border-radius:8px; background:#f1edff; }
+.recent-task .rt-left { display:flex; align-items:center; gap:8px; }
+.recent-task .dot-ok { color:#52c41a; }
+.recent-task .rt-time { color:#b0b4bb; font-size:12px; }
+.side-user { margin-top:auto; display:flex; align-items:center; gap:10px; padding:10px 6px; border-top:1px solid #eceef1; }
+.side-user .uav { width:34px; height:34px; border-radius:50%; background:#d9d0ff; color:#6b46f5; display:flex; align-items:center; justify-content:center; font-weight:700; }
+.side-user .uinfo .n { font-size:14px; font-weight:600; }
+.side-user .uinfo .d { font-size:12px; color:#8a9099; }
+
+/* 中间对话区 */
+.chat { flex:1; display:flex; flex-direction:column; background:#fff; border-right:1px solid #eceef1; overflow:hidden; min-width:0; transition:flex-basis .25s ease, max-width .25s ease; }
+/* 唤起操作区后：会话区收窄为固定宽度，让出空间给右侧操作区 */
+body.ws-open .chat { flex:0 0 460px; max-width:460px; }
+.chat-head { height:58px; display:flex; align-items:center; padding:0 24px; border-bottom:1px solid #eceef1; flex-shrink:0; }
+.chat-head .ct { font-size:16px; font-weight:700; }
+.chat-head .edit { color:#b0b4bb; margin-left:8px; cursor:pointer; }
+.chat-head .spacer { flex:1; }
+.chat-head .hi { color:#8a9099; cursor:pointer; }
+.msgs { flex:1; overflow-y:auto; padding:24px; min-height:0; }
+.msg-user { display:flex; justify-content:flex-end; margin-bottom:22px; }
+.msg-user .bubble { background:#f0f1f3; border-radius:12px; padding:10px 16px; font-size:14px; max-width:70%; }
+.msg-ai { display:flex; gap:12px; margin-bottom:22px; }
+.msg-ai .ai-av { width:30px; height:30px; border-radius:8px; background:linear-gradient(135deg,#ff4d4f,#e01c1c); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:800; font-size:13px; flex-shrink:0; }
+.msg-ai .ai-body { flex:1; max-width:88%; }
+.msg-ai .ai-name { font-size:14px; font-weight:600; margin-bottom:8px; }
+.fold { display:inline-flex; align-items:center; gap:6px; font-size:13px; color:#12a150; background:#f6fef9; border:1px solid #d3f0df; border-radius:8px; padding:5px 12px; margin-bottom:10px; cursor:pointer; }
+.fold.tool { color:#1677ff; background:#f0f7ff; border-color:#cfe3ff; }
+.fold.intent { color:#722ed1; background:#f9f0ff; border-color:#e6d3ff; }
+.fold .arrow { transition:transform .2s; }
+.fold-content { font-size:13px; color:#5c6169; background:#fafbfc; border:1px solid #f0f1f3; border-radius:8px; padding:12px 14px; margin-bottom:10px; line-height:1.7; white-space:pre-wrap; }
+.ai-text { font-size:14px; line-height:1.8; color:#1f2329; }
+.ai-text b { color:#1f2329; }
+.ai-text .q { margin:10px 0; }
+.ai-text .q .qn { font-weight:700; }
+
+/* 选项气泡 */
+.opts { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0 4px; }
+.opt { border:1px solid #d9dce1; border-radius:10px; padding:9px 16px; font-size:14px; cursor:pointer; background:#fff; transition:all .15s; }
+.opt:hover { border-color:#6b46f5; color:#6b46f5; background:#faf9ff; }
+.msg-done { display:flex; align-items:center; gap:14px; margin-top:12px; color:#12a150; font-size:13px; }
+.msg-done .time { color:#b0b4bb; }
+.msg-done .ic { color:#b0b4bb; cursor:pointer; }
+
+/* 澄清卡片（多槽/多Tab/渐进填充） */
+.clarify-card { border:1px solid #e6d3ff; border-radius:12px; margin:12px 0; overflow:hidden; }
+.cc-head { background:#f9f0ff; padding:11px 16px; font-size:13px; font-weight:700; color:#722ed1; display:flex; align-items:center; gap:6px; }
+.cc-tabs { display:flex; border-bottom:1px solid #f0f1f3; background:#fafbfc; overflow-x:auto; }
+.cc-tab { padding:10px 16px; font-size:13px; cursor:pointer; color:#8a9099; border-bottom:2px solid transparent; white-space:nowrap; }
+.cc-tab.active { color:#722ed1; border-bottom-color:#722ed1; font-weight:600; }
+.cc-tab.filled { color:#12a150; }
+.cc-tab .dot { display:inline-block; width:6px; height:6px; border-radius:50%; background:#ff4d4f; margin-left:5px; }
+.cc-tab.filled .dot { background:#52c41a; }
+.cc-pane { padding:14px 16px; }
+.cc-label { font-size:13px; color:#5c6169; margin-bottom:10px; }
+.cc-label .req { color:#ff4d4f; margin-left:3px; }
+.cc-opts { display:flex; flex-wrap:wrap; gap:9px; }
+.cc-opt { border:1px solid #d9dce1; border-radius:9px; padding:8px 14px; font-size:13px; cursor:pointer; background:#fff; }
+.cc-opt:hover { border-color:#722ed1; color:#722ed1; }
+.cc-opt.sel { border-color:#722ed1; background:#f9f0ff; color:#722ed1; font-weight:600; }
+.cc-input { display:flex; gap:8px; margin-top:10px; }
+.cc-input input { flex:1; border:1px solid #d9dce1; border-radius:8px; padding:8px 12px; font-size:13px; outline:none; }
+.cc-input input:focus { border-color:#722ed1; }
+.cc-foot { padding:12px 16px; border-top:1px solid #f0f1f3; display:flex; align-items:center; gap:10px; }
+.cc-hint { font-size:12px; color:#b0b4bb; flex:1; }
+.cc-btn { border:none; border-radius:9px; padding:8px 18px; font-size:13px; font-weight:600; cursor:pointer; }
+.cc-btn.primary { background:#6b46f5; color:#fff; }
+.cc-btn.primary:disabled { background:#d9dce1; cursor:not-allowed; }
+.cc-btn.ghost { background:#fff; border:1px solid #d9dce1; color:#5c6169; }
+
+/* 卡片式产出 */
+.mini-card { border:1px solid #eceef1; border-radius:10px; padding:14px 16px; margin:12px 0; }
+.mini-title { font-size:14px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.mini-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px; }
+.mm { background:#fafbfc; border-radius:8px; padding:10px; text-align:center; }
+.mm .v { font-size:19px; font-weight:800; }
+.mm .l { font-size:11px; color:#8a9099; margin-top:2px; }
+table { width:100%; border-collapse:collapse; font-size:12.5px; }
+th,td { text-align:left; padding:8px 10px; border-bottom:1px solid #f0f1f3; }
+th { color:#8a9099; font-weight:600; background:#fafbfc; }
+.num-red { color:#cf1322; font-weight:600; }
+.num-green { color:#12a150; font-weight:600; }
+.num-blue { color:#1677ff; font-weight:600; }
+.tag { display:inline-block; padding:2px 9px; border-radius:6px; font-size:11.5px; font-weight:600; }
+.tag-red { background:#fff1f0; color:#cf1322; }
+.tag-blue { background:#e6f4ff; color:#1677ff; }
+.tag-gray { background:#f0f1f3; color:#8a9099; }
+.tag-green { background:#f6ffed; color:#12a150; }
+.tag-purple { background:#f9f0ff; color:#722ed1; }
+.push-card { background:#fff; border:1px solid #eceef1; border-radius:10px; overflow:hidden; margin:10px 0; box-shadow:0 2px 8px rgba(0,0,0,.05); }
+.push-card .pc-head { padding:11px 14px; font-size:14px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #f0f1f3; }
+.push-card .pc-body { padding:11px 14px; font-size:13px; color:#5c6169; line-height:1.7; }
+
+/* 输入区 */
+.composer { padding:16px 24px 20px; flex-shrink:0; }
+.composer-box { border:1.5px solid #d9dce1; border-radius:14px; padding:14px 16px 10px; }
+.composer-box:focus-within { border-color:#6b46f5; }
+.composer textarea { width:100%; border:none; outline:none; resize:none; font-size:14px; font-family:inherit; min-height:26px; max-height:120px; }
+.composer textarea::placeholder { color:#b0b4bb; }
+.composer-tools { display:flex; align-items:center; gap:10px; margin-top:8px; }
+.ct-btn { border:1px solid #e3e6eb; border-radius:8px; padding:6px 12px; font-size:13px; color:#5c6169; cursor:pointer; display:flex; align-items:center; gap:5px; }
+.ct-btn:hover { background:#f5f6fa; }
+.send { margin-left:auto; width:36px; height:36px; border-radius:50%; background:#6b46f5; color:#fff; border:none; cursor:pointer; font-size:16px; display:flex; align-items:center; justify-content:center; }
+.send:hover { background:#5a37e0; }
+.hint-chips { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+.hint-chip { font-size:12px; color:#6b46f5; background:#f5f2ff; border:1px solid #e6d3ff; border-radius:20px; padding:5px 12px; cursor:pointer; }
+.hint-chip:hover { background:#ece5ff; }
+
+/* 右侧上下文 */
+.context { width:300px; background:#fff; flex-shrink:0; padding:18px 20px; overflow-y:auto; }
+.ctx-head { display:flex; align-items:center; margin-bottom:18px; }
+.ctx-head .t { font-size:16px; font-weight:700; }
+.ctx-head .hi { margin-left:auto; color:#b0b4bb; cursor:pointer; }
+.ctx-sec { margin-bottom:22px; }
+.ctx-sec .sh { display:flex; align-items:center; font-size:14px; font-weight:700; margin-bottom:10px; }
+.ctx-sec .sh .caret { margin-left:auto; color:#b0b4bb; }
+.ctx-empty { font-size:13px; color:#b0b4bb; }
+.slot-item { display:flex; align-items:flex-start; gap:8px; padding:8px 10px; background:#fafbfc; border-radius:8px; margin-bottom:6px; font-size:13px; }
+.slot-item .si-k { color:#8a9099; flex-shrink:0; }
+.slot-item .si-v { color:#1f2329; font-weight:600; margin-left:auto; text-align:right; }
+.slot-item.missing .si-v { color:#ff4d4f; font-weight:400; }
+.slot-item.missing { background:#fff8f8; }
+.plan-step { display:flex; gap:10px; padding:8px 0; font-size:13px; }
+.plan-step .ps-ic { width:18px; height:18px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; background:#eceef1; color:#8a9099; }
+.plan-step.done .ps-ic { background:#52c41a; color:#fff; }
+.plan-step.active .ps-ic { background:#6b46f5; color:#fff; }
+.plan-step .ps-t { color:#5c6169; }
+.plan-step.active .ps-t { color:#1f2329; font-weight:600; }
+.ctx-doc, .ctx-skill { font-size:13px; color:#3d424b; padding:7px 10px; background:#fafbfc; border-radius:8px; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+.ctx-skill code { font-size:12px; color:#6b46f5; }
+.conf-bar { height:6px; background:#eceef1; border-radius:6px; overflow:hidden; margin-top:6px; }
+.conf-bar .cb { height:100%; background:#52c41a; transition:width .4s; }
+
+.toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#1f2329; color:#fff; padding:12px 22px; border-radius:10px; font-size:14px; opacity:0; transition:opacity .3s; z-index:999; }
+.toast.show { opacity:1; }.typing { display:inline-flex; gap:4px; padding:4px 0; }
+.typing span { width:7px; height:7px; border-radius:50%; background:#c4c8ce; animation:blink 1.2s infinite; }
+.typing span:nth-child(2){animation-delay:.2s}.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink { 0%,60%,100%{opacity:.3}30%{opacity:1} }
+
+/* 推送汇总维度选择器 */
+.push-dims { display:flex; flex-wrap:wrap; gap:9px; margin:12px 0; }
+.pd-chip { border:1px solid #d9dce1; border-radius:9px; padding:8px 14px; font-size:13px; cursor:pointer; background:#fff; }
+.pd-chip:hover { border-color:#6b46f5; color:#6b46f5; }
+.pd-chip.sel { border-color:#6b46f5; background:#faf9ff; color:#6b46f5; font-weight:600; }
+.fmt-pick { display:flex; gap:9px; margin:10px 0; }
+.fmt-btn { flex:1; border:1px solid #d9dce1; border-radius:10px; padding:12px; text-align:center; font-size:13px; cursor:pointer; }
+.fmt-btn:hover { border-color:#6b46f5; }
+.fmt-btn.sel { border-color:#6b46f5; background:#faf9ff; color:#6b46f5; font-weight:600; }
+.fmt-btn .fb-ic { font-size:20px; display:block; margin-bottom:4px; }
+.fmt-btn .fb-sub { font-size:11px; color:#8a9099; margin-top:3px; }
+
+/* 生成产物缩略卡 */
+.gen-card { border:1px solid #eceef1; border-radius:10px; margin:12px 0; overflow:hidden; }
+.gen-head { background:#fafbfc; padding:10px 14px; font-size:13px; font-weight:700; display:flex; align-items:center; gap:6px; border-bottom:1px solid #f0f1f3; }
+.gen-head .gh-badge { margin-left:auto; font-size:11px; padding:2px 9px; border-radius:6px; background:#f9f0ff; color:#722ed1; }
+.gen-body { padding:14px; display:flex; gap:14px; align-items:flex-start; }
+.gen-thumb { width:132px; flex-shrink:0; border:1px solid #eceef1; border-radius:8px; overflow:hidden; cursor:pointer; }
+.gen-thumb img { width:100%; display:block; }
+.gen-meta { flex:1; font-size:13px; color:#5c6169; line-height:1.9; }
+.gen-actions { display:flex; gap:8px; margin-top:10px; }
+.gen-btn { border:1px solid #d9dce1; border-radius:8px; padding:6px 14px; font-size:12.5px; cursor:pointer; background:#fff; }
+.gen-btn.primary { background:#6b46f5; color:#fff; border-color:#6b46f5; }
+.gen-btn:hover { opacity:.9; }
+
+/* 京Me 发送成功回执 */
+.jm-receipt { border:1px solid #d3f0df; background:#f6fef9; border-radius:10px; padding:11px 14px; margin:12px 0; font-size:13px; color:#12a150; display:flex; align-items:center; gap:8px; }
+
+/* 预览弹窗 */
+.modal-mask { position:fixed; inset:0; background:rgba(0,0,0,.45); display:none; align-items:center; justify-content:center; z-index:1000; }
+.modal-mask.show { display:flex; }
+.modal { background:#fff; border-radius:14px; max-width:90vw; max-height:88vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 12px 40px rgba(0,0,0,.25); }
+.modal-head { padding:14px 18px; border-bottom:1px solid #f0f1f3; display:flex; align-items:center; font-size:15px; font-weight:700; }
+.modal-head .mc { margin-left:auto; cursor:pointer; color:#8a9099; font-size:20px; }
+.modal-body { padding:18px; overflow:auto; }
+.modal-body img { display:block; border:1px solid #eceef1; border-radius:8px; }
+.modal-body iframe { width:760px; max-width:86vw; height:60vh; border:1px solid #eceef1; border-radius:8px; background:#fff; }
+
+@keyframes blink { 0%,60%,100%{opacity:.3}30%{opacity:1} }
+
+/* ===== 操作区域「插件框架」范式 ===== */
+.workspace { flex:1; display:flex; flex-direction:column; background:#fff; overflow:hidden; min-width:0; }
+.ws-head { height:58px; display:flex; align-items:center; padding:0 24px; border-bottom:1px solid #eceef1; flex-shrink:0; }
+.ws-head .wt { font-size:16px; font-weight:700; }
+.ws-head .spacer { flex:1; }
+.ws-head .hi { color:#b0b4bb; cursor:pointer; }
+.ws-body { flex:1; overflow-y:auto; padding:20px 24px; }
+
+/* 黄金流程导航 */
+.golden-flow { display:flex; align-items:center; gap:6px; margin-bottom:20px; flex-wrap:wrap; }
+.gf-step { display:flex; align-items:center; gap:7px; border:1px solid #e3e6eb; border-radius:22px; padding:8px 18px; font-size:14px; font-weight:600; color:#5c6169; background:#fff; cursor:pointer; transition:all .15s; }
+.gf-step .gf-ic { font-size:14px; }
+.gf-step.active { background:#1f2329; color:#fff; border-color:#1f2329; }
+.gf-step.done { color:#12a150; border-color:#d3f0df; background:#f6fef9; }
+.gf-arrow { color:#c4c8ce; font-size:13px; }
+
+/* 目标区（指标带） */
+.ws-goal { border:1px solid #eceef1; border-radius:12px; padding:16px 20px; margin-bottom:16px; background:#fafbfc; }
+.ws-goal .wg-label { font-size:12px; color:#8a9099; font-weight:600; margin-bottom:12px; letter-spacing:.5px; }
+.wg-metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; }
+.wg-m { text-align:center; }
+.wg-m .v { font-size:22px; font-weight:800; color:#1f2329; }
+.wg-m .v.red { color:#cf1322; }
+.wg-m .v.blue { color:#1677ff; }
+.wg-m .v.green { color:#12a150; }
+.wg-m .l { font-size:12px; color:#8a9099; margin-top:4px; }
+
+/* 货盘区（Tab切换） */
+.ws-pallet { display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; }
+.pallet-tab { flex:1; min-width:140px; border:1px solid #e3e6eb; border-radius:10px; padding:14px 16px; cursor:pointer; background:#f7f8fa; transition:all .15s; }
+.pallet-tab:hover { border-color:#6b46f5; }
+.pallet-tab.active { border-color:#6b46f5; background:#faf9ff; box-shadow:0 0 0 1px #6b46f5 inset; }
+.pallet-tab .pt-name { font-size:14px; font-weight:700; color:#1f2329; }
+.pallet-tab .pt-sub { font-size:12px; color:#8a9099; margin-top:4px; }
+
+/* 策略主区 */
+.ws-strategy { border:1px solid #eceef1; border-radius:12px; min-height:280px; padding:20px; }
+.ws-strategy .wst-label { font-size:12px; color:#8a9099; font-weight:600; margin-bottom:14px; letter-spacing:.5px; }
+.ws-empty { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:60px 20px; color:#b0b4bb; text-align:center; }
+.ws-empty .we-ic { font-size:34px; margin-bottom:12px; opacity:.5; }
+.ws-empty .we-t { font-size:14px; }
+
+/* 会话区激发卡片 */
+.trigger-wrap { border:1px solid #eceef1; border-radius:12px; margin:0 24px 12px; overflow:hidden; }
+.trigger-cards { display:flex; gap:10px; padding:14px; }
+.trigger-card { flex:1; border:1px solid #e3e6eb; border-radius:10px; padding:12px 14px; cursor:pointer; background:#fafbfc; transition:all .15s; }
+.trigger-card:hover { border-color:#6b46f5; background:#faf9ff; }
+.trigger-card .tc-t { font-size:13px; font-weight:700; color:#1f2329; }
+.trigger-card .tc-d { font-size:12px; color:#8a9099; margin-top:5px; line-height:1.5; }
+.trigger-fold { text-align:center; padding:8px; font-size:13px; color:#8a9099; cursor:pointer; border-top:1px solid #f0f1f3; }
+.trigger-fold:hover { background:#fafbfc; }
+
+/* ===== 首屏：指标面板 + 部门切换 + 意图猜测（可收起，遵循「插件框架范式」——激发卡片位于会话区顶部，底部对话框固定） ===== */
+.home-panel { margin:0 24px 4px; flex-shrink:0; }
+.home-panel.collapsed .hp-body { display:none; }
+.hp-fold { display:flex; align-items:center; justify-content:center; gap:6px; padding:8px; font-size:12.5px; color:#8a9099; cursor:pointer; border-top:1px solid #f0f1f3; margin-top:8px; }
+.hp-fold:hover { color:#6b46f5; }
+.hp-fold .caret { transition:transform .2s; display:inline-block; }
+.home-panel.collapsed .hp-fold .caret { transform:rotate(180deg); }
+.dept-switch { display:flex; align-items:center; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.dept-switch .ds-label { font-size:13px; color:#8a9099; font-weight:600; }
+.dept-sel { border:1px solid #d9dce1; border-radius:8px; padding:6px 12px; font-size:13px; color:#3d424b; background:#fff; cursor:pointer; outline:none; }
+.dept-sel:focus { border-color:#6b46f5; }
+.home-metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:8px; }
+.hm-card { border:1px solid #eceef1; border-radius:12px; padding:16px 18px; background:#fff; display:flex; flex-direction:column; gap:8px; min-height:130px; }
+.hm-card .hm-l { font-size:12.5px; color:#5c6169; font-weight:600; display:flex; align-items:center; gap:6px; }
+.hm-card .hm-l .hm-span { font-size:11px; color:#8a9099; font-weight:400; margin-left:auto; }
+.hm-row { display:flex; align-items:center; gap:12px; }
+.hm-item { flex:1; }
+.hm-arrow { color:#6b46f5; font-size:16px; font-weight:700; }
+.hm-vs { color:#c4c8ce; font-size:16px; font-weight:700; }
+.hm-sub-l { font-size:11px; color:#8a9099; margin-bottom:2px; }
+.hm-card .hm-v { font-size:22px; font-weight:800; color:#1f2329; line-height:1.1; }
+.hm-card .hm-v.big { font-size:32px; }
+.hm-card .hm-v.red { color:#cf1322; }
+.hm-card .hm-v.blue { color:#1677ff; }
+.hm-card .hm-v.green { color:#12a150; }
+.hm-badge { }
+.hm-gap { display:inline-block; font-size:11.5px; padding:3px 10px; border-radius:12px; background:#f6ffed; color:#12a150; font-weight:600; border:1px solid #d3f0df; }
+.hm-hint { font-size:11.5px; color:#8a9099; line-height:1.5; }
+.hm-bar { position:relative; height:22px; background:#f0f7ff; border-radius:5px; overflow:hidden; margin-top:2px; }
+.hm-bar-inner { height:100%; background:linear-gradient(90deg,#ff7875,#cf1322); border-radius:5px 0 0 5px; }
+.hm-bar-labels { position:absolute; inset:0; display:flex; align-items:center; justify-content:space-between; padding:0 10px; font-size:11px; color:#fff; font-weight:600; text-shadow:0 1px 2px rgba(0,0,0,.2); }
+.hm-card .hm-sub { font-size:12px; margin-top:auto; }
+.hm-card .hm-sub .up { color:#cf1322; }
+.hm-card .hm-sub .down { color:#12a150; }
+.hm-card .hm-sub .pos { color:#12a150; }
+.hm-card .hm-sub .neg { color:#cf1322; }
+/* 会话区收窄时（操作区已唤起），首屏卡片压缩排布，避免挤压 */
+body.ws-open .home-metrics { grid-template-columns:1fr; gap:8px; }
+body.ws-open .hm-card { padding:12px 14px; min-height:0; gap:4px; }
+body.ws-open .hm-card .hm-v.big { font-size:24px; }
+body.ws-open .hm-card .hm-sub { font-size:11.5px; }
+body.ws-open .ig-cards { flex-direction:column; }
+body.ws-open .ig-card { min-width:0; padding:12px 14px; }
+body.ws-open .ig-card .ig-t { font-size:14px; margin-top:6px; }
+body.ws-open .ig-card .ig-d { font-size:12px; margin-top:4px; }
+body.ws-open .dept-switch { gap:6px; }
+/* 收窄状态下 composer 紧凑一些，保证输入框始终显露 */
+body.ws-open .composer { padding:10px 16px 14px; }
+body.ws-open .composer-box { padding:10px 12px 8px; }
+body.ws-open .composer textarea { font-size:13px; }
+body.ws-open .composer-tools { gap:6px; }
+body.ws-open .ct-btn { padding:5px 8px; font-size:12px; }
+body.ws-open .send { width:32px; height:32px; font-size:14px; }
+body.ws-open .home-panel { margin:0 16px 4px; }
+body.ws-open .chat-head { padding:0 16px; }
+body.ws-open .msgs { padding:16px; }
+.intent-guess { margin:6px 0; }
+.ig-label { font-size:13px; color:#8a9099; font-weight:600; margin-bottom:10px; }
+.ig-cards { display:flex; gap:12px; flex-wrap:wrap; }
+.ig-card { flex:1; min-width:220px; border:1.5px solid #e3e6eb; border-radius:12px; padding:16px 18px; cursor:pointer; background:#fafbfc; transition:all .15s; }
+.ig-card:hover { border-color:#6b46f5; background:#faf9ff; box-shadow:0 4px 14px rgba(107,70,245,.1); }
+.ig-card .ig-ic { font-size:22px; }
+.ig-card .ig-t { font-size:15px; font-weight:700; color:#1f2329; margin-top:8px; }
+.ig-card .ig-d { font-size:12.5px; color:#8a9099; margin-top:6px; line-height:1.6; }
+.ig-card .ig-arrow { font-size:13px; color:#6b46f5; font-weight:600; margin-top:10px; }
+
+/* ===== 快捷反馈：摘要卡片区 + 统计分析区 ===== */
+.qf-sysinfo { background:#f9f0ff; border:1px solid #e6d3ff; border-radius:10px; padding:10px 14px; font-size:13px; color:#722ed1; margin-bottom:14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.qf-sysinfo b { color:#531dab; }
+.qf-sysinfo .qf-sep { color:#d3adf7; }
+.qf-sysinfo .qf-edit { margin-left:auto; font-size:12px; color:#6b46f5; cursor:pointer; border:1px solid #d3adf7; border-radius:6px; padding:3px 10px; }
+.qf-block { margin-bottom:18px; }
+.qf-block .qf-h { font-size:13px; font-weight:700; color:#1f2329; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.qf-summary { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+.qf-sc { border:1px solid #eceef1; border-radius:10px; padding:12px 14px; background:#fafbfc; }
+.qf-sc .sc-l { font-size:12px; color:#8a9099; }
+.qf-sc .sc-v { font-size:20px; font-weight:800; color:#1f2329; margin-top:4px; }
+.qf-sc .sc-v.blue { color:#1677ff; }
+.qf-sc .sc-v.green { color:#12a150; }
+.qf-sc .sc-v.red { color:#cf1322; }
+.qf-sc .sc-break { font-size:12px; color:#5c6169; margin-top:8px; line-height:1.7; }
+.qf-sc .sc-break span { color:#8a9099; }
+.qf-benefit { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+.qf-bc { border:1px solid #d3f0df; border-radius:10px; padding:14px; background:#f6fef9; text-align:center; }
+.qf-bc .bc-v { font-size:22px; font-weight:800; color:#12a150; }
+.qf-bc .bc-l { font-size:12px; color:#5c6169; margin-top:5px; }
+.qf-calc { font-size:12px; color:#8a9099; line-height:1.8; background:#fafbfc; border-radius:8px; padding:10px 12px; margin-top:6px; }
+.qf-calc b { color:#5c6169; }
+
+/* ===== 诊断策略仿真：规则配置 ===== */
+.rule-cfg { }
+.rule-row { border:1px solid #eceef1; border-radius:10px; margin-bottom:10px; overflow:hidden; }
+.rule-head { padding:12px 16px; display:flex; align-items:center; gap:10px; cursor:pointer; background:#fafbfc; }
+.rule-head .rh-name { font-size:14px; font-weight:700; color:#1f2329; }
+.rule-head .rh-def { font-size:12px; color:#8a9099; margin-left:8px; }
+.rule-head .rh-caret { margin-left:auto; color:#b0b4bb; transition:transform .2s; }
+.rule-row.open .rh-caret { transform:rotate(90deg); }
+.rule-body { display:none; padding:14px 16px; border-top:1px solid #f0f1f3; font-size:13px; color:#5c6169; line-height:1.8; }
+.rule-row.open .rule-body { display:block; }
+.rule-body .rb-opt { display:inline-block; border:1px solid #d9dce1; border-radius:8px; padding:6px 12px; margin:4px 6px 4px 0; cursor:pointer; background:#fff; font-size:12.5px; }
+.rule-body .rb-opt:hover { border-color:#6b46f5; color:#6b46f5; }
+.rule-body .rb-opt.sel { border-color:#6b46f5; background:#faf9ff; color:#6b46f5; font-weight:600; }
+.rule-body .rb-k { color:#8a9099; margin-right:6px; }
+.rule-exclude { border:1px dashed #d9dce1; border-radius:10px; padding:14px 16px; margin-top:12px; }
+.rule-exclude .re-h { font-size:13px; font-weight:700; margin-bottom:10px; }
+.rule-actions { display:flex; gap:10px; margin-top:16px; }
+.rule-btn { border:none; border-radius:9px; padding:10px 20px; font-size:14px; font-weight:600; cursor:pointer; }
+.rule-btn.primary { background:#6b46f5; color:#fff; }
+.rule-btn.ghost { background:#fff; border:1px solid #d9dce1; color:#5c6169; }
+
+/* ===== 改善进度：Tab 切换 ===== */
+.prog-tabs { display:flex; gap:4px; margin-bottom:16px; border-bottom:1px solid #eceef1; }
+.prog-tab { padding:10px 18px; font-size:13.5px; font-weight:600; color:#8a9099; cursor:pointer; border-bottom:2px solid transparent; margin-bottom:-1px; white-space:nowrap; }
+.prog-tab:hover { color:#6b46f5; }
+.prog-tab.active { color:#6b46f5; border-bottom-color:#6b46f5; }
+.prog-controls { display:flex; align-items:center; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.ctl-label { font-size:13px; color:#8a9099; }
+.days-btn, .h2-btn { border:1px solid #d9dce1; border-radius:8px; padding:6px 14px; font-size:12.5px; cursor:pointer; background:#fff; }
+.days-btn:hover, .h2-btn:hover { border-color:#6b46f5; color:#6b46f5; }
+.days-btn.sel, .h2-btn.sel { border-color:#6b46f5; background:#faf9ff; color:#6b46f5; font-weight:600; }
+.tbl-wrap { border:1px solid #eceef1; border-radius:10px; overflow:hidden; margin-bottom:12px; }
+.tbl-wrap.tbl-scroll { overflow-x:auto; }
+.tbl-wrap table { width:100%; }
+.tbl-wrap.tbl-scroll table { min-width:1600px; }
+.tbl-wrap th { background:#fafbfc; font-weight:600; font-size:12px; padding:10px 12px; }
+.tbl-wrap td { padding:9px 12px; font-size:12.5px; }
+.tbl-wrap tr:last-child td { border-bottom:none; }
+.prog-note { font-size:12px; color:#5c6169; line-height:1.9; background:#fafbfc; border:1px solid #f0f1f3; border-radius:8px; padding:10px 14px; }
+.prog-note b { color:#1f2329; }
+.trend-nums { font-size:11px; color:#8a9099; margin-top:2px; }
+.list-hint { font-size:12.5px; color:#5c6169; margin-bottom:10px; }
+.list-chip { display:inline-block; margin-left:6px; font-size:12px; color:#6b46f5; background:#f5f2ff; border:1px solid #e6d3ff; border-radius:12px; padding:3px 10px; cursor:pointer; }
+
+/* ===== 诊断策略仿真：当前策略 + 4测算场景 + 仿真对比 ===== */
+.strat-section { margin-bottom:20px; }
+.strat-h { font-size:13px; font-weight:700; color:#1f2329; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.strat-h .strat-tag { font-size:11px; padding:2px 8px; border-radius:5px; background:#f9f0ff; color:#722ed1; font-weight:600; }
+.cur-strat { border:1px solid #d3f0df; background:#f6fef9; border-radius:10px; padding:14px 16px; font-size:13px; color:#1f2329; line-height:1.9; }
+.cur-strat b { color:#12a150; }
+.cur-strat .cs-row { display:flex; gap:14px; flex-wrap:wrap; }
+.cur-strat .cs-item { min-width:200px; }
+.cur-strat .cs-l { font-size:11.5px; color:#5c6169; }
+.cur-strat .cs-v { font-size:13px; font-weight:600; color:#1f2329; }
+.scen-tabs { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.scen-tab { border:1px solid #d9dce1; border-radius:9px; padding:10px 14px; font-size:12.5px; cursor:pointer; background:#fff; min-width:110px; text-align:center; }
+.scen-tab:hover { border-color:#6b46f5; }
+.scen-tab.sel { border-color:#6b46f5; background:#faf9ff; color:#6b46f5; font-weight:600; }
+.scen-tab .st-desc { display:block; font-size:11px; color:#8a9099; font-weight:400; margin-top:3px; }
+.scen-tab.sel .st-desc { color:#8a7bff; }
+.sim-compare { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:14px; }
+.sim-col { border:1px solid #eceef1; border-radius:10px; padding:14px 16px; }
+.sim-col.cur { background:#fafbfc; }
+.sim-col.new { border-color:#6b46f5; background:#faf9ff; box-shadow:0 0 0 1px #6b46f5 inset; }
+.sim-col .sc-title { font-size:13px; font-weight:700; margin-bottom:10px; display:flex; align-items:center; gap:6px; }
+.sim-col .sc-title .sc-tag { font-size:10px; padding:1px 7px; border-radius:4px; background:#eceef1; color:#5c6169; font-weight:600; }
+.sim-col.new .sc-title .sc-tag { background:#6b46f5; color:#fff; }
+.sim-metric { display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed #eceef1; font-size:13px; }
+.sim-metric:last-child { border-bottom:none; }
+.sim-metric .sm-l { color:#8a9099; }
+.sim-metric .sm-v { font-weight:700; }
+.sim-metric .sm-v.up { color:#12a150; }
+.sim-metric .sm-v.down { color:#cf1322; }
+.strat-config-hint { font-size:12px; color:#8a9099; margin-bottom:10px; }
+.enter-config-btn { background:#6b46f5; color:#fff; border:none; border-radius:9px; padding:9px 18px; font-size:13.5px; font-weight:600; cursor:pointer; }
+.enter-config-btn:hover { background:#5a37e0; }
+
+/* ===== 会话内内置报告（采购价预警改善结果） ===== */
+.in-report { border:1px solid #eceef1; border-radius:12px; margin:10px 0 4px; background:#fff; overflow:hidden; }
+.in-report .ir-head { background:linear-gradient(135deg,#f5f2ff,#faf9ff); padding:14px 16px; border-bottom:1px solid #eceef1; }
+.in-report .ir-title { font-size:15px; font-weight:800; color:#1f2329; }
+.in-report .ir-meta { font-size:12px; color:#5c6169; margin-top:4px; }
+.in-report .ir-sec { padding:14px 16px; border-top:1px dashed #eceef1; }
+.in-report .ir-sec-t { font-size:13.5px; font-weight:700; color:#1f2329; margin-bottom:10px; display:flex; align-items:center; }
+.in-report .ir-toggle { margin-left:auto; font-size:11.5px; }
+.in-report .ir-toggle a { color:#8a9099; margin-left:8px; cursor:pointer; }
+.in-report .ir-toggle a.on { color:#6b46f5; font-weight:600; text-decoration:underline; }
+.in-report .ir-tbl { width:100%; border-collapse:collapse; font-size:12px; }
+.in-report .ir-tbl th, .in-report .ir-tbl td { border:1px solid #eceef1; padding:6px 8px; text-align:left; }
+.in-report .ir-tbl thead th { background:#fafbfc; font-weight:600; color:#5c6169; }
+.in-report .ir-hint { font-size:12px; color:#5c6169; margin-top:8px; }
+.in-report .ir-hint .pos { color:#12a150; }
+.in-report .ir-foot { padding:10px 16px; font-size:11.5px; color:#8a9099; background:#fafbfc; border-top:1px solid #eceef1; }
+.tb-wrap { display:flex; align-items:flex-end; gap:14px; height:120px; padding:6px 4px; border-bottom:1px dashed #eceef1; }
+.tb-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
+.tb-bar { width:32px; background:linear-gradient(180deg,#6b46f5,#8a7bff); border-radius:4px 4px 0 0; }
+.tb-v { font-size:12px; font-weight:700; color:#1f2329; }
+.tb-l { font-size:11px; color:#8a9099; }
+.tb-p { font-size:11px; color:#12a150; font-weight:600; }
+.h2-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; }
+.h2-cell { background:#fafbfc; border:1px solid #eceef1; border-radius:8px; padding:10px 12px; }
+.h2-l { font-size:11.5px; color:#5c6169; }
+.h2-v { font-size:16px; font-weight:800; color:#1f2329; margin:4px 0 2px; }
+.h2-e { font-size:11px; color:#8a9099; }
+
+/* 会话内维度勾选卡 */
+.dim-checks { display:flex; flex-direction:column; gap:6px; margin:10px 0 4px; padding:10px 12px; background:#fafbfc; border:1px solid #eceef1; border-radius:8px; }
+.ic-check { font-size:13px; color:#3d424b; cursor:pointer; display:flex; align-items:center; gap:6px; padding:2px 0; }
+.ic-check input { cursor:pointer; }
+
+/* ===== 采购价异常识别 · 规则清单 & 详情 ===== */
+.rn-tbl { width:100%; border-collapse:collapse; font-size:13px; background:#fff; border:1px solid #eceef1; border-radius:10px; overflow:hidden; }
+.rn-tbl th, .rn-tbl td { padding:11px 14px; text-align:left; border-bottom:1px solid #eceef1; vertical-align:top; }
+.rn-tbl thead th { background:#fafbfc; font-weight:700; color:#5c6169; font-size:12.5px; }
+.rn-tbl .rn-name { min-width:180px; }
+.rn-tbl .rn-sub { font-size:11.5px; color:#8a9099; margin-top:3px; }
+.rn-btn { display:inline-block; border:1px solid #d9dce1; border-radius:7px; padding:5px 10px; font-size:12px; color:#5c6169; cursor:pointer; margin-right:6px; margin-bottom:4px; background:#fff; }
+.rn-btn:hover { border-color:#6b46f5; color:#6b46f5; }
+.rn-btn.primary { border-color:#6b46f5; color:#6b46f5; background:#faf9ff; }
+.rn-btn.primary:hover { background:#6b46f5; color:#fff; }
+.rn-foot { display:flex; align-items:center; gap:12px; margin-top:14px; padding:12px 14px; background:#fafbfc; border:1px solid #eceef1; border-radius:10px; }
+.rn-tip { flex:1; font-size:12.5px; color:#5c6169; }
+.rn-custom { border:none; background:#6b46f5; color:#fff; border-radius:9px; padding:9px 18px; font-size:13px; font-weight:600; cursor:pointer; }
+.rn-custom:hover { background:#5a37e0; }
+.rd-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px; }
+.rd-card { border:1px solid #eceef1; border-radius:10px; padding:12px 14px; background:#fff; }
+.rd-t { font-size:12.5px; font-weight:700; color:#1f2329; margin-bottom:8px; }
+.rd-v { font-size:12.5px; color:#5c6169; line-height:1.8; }
+.rd-chip { display:inline-block; background:#f5f6fa; border:1px solid #eceef1; border-radius:14px; padding:2px 10px; font-size:11.5px; color:#3d424b; margin:2px 4px 2px 0; }
+.rd-btn { margin-top:8px; border:1px solid #6b46f5; color:#6b46f5; background:#fff; border-radius:7px; padding:5px 12px; font-size:12px; cursor:pointer; }
+.rd-btn:hover { background:#6b46f5; color:#fff; }
+
+/* ===== 会话内仿真配置卡（规则要求 + 圈品，全部在对话区调整） ===== */
+.in-sim { border:1px solid #e6d3ff; border-radius:12px; background:#faf9ff; margin:10px 0; overflow:hidden; }
+.in-sim .is-head { background:#f5f2ff; padding:11px 14px; font-size:13px; font-weight:700; color:#6b46f5; border-bottom:1px solid #e6d3ff; }
+.in-sim .is-sec { padding:12px 14px; border-bottom:1px dashed #e6d3ff; }
+.in-sim .is-sec:last-of-type { border-bottom:none; }
+.in-sim .is-sec-t { font-size:12.5px; font-weight:700; color:#1f2329; margin-bottom:8px; }
+.in-sim .is-sel { border:1px solid #d9dce1; border-radius:7px; padding:6px 10px; font-size:12.5px; background:#fff; min-width:260px; }
+.in-sim .is-sel:focus { border-color:#6b46f5; outline:none; }
+.in-sim .is-hint { font-size:11.5px; color:#8a9099; margin-top:6px; }
+.in-sim .is-row { display:flex; padding:7px 0; align-items:flex-start; }
+.in-sim .is-lbl { flex:0 0 88px; font-size:12.5px; color:#5c6169; font-weight:600; }
+.in-sim .is-vals { flex:1; display:flex; flex-wrap:wrap; gap:10px; }
+.in-sim .is-tip { font-size:11.5px; color:#5c6169; background:#f5f2ff; padding:8px 14px; border-top:1px solid #e6d3ff; }
+
+/* ===== 仿真配置 & 结果（右侧结果面板保留） ===== */
+.sim-form { border:1px solid #eceef1; border-radius:10px; background:#fff; padding:6px 14px; margin-top:12px; }
+.sim-row { display:flex; padding:12px 0; border-bottom:1px dashed #eceef1; }
+.sim-row:last-child { border-bottom:none; }
+.sim-lbl { flex:0 0 120px; font-size:13px; color:#5c6169; font-weight:600; }
+.sim-vals { flex:1; display:flex; flex-wrap:wrap; gap:12px; }
+.sim-vals .ic-check { font-size:12.5px; }
+.sim-tabs { display:flex; border-bottom:1px solid #eceef1; margin:14px 0 0; }
+.sim-tab { padding:10px 20px; font-size:13px; cursor:pointer; color:#8a9099; border-bottom:2px solid transparent; }
+.sim-tab.active { color:#6b46f5; border-bottom-color:#6b46f5; font-weight:700; }
+.sim-kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:10px; margin:14px 0; }
+.sm-k { border:1px solid #eceef1; border-radius:10px; padding:12px; background:#fff; }
+.sm-l { font-size:11.5px; color:#8a9099; }
+.sm-v { font-size:18px; font-weight:800; color:#1f2329; margin-top:6px; }
+.sim-tbl-wrap { overflow-x:auto; border:1px solid #eceef1; border-radius:10px; background:#fff; }
+.sim-tbl { border-collapse:collapse; font-size:12px; white-space:nowrap; min-width:1600px; }
+.sim-tbl th, .sim-tbl td { border-right:1px solid #eceef1; border-bottom:1px solid #eceef1; padding:8px 10px; text-align:left; vertical-align:top; }
+.sim-tbl thead th { background:#fafbfc; color:#5c6169; font-weight:700; font-size:11.5px; position:sticky; top:0; z-index:2; }
+.sim-tbl th.freeze, .sim-tbl td.freeze { position:sticky; left:0; background:#fff; z-index:3; border-right:2px solid #eceef1; }
+.sim-tbl thead th.freeze { background:#fafbfc; z-index:4; }
+.cell-goods { display:flex; gap:8px; align-items:flex-start; min-width:220px; }
+.cell-goods .cg-img { font-size:24px; width:32px; text-align:center; }
+.cell-goods .cg-name { font-weight:700; color:#1f2329; }
+.cell-goods .cg-meta { font-size:11px; color:#8a9099; margin-top:2px; }
+.cell-goods .tag-stop { background:#fff2f0; border:1px solid #ffd8ce; color:#cf1322; border-radius:3px; padding:0 5px; font-size:10px; margin-left:4px; }
+.c-sub { font-size:11px; color:#8a9099; }
+.c-default { background:#f0f7ff; border:1px solid #cfe3ff; color:#1677ff; border-radius:3px; padding:0 5px; font-size:10px; }
+
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-logo">Y<small>AGENT</small></div>
+    <div class="brand-title">供应链Agent</div>
+    <div class="brand-icons"><span>&#128269;</span><span>&#9744;</span></div>
+  </div>
+  <div class="collab-btn">&#128421; 协作</div>
+  <div class="nav-item"><span class="ico">&#128640;</span>驾驶舱</div>
+  <div class="nav-item"><span class="ico">&#128214;</span>策略中心</div>
+  <div class="nav-item"><span class="ico">&#128218;</span>插件中心</div>
+  <div class="nav-divider"></div>
+  <div class="recent-head">最近使用 <span class="caret">&#9662;</span></div>
+  <div class="recent-day">今天 <span class="badge">1 &#9662;</span></div>
+  <div class="recent-task"><div class="rt-left"><span class="dot-ok">&#10004;</span> 采购价插件</div><span class="rt-time">20:24</span></div>
+  <div class="side-user">
+  <div class="uav">何</div>
+    <div class="uinfo"><div class="n">何爽</div><div class="d">品规与价格产品部</div></div>
+  </div>
+</aside>
+
+<div class="chat">
+  <div class="chat-head">
+    <span class="ct">采购价插件</span><span class="edit">&#9998;</span>
+    <span class="spacer"></span><span class="hi">&#8599;</span>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="home-panel" id="homePanelHost" style="display:none;"></div>
+  <div class="composer">
+    <div class="hint-chips" id="hintChips"></div>
+    <div class="composer-box">
+      <textarea id="input" rows="1" placeholder="用自然语言描述你的诊断诉求，例如「帮我诊断家纺部前毛为负的商品」（Return 发送，Shift+Return 换行）"></textarea>
+      <div class="composer-tools">
+        <span class="ct-btn">&#128206;</span>
+        <span class="ct-btn">&#128101; 专家</span>
+        <span class="ct-btn">&#9881; 技能 &#9662;</span>
+        <span class="ct-btn">&#128218; 标准 &#9662;</span>
+        <button class="send" id="sendBtn">&#8593;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="workspace" id="workspace" style="display:none;">
+  <div class="ws-head"><span class="wt" id="wsTitle">操作区域 · 采购价治理</span><span class="spacer"></span><span class="hi">&#9776;</span></div>
+  <div class="ws-body" id="wsBody"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="modal-mask" id="modalMask"><div class="modal"><div class="modal-head"><span id="modalTitle">预览</span><span class="mc" onclick="closeModal()">&times;</span></div><div class="modal-body" id="modalBody"></div></div></div>
+<script src="agent-core.js"></script>
+<script>
+(function(){
+  /* ===== 部门维度 Mock 指标（一/二/三级切换） =====
+     3 指标：前台毛利率 / 采购价预警数 / 采购价改善占比 */
+  var DEPT = {
+    'all':      { name:'全部部门',
+                  fmr:  {val:'8.2%',  trend:'pos', trendText:'环比 +0.3pt', hint:'目标 ≥10%'},
+                  warn: {val:'459',   trend:'pos', trendText:'环比 -32 条',  hint:'较上周下降'},
+                  imp:  {val:'12.6%', trend:'pos', trendText:'环比 +1.8pt', hint:'已改善 / 累计预警'} },
+    'home':     { name:'家纺事业部',
+                  fmr:  {val:'6.1%',  trend:'pos', trendText:'环比 +0.4pt', hint:'目标 ≥9%'},
+                  warn: {val:'186',   trend:'pos', trendText:'环比 -14 条',  hint:'较上周下降'},
+                  imp:  {val:'14.2%', trend:'pos', trendText:'环比 +2.1pt', hint:'已改善 / 累计预警'} },
+    'home-c2':  { name:'　└ 家居用品（二级）',
+                  fmr:  {val:'5.4%',  trend:'pos', trendText:'环比 +0.5pt', hint:'目标 ≥8.5%'},
+                  warn: {val:'92',    trend:'pos', trendText:'环比 -8 条',   hint:'较上周下降'},
+                  imp:  {val:'15.8%', trend:'pos', trendText:'环比 +2.6pt', hint:'已改善 / 累计预警'} },
+    'home-c3':  { name:'　　└ 四件套（三级）',
+                  fmr:  {val:'4.8%',  trend:'pos', trendText:'环比 +0.6pt', hint:'目标 ≥8%'},
+                  warn: {val:'41',    trend:'pos', trendText:'环比 -5 条',   hint:'较上周下降'},
+                  imp:  {val:'17.1%', trend:'pos', trendText:'环比 +3.2pt', hint:'已改善 / 累计预警'} },
+    'appliance':{ name:'家电事业部',
+                  fmr:  {val:'9.6%',  trend:'pos', trendText:'环比 +0.2pt', hint:'目标 ≥11%'},
+                  warn: {val:'138',   trend:'neg', trendText:'环比 +6 条',   hint:'较上周上升'},
+                  imp:  {val:'10.4%', trend:'pos', trendText:'环比 +1.1pt', hint:'已改善 / 累计预警'} }
+  };
+  var curDept='all';
+
+  /* ===== 首屏面板：意图激发卡片（部门维度已去掉，由用户所属权限自动识别） ===== */
+  function renderHome(k){
+    return ''
+    +'<div class="hp-body">'
+    +'<div class="intent-guess"><div class="ig-cards">'
+    +'<div class="ig-card" data-intent="report"><div class="ig-ic">&#128200;</div><div class="ig-t">采购价预警改善结果</div><div class="ig-d">按您所属部门权限（C2 / C3）内置生成改善报告：周降价排名 · 4 周变化 · H2 至今 · 预警改善明细，可对话调整维度</div><div class="ig-arrow">生成报告 &#8594;</div></div>'
+    +'<div class="ig-card" data-intent="anomaly"><div class="ig-ic">&#128269;</div><div class="ig-t">采购价异常识别诊断</div><div class="ig-d">先看部门当前命中的巡检规则清单 → 点击详情看命中商品范围 → 在规则基础上仿真或自定义策略仿真</div><div class="ig-arrow">进入诊断 &#8594;</div></div>'
+    +'<div class="ig-card" data-intent="grosstarget"><div class="ig-ic">&#127919;</div><div class="ig-t">综毛目标拆解与仿真</div><div class="ig-d">按综毛目标拆解到 C2 / C3 / 品类 / 品牌 / 采销，量化前毛 · 销售差 · 广告 · 返利四项贡献，对话式做仿真</div><div class="ig-arrow">开始拆解 &#8594;</div></div>'
+    +'</div></div>'
+    +'</div>'
+    +'<div class="hp-fold" id="hpFold"><span class="caret">&#9650;</span> <span class="hp-fold-txt">收起</span></div>';
+  }
+  function mountHome(k){
+    curDept=k||curDept||'all';
+    var host=document.getElementById('homePanelHost'); if(!host)return;
+    host.innerHTML=renderHome(curDept);
+    /* 操作区已唤起时默认收起首屏面板，保留入口 */
+    if(document.body.classList.contains('ws-open')) host.classList.add('collapsed');
+    var fold=document.getElementById('hpFold');
+    if(fold) fold.addEventListener('click',function(){
+      host.classList.toggle('collapsed');
+      var t=fold.querySelector('.hp-fold-txt'); if(t) t.textContent=host.classList.contains('collapsed')?'展开激发卡片':'收起';
+    });
+    /* 若初始就是收起状态，同步文案 */
+    if(host.classList.contains('collapsed')){ var t0=fold&&fold.querySelector('.hp-fold-txt'); if(t0) t0.textContent='展开激发卡片'; }
+    /* 意图卡片可点击 —— 用事件委托保证任何时候点击都生效 */
+    host.querySelectorAll('.ig-card').forEach(function(c){
+      c.style.cursor='pointer';
+      c.addEventListener('click',function(){
+        var it=c.getAttribute('data-intent');
+        if(it==='report') startImprovementReport();       // 采购价预警改善结果：会话区多轮澄清 → 生成内置报告
+        else if(it==='anomaly') startAnomalyDiagnose();   // 采购价异常识别：先澄清部门 → 右侧展示命中规则
+        else if(it==='grosstarget') startGrossTarget();   // 综毛目标拆解与仿真
+      });
+    });
+  }
+  /* 首屏立即挂载（不依赖 agent-core.js 的 init 时序） */
+  mountHome('all');
+  function showWs(title){
+    var ws=document.getElementById('workspace'); if(ws)ws.style.display='flex';
+    document.body.classList.add('ws-open');
+    /* 唤起操作区时自动收起首屏面板，遵循「插件框架范式」：会话区顶部激发卡片可收起，底部对话框固定 */
+    var host=document.getElementById('homePanelHost');
+    if(host){
+      host.classList.add('collapsed');
+      var t=host.querySelector('.hp-fold-txt'); if(t) t.textContent='展开激发卡片';
+    }
+    var t2=document.getElementById('wsTitle'); if(t2&&title)t2.textContent=title;
+  }
+  function deptName(){ return (DEPT[curDept]||DEPT['all']).name.replace(/[│└　]/g,'').trim(); }
+
+  /* ===== 4.1 改善进度 & 明细：4 Tab（周排名 / 4周趋势 / H2至今 / 明细清单） ===== */
+  var PROG_TAB='rank'; // rank | trend | h2 | list
+  var PROG_DAYS=7;     // 7 / 15 / 30
+  var PROG_H2='m';     // m 月至今 / q 季至今 / h2 H2至今
+  function openProgress(){
+    showWs('操作区域 · 改善进度 & 明细查看');
+    var b=document.getElementById('wsBody'); if(!b)return;
+    b.innerHTML=progressShellHtml();
+    bindProgressShell();
+    renderProgTab();
+    if(typeof addUser==='function'){ addUser('查看'+deptName()+'的改善进度与命中明细'); }
+    if(typeof addAI==='function'){ addAI('已为「'+deptName()+'」打开<b>改善进度 & 明细</b>操作区（共 4 个 Tab）。默认展示<b>周度降价商品数量排名</b>，支持切换天数 7 / 15 / 30 天，或直接说「切到 4 周趋势」「看 H2 累计」「打开明细清单」。'); }
+  }
+  window.__openProgress=openProgress;
+  window.__openStrategy=function(){ openStrategy(); };
+  window.__mountHome=mountHome;
+  /* 暴露两条核心链路的入口，供顶部快捷选项 & 未来意图路由复用 */
+  window.startImprovementReport=function(){ startImprovementReport(); };
+  window.startAnomalyDiagnose=function(){ startAnomalyDiagnose(); };
+  window.startGrossTarget=function(){ startGrossTarget(); };
+
+  /* ============================================================
+   * 【核心链路 A】采购价预警改善结果 —— 全流程在会话区完成，不唤起右侧
+   *   步骤: 权限识别（部门 & 默认粒度 C2/C3） → 对比时间澄清 →
+   *          维度可调整（周排名 / 4 周变化 / H2 至今 / 明细） → 生成内置报告
+   * ============================================================ */
+  var USER_PROFILE = { name:'何爽', dept:'家纺家居事业部', deptCode:'C1', ownGranularity:'C2' /* 默认粒度 */ };
+  var REPORT_CTX = null;   // { granularity, dept, compareDate, baseDate, dims:[..] }
+  var REPORT_DIMS_ALL = [
+    { k:'rank',  l:'周度降价商品数量排名' },
+    { k:'trend', l:'近 4 周降价商品数量变化' },
+    { k:'h2',    l:'H2 至今采购价降价情况（可切月至今 / 季至今）' },
+    { k:'list',  l:'预警改善商品明细' }
+  ];
+  function startImprovementReport(){
+    var host=document.getElementById('homePanelHost');
+    if(host){ host.classList.add('collapsed'); var t=host.querySelector('.hp-fold-txt'); if(t) t.textContent='展开激发卡片'; }
+    if(typeof addUser==='function') addUser('我想看采购价预警改善结果');
+    /* 初始化上下文 */
+    var today='2026-07-03', base='2026-06-26';
+    REPORT_CTX = { granularity:USER_PROFILE.ownGranularity, dept:USER_PROFILE.dept, compareDate:today, baseDate:base, dims:REPORT_DIMS_ALL.map(function(x){return x.k;}) };
+    if(typeof delay==='function'){
+      delay(function(){
+        if(typeof addAI!=='function') return;
+        var msg='已识别到您所属：<b>'+USER_PROFILE.dept+'</b>（'+USER_PROFILE.name+'）。'
+              +'根据您的权限，将默认按 <b>'+REPORT_CTX.granularity+'</b> 维度为您生成一份采购价预警改善结果内置报告。<br>'
+              +'对比时间：<b>'+REPORT_CTX.compareDate+'</b>（当前）vs <b>'+REPORT_CTX.baseDate+'</b>（7 天前）<br>'
+              +'内置维度：<span style="color:#5c6169;">'+REPORT_DIMS_ALL.map(function(x){return x.l;}).join('、')+'</span>';
+        addAI(msg,
+          [
+            {label:'确认，按 '+REPORT_CTX.granularity+' 生成', onclick:function(){ if(typeof addUser==='function')addUser('确认按 '+REPORT_CTX.granularity+' 生成'); confirmAndBuildReport(); }},
+            {label:'我要按 C3 维度', onclick:function(){ REPORT_CTX.granularity='C3'; if(typeof addUser==='function')addUser('改为 C3 维度'); confirmAndBuildReport(); }},
+            {label:'调整对比时间', onclick:function(){ if(typeof addUser==='function')addUser('调整对比时间'); delay(askCompareTime); }},
+            {label:'只看部分维度', onclick:function(){ if(typeof addUser==='function')addUser('只看部分维度'); delay(askDims); }}
+          ], null,
+          '<div class="fold intent" onclick="tgl(this)">&#129504; 意图理解 <span class="arrow">&#9662;</span></div>'
+          +'<div class="fold-content" style="display:none">意图分类：采购价预警改善结果查看（置信 96%）\n参数澄清：\n · 部门粒度 = '+REPORT_CTX.granularity+'（源自登录权限，可对话调整）\n · 对比时间 = '+REPORT_CTX.compareDate+' vs '+REPORT_CTX.baseDate+'（默认最近 7 天）\n · 报告维度 = 4 项全部开启</div>');
+      });
+    }
+  }
+  function askCompareTime(){
+    if(typeof addAI!=='function') return;
+    addAI('请选择对比口径：',
+      [
+        {label:'当前 vs 7 天前（默认）', onclick:function(){ REPORT_CTX.baseDate='2026-06-26'; if(typeof addUser==='function')addUser('当前 vs 7 天前'); confirmAndBuildReport(); }},
+        {label:'当前 vs 上个月同期', onclick:function(){ REPORT_CTX.baseDate='2026-06-03'; if(typeof addUser==='function')addUser('当前 vs 上个月同期'); confirmAndBuildReport(); }},
+        {label:'当前 vs H2 首日', onclick:function(){ REPORT_CTX.baseDate='2026-07-01'; if(typeof addUser==='function')addUser('当前 vs H2 首日'); confirmAndBuildReport(); }}
+      ]);
+  }
+  function askDims(){
+    if(typeof addAI!=='function') return;
+    var chks=REPORT_DIMS_ALL.map(function(x){ return '<label class="ic-check"><input type="checkbox" data-k="'+x.k+'" checked> '+x.l+'</label>'; }).join('');
+    addAI('请勾选想看的维度（默认全选）：', null, null,
+      '<div class="dim-checks">'+chks+'</div>'
+      +'<div class="opts"><div class="opt" id="dimGo">按勾选生成</div></div>');
+    setTimeout(function(){
+      var go=document.getElementById('dimGo');
+      if(go) go.onclick=function(){
+        var ks=[].slice.call(document.querySelectorAll('.dim-checks input:checked')).map(function(i){return i.getAttribute('data-k');});
+        REPORT_CTX.dims = ks.length?ks:REPORT_DIMS_ALL.map(function(x){return x.k;});
+        if(typeof addUser==='function') addUser('维度：'+REPORT_CTX.dims.join('、'));
+        confirmAndBuildReport();
+      };
+    },10);
+  }
+  function confirmAndBuildReport(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      if(typeof addAI!=='function') return;
+      addAI('参数已就绪。正在为 <b>'+REPORT_CTX.dept+'</b> 按 <b>'+REPORT_CTX.granularity+'</b> 维度生成采购价预警改善结果报告（'+REPORT_CTX.compareDate+' vs '+REPORT_CTX.baseDate+'）…',
+        null,
+        [{type:'tool', text:'调用 Skill: improvement_progress_track\n · granularity = '+REPORT_CTX.granularity+'\n · compareDate = '+REPORT_CTX.compareDate+'\n · baseDate = '+REPORT_CTX.baseDate+'\n · dims = '+REPORT_CTX.dims.join(',')+'\n\n调用 Tool: query_sku_snapshot(compareDate) / query_sku_snapshot(baseDate)\n调用 Tool: query_improvement_effect(compareDate, baseDate)'}]);
+      delay(function(){
+        var report=buildReportHtml(REPORT_CTX);
+        if(typeof addAI==='function'){
+          addAI('报告已生成，可在下方查看，如需调整维度直接告诉我即可（例如「改成 C3」「隐藏 H2」「加上按品类拆分」）：',
+            [
+              {label:'导出 HTML 报告', onclick:function(){ if(typeof addUser==='function')addUser('导出报告'); delay(function(){ if(typeof addAI==='function')addAI('已导出报告到产物区。'); }); }},
+              {label:'推送到京Me机器人', onclick:function(){ if(typeof addUser==='function')addUser('推送到京Me机器人'); delay(function(){ if(typeof addAI==='function')addAI('已按 P0/P1 分层推送到「家纺家居事业部通晒群」，采销可点击对应 SKU 查看明细。'); }); }},
+              {label:'改成 C3 维度', onclick:function(){ REPORT_CTX.granularity='C3'; if(typeof addUser==='function')addUser('改成 C3 维度'); confirmAndBuildReport(); }}
+            ], null, report);
+        }
+      });
+    });
+  }
+  function buildReportHtml(ctx){
+    var rankRows=[
+      ['1','四件套',   '312','+38','680','45.9%','↑ 4.2pt','7.2%','58','-20'],
+      ['2','冬被加厚', '246','+21','410','60.0%','↑ 2.6pt','8.1%','35','-14'],
+      ['3','抱枕套',   '184','+12','520','35.4%','↑ 1.8pt','5.6%','42','+8'],
+      ['4','实木书架', '142','+9', '380','37.4%','→ 0.5pt','6.3%','28','-5']
+    ];
+    var rankRowsC2=[
+      ['1','家纺（家居事业部）', '598','+62','1,180','50.7%','↑ 3.1pt','7.5%','98','-34'],
+      ['2','家居（家居事业部）', '346','+25','820',  '42.2%','↑ 2.0pt','6.1%','66','-11'],
+      ['3','家电事业部',         '288','+18','940',  '30.6%','↑ 1.2pt','5.4%','54','-6'],
+      ['4','厨具（厨卫事业部）', '204','+14','560',  '36.4%','↑ 1.5pt','5.8%','38','-3']
+    ];
+    var useC3 = ctx.granularity==='C3';
+    var rankHead='<tr><th>排名</th><th>'+(useC3?'C3 部门/组':'C2 部门')+'</th><th>过去 7 天降价 SKU</th><th>本周新增降价</th><th>部门上架 SKU</th><th>降价占比</th><th>环比</th><th>降价幅度</th><th>新增预警</th><th>净变化</th></tr>';
+    var rankBody=(useC3?rankRows:rankRowsC2).map(function(r){ return '<tr><td>'+r.join('</td><td>')+'</td></tr>'; }).join('');
+    var trendData=[
+      ['第 22 周', 68, '3.2%'],
+      ['第 23 周', 84, '4.0%'],
+      ['第 24 周', 96, '4.6%'],
+      ['第 25 周', 112,'5.4%']
+    ];
+    var maxV=Math.max.apply(null,trendData.map(function(r){return r[1];}));
+    var trendBars=trendData.map(function(r){
+      var h=Math.round(r[1]/maxV*72);
+      return '<div class="tb-col"><div class="tb-bar" style="height:'+h+'px"></div><div class="tb-v">'+r[1]+'</div><div class="tb-l">'+r[0]+'</div><div class="tb-p">'+r[2]+'</div></div>';
+    }).join('');
+    var h2Items=[
+      ['&#128200; 累计预警商品数','1,246','环比 -84 条'],
+      ['&#128200; 累计降价商品数','684','环比 +52 条'],
+      ['&#128176; 实际降本金额','¥ 218.6 万','环比 +32 万'],
+      ['&#128200; 实际降价幅度','6.4%','环比 +0.5pt'],
+      ['&#9989; 已降价成功','684 个','占累计 54.9%'],
+      ['&#10060; 供应商拒绝','92 个 · 38 家','占累计 7.4%'],
+      ['&#128260; 议价中','338 个','含 7 天无反馈 46 个'],
+      ['&#9203; 未处理预警','132 个','占累计 10.6%']
+    ];
+    var h2Html=h2Items.map(function(a){ return '<div class="h2-cell"><div class="h2-l">'+a[0]+'</div><div class="h2-v">'+a[1]+'</div><div class="h2-e">'+a[2]+'</div></div>'; }).join('');
+    var listItems=[
+      ['100010023','华信 纯棉四件套','家纺 / 四件套','品牌商','128.00→115.00','-10.2%','2026-07-01'],
+      ['100010047','暖冬 冬被加厚','家纺 / 冬被','授权经销商','268.00→245.00','-8.6%','2026-06-30'],
+      ['100010061','洁丽雅 毛巾3条装','家纺 / 毛巾','品牌商','58.00→52.50','-9.5%','2026-06-29'],
+      ['100010128','纳川 收纳箱','家居 / 收纳','贸易商','89.00→81.20','-8.8%','2026-06-28']
+    ];
+    var listHead='<tr><th>SKU</th><th>商品</th><th>C3 品类</th><th>供应商身份</th><th>采购价变化</th><th>降幅</th><th>修改时间</th></tr>';
+    var listBody=listItems.map(function(r){ return '<tr><td>'+r.join('</td><td>')+'</td></tr>'; }).join('');
+    var include={}; ctx.dims.forEach(function(k){include[k]=1;});
+    var html='<div class="in-report">'
+      +'<div class="ir-head"><div class="ir-title">&#128203; 采购价预警改善结果报告</div>'
+      +'<div class="ir-meta">'+ctx.dept+' · 按 <b>'+ctx.granularity+'</b> 维度 · '+ctx.compareDate+' vs '+ctx.baseDate+'</div></div>';
+    if(include.rank) html+='<div class="ir-sec"><div class="ir-sec-t">1. 周度降价商品数量排名</div>'
+      +'<table class="ir-tbl"><thead>'+rankHead+'</thead><tbody>'+rankBody+'</tbody></table></div>';
+    if(include.trend) html+='<div class="ir-sec"><div class="ir-sec-t">2. 近 4 周降价商品数量变化</div>'
+      +'<div class="tb-wrap">'+trendBars+'</div>'
+      +'<div class="ir-hint">近 28 天累计降价商品数：360 个，占比 4.3% <span class="pos">↑ 上升趋势</span></div></div>';
+    if(include.h2) html+='<div class="ir-sec"><div class="ir-sec-t">3. H2 至今采购价降价情况'
+      +' <span class="ir-toggle"><a data-h2="m">月至今</a> <a data-h2="q">季至今</a> <a data-h2="all" class="on">H2 至今</a></span></div>'
+      +'<div class="h2-grid">'+h2Html+'</div></div>';
+    if(include.list) html+='<div class="ir-sec"><div class="ir-sec-t">4. 预警改善商品明细（'+listItems.length+' / 显示前 4 · 完整 826 条可导出）</div>'
+      +'<table class="ir-tbl"><thead>'+listHead+'</thead><tbody>'+listBody+'</tbody></table></div>';
+    html+='<div class="ir-foot">&#128101; 报告由 improvement_progress_track Skill 生成 · 数据源 dwd_purchase_price / dwd_task_snapshot</div>'
+      +'</div>';
+    return html;
+  }
+
+  /* ============================================================
+   * 【核心链路 B】采购价异常识别诊断 —— 澄清部门 → 右侧展示命中规则 → 详情 → 仿真
+   * ============================================================ */
+  function startAnomalyDiagnose(){
+    var host=document.getElementById('homePanelHost');
+    if(host){ host.classList.add('collapsed'); var t=host.querySelector('.hp-fold-txt'); if(t) t.textContent='展开激发卡片'; }
+    if(typeof addUser==='function') addUser('我想看采购价异常识别诊断');
+    if(typeof delay==='function'){
+      delay(function(){
+        if(typeof addAI!=='function') return;
+        addAI('好的，先明确您想看的<b>部门</b>。规则默认落到 <b>C3</b> 维度；如果选 C2，将查询该 C2 下 <b>全部 C3</b> 部门的规则。',
+          [
+            {label:'家纺（C2） · 查询全部 C3', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家纺', c3List:['四件套','冬被','抱枕套','毛巾','乳胶枕'] }; if(typeof addUser==='function')addUser('家纺 C2，全部 C3'); openAnomalyRules(); }},
+            {label:'家居（C2） · 查询全部 C3', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家居', c3List:['收纳箱','置物架','挂架','浴室置物架','垃圾桶'] }; if(typeof addUser==='function')addUser('家居 C2，全部 C3'); openAnomalyRules(); }},
+            {label:'四件套（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'四件套', c3List:['四件套'] }; if(typeof addUser==='function')addUser('四件套 C3'); openAnomalyRules(); }},
+            {label:'冬被（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'冬被', c3List:['冬被'] }; if(typeof addUser==='function')addUser('冬被 C3'); openAnomalyRules(); }}
+          ]);
+      });
+    }
+  }
+  var ANOM_CTX=null; // { deptL, dept, c3List }
+
+  var RULE_DEFS = [
+    { k:'r1', name:'前毛倒挂', baseline:'对比 30 天众数成交价', threshold:'采购价 > 对标价' },
+    { k:'r2', name:'高于基准价', baseline:'对比基准价', threshold:'高于 5% 或高于 3 元' },
+    { k:'r3', name:'采购成本上升', baseline:'对比上次采购价', threshold:'上升 > 5%' },
+    { k:'r4', name:'非多商最低价', baseline:'同 SKU 多供应商', threshold:'非最低价 且 差价 > 2%' },
+    { k:'r5', name:'采购价无行业优势', baseline:'对比 30 天最低价 / 众数价 / 测算价', threshold:'高于对标 3%' },
+    { k:'r6', name:'采购价无 POP 优势', baseline:'对比 7/30 天最低价 / 众数价 / 测算价', threshold:'高于对标 3%' }
+  ];
+  function openAnomalyRules(){
+    showWs('操作区域 · 采购价异常识别 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）');
+    if(typeof addAI==='function') addAI('已在右侧操作区打开「<b>'+ANOM_CTX.dept+'</b>」当前命中的巡检规则清单（共 6 类规则）。点击任一规则右侧「查看详情」可下钻商品范围；也可以直接说「基于「前毛倒挂」做仿真」或「自定义仿真策略」。');
+    var body=document.getElementById('wsBody'); if(!body) return;
+    body.innerHTML=anomalyRulesHtml();
+    bindAnomalyRules();
+  }
+  function anomalyRulesHtml(){
+    var rows=RULE_DEFS.map(function(r,i){
+      var hit=[458,362,214,168,296,232][i];
+      var sup=[86,72,54,41,63,55][i];
+      return ''
+        +'<tr>'
+        +'<td class="rn-name"><b>'+r.name+'</b><div class="rn-sub">'+r.baseline+'</div></td>'
+        +'<td>'+r.threshold+'</td>'
+        +'<td class="num-red">'+hit+'</td>'
+        +'<td>'+sup+'</td>'
+        +'<td>'
+        +'<span class="rn-btn" data-act="detail" data-k="'+r.k+'">&#128269; 查看详情</span>'
+        +'<span class="rn-btn primary" data-act="sim" data-k="'+r.k+'">&#128295; 基于此规则仿真</span>'
+        +'</td>'
+        +'</tr>';
+    }).join('');
+    return ''
+      +'<div class="qf-sysinfo">'
+      +'<span>部门：<b>'+ANOM_CTX.dept+'</b>（'+ANOM_CTX.deptL+'）</span>'
+      +(ANOM_CTX.deptL==='C2'?'<span class="qf-sep">｜</span><span>覆盖 C3：<b>'+ANOM_CTX.c3List.join('、')+'</b></span>':'')
+      +'<span class="qf-sep">｜</span><span>测算时间：<b>2026-07-03</b></span>'
+      +'</div>'
+      +'<table class="rn-tbl"><thead>'
+      +'<tr><th>规则名称</th><th>规则要求</th><th>命中 SKU</th><th>供应商数</th><th>操作</th></tr>'
+      +'</thead><tbody>'+rows+'</tbody></table>'
+      +'<div class="rn-foot">'
+      +'<div class="rn-tip">&#128161; 点选规则可查看命中商品范围；如需<b>自定义规则组合</b>与阈值，请说「自定义仿真策略」。</div>'
+      +'<button class="rn-custom" id="rnCustom">&#9881; 自定义仿真策略</button>'
+      +'</div>';
+  }
+  function bindAnomalyRules(){
+    document.querySelectorAll('.rn-btn').forEach(function(b){
+      b.onclick=function(){
+        var act=b.getAttribute('data-act'), k=b.getAttribute('data-k');
+        var r=RULE_DEFS.filter(function(x){return x.k===k;})[0]; if(!r) return;
+        if(act==='detail') openRuleDetail(r);
+        else if(act==='sim') startSimFromRule(r);
+      };
+    });
+    var c=document.getElementById('rnCustom');
+    if(c) c.onclick=function(){ startCustomSim(); };
+  }
+  function openRuleDetail(r){
+    if(typeof addUser==='function') addUser('查看「'+r.name+'」命中详情');
+    var body=document.getElementById('wsBody'); if(!body) return;
+    body.innerHTML=ruleDetailHtml(r);
+    var back=document.getElementById('rnBack'); if(back) back.onclick=openAnomalyRules;
+    var toSim=document.getElementById('rnToSim'); if(toSim) toSim.onclick=function(){ startSimFromRule(r); };
+    var dl=document.getElementById('rnDl'); if(dl) dl.onclick=function(){ if(typeof addAI==='function') addAI('已导出「加白清单」EXCEL 到产物区。'); };
+    if(typeof addAI==='function') addAI('已展示「<b>'+r.name+'</b>」命中商品范围：包含 <b>部门/类目 / 品牌 / 供应商 / 一二三类货 / band 等级 / 加白清单</b> 6 个维度。<br>下一步您想 <b>基于此规则做仿真</b>？还是 <b>自定义仿真策略</b>？',
+      [
+        {label:'基于「'+r.name+'」仿真', onclick:function(){ if(typeof addUser==='function')addUser('基于「'+r.name+'」仿真'); startSimFromRule(r); }},
+        {label:'自定义仿真策略', onclick:function(){ if(typeof addUser==='function')addUser('自定义仿真策略'); startCustomSim(); }}
+      ]);
+  }
+  function ruleDetailHtml(r){
+    return ''
+      +'<div class="qf-sysinfo"><span><a id="rnBack" style="cursor:pointer;color:#6b46f5;">&#8592; 返回规则清单</a></span>'
+      +'<span class="qf-sep">｜</span><span>规则：<b>'+r.name+'</b> · '+r.baseline+' · '+r.threshold+'</span></div>'
+      +'<div class="rd-grid">'
+      +rdCard('&#127970; 部门 / 类目', ['家纺 - 四件套','家纺 - 冬被','家纺 - 抱枕','家居 - 收纳','家居 - 挂架'])
+      +rdCard('&#127991; 品牌', ['华信','暖冬','洁丽雅','水星','纳川','禧天龙'])
+      +rdCard('&#127981; 供应商', ['华信官方旗舰','暖冬直营','洁丽雅旗舰','水星家纺','纳川旗舰'])
+      +rdCard('&#128230; 一 / 二 / 三类货', ['一类货 32%','二类货 41%','三类货 27%'])
+      +rdCard('&#127942; Band 等级', ['A · 128 个','B · 214 个','C · 86 个','D · 24 个','E · 6 个','F · 0 个'])
+      +'<div class="rd-card">'
+      +'<div class="rd-t">&#128220; 加白清单</div>'
+      +'<div class="rd-v">当前加白 SKU：<b>146</b> 个（历史豁免 / 战略亏损）</div>'
+      +'<button class="rd-btn" id="rnDl">&#8595; 下载 EXCEL</button>'
+      +'</div>'
+      +'</div>'
+      +'<div class="rn-foot"><div class="rn-tip">&#128200; 命中 <b class="num-red">'+({r1:458,r2:362,r3:214,r4:168,r5:296,r6:232}[r.k])+'</b> 个 SKU · 涉及供应商 '+({r1:86,r2:72,r3:54,r4:41,r5:63,r6:55}[r.k])+' 家 · 月前毛损失约 <b class="num-red">¥ 62.4 万</b></div>'
+      +'<button class="rn-custom" id="rnToSim">&#128295; 基于此规则仿真</button></div>';
+  }
+  function rdCard(title, arr){
+    return '<div class="rd-card"><div class="rd-t">'+title+'</div><div class="rd-v">'+arr.map(function(x){return '<span class="rd-chip">'+x+'</span>';}).join('')+'</div></div>';
+  }
+
+  /* --- 仿真对话流：配置全部在会话区完成，右侧仅展示规则清单/详情，测算完成后展示结果 --- */
+  var SIM_CTX=null; // { fromRule, threshold, benchmark, scope:{cat,brand,supplier,band,white}, mode:'rule'|'custom' }
+  function defaultScope(){ return { cat:['全部'], brand:['全部'], supplier:['全部'], band:['A','B','C'], white:'排除加白' }; }
+  function scopeSummary(){
+    var s=SIM_CTX.scope;
+    return '品类='+s.cat.join('/')+' · 品牌='+s.brand.join('/')+' · 供应商='+s.supplier.join('/')+' · Band='+s.band.join('/')+' · '+s.white;
+  }
+  /* 在会话气泡内嵌入的仿真配置卡（供 addAI 的 extraHtml 使用） */
+  function simConfigInlineHtml(cardId){
+    var opts=function(arr,sel){ return arr.map(function(v){ return '<label class="ic-check"><input type="checkbox" data-v="'+v+'" '+(sel.indexOf(v)>=0?'checked':'')+'> '+v+'</label>'; }).join(''); };
+    var thresholdOpts=[
+      '采购价 > 30 天众数成交价',
+      '偏离度 > 5%',
+      '偏离度 > 10%',
+      '采购价 > 上次采购价（成本上升）',
+      '非多商最低价 且 差价 > 2%'
+    ].map(function(t){ return '<option value="'+t+'" '+(t===SIM_CTX.threshold?'selected':'')+'>'+t+'</option>'; }).join('');
+    return ''
+      +'<div class="in-sim" id="'+cardId+'">'
+      +'<div class="is-head">&#128295; 仿真配置 · '+(SIM_CTX.mode==='rule'?'基于「'+SIM_CTX.fromRule.name+'」':'自定义策略')+'</div>'
+      +'<div class="is-sec">'
+      +'<div class="is-sec-t">1. 规则要求（对标口径 + 阈值）</div>'
+      +'<select class="is-sel" data-fld="threshold">'+thresholdOpts+'</select>'
+      +'<div class="is-hint">支持在下方对话中一句话调整，例如「换成 7 天众数」「阈值改为 8%」</div>'
+      +'</div>'
+      +'<div class="is-sec">'
+      +'<div class="is-sec-t">2. 圈选商品池</div>'
+      +'<div class="is-row"><span class="is-lbl">品类</span><div class="is-vals" data-key="cat">'+opts(['全部','家纺','家居','厨具','个护'],SIM_CTX.scope.cat)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">品牌</span><div class="is-vals" data-key="brand">'+opts(['全部','华信','暖冬','洁丽雅','水星','纳川','禧天龙'],SIM_CTX.scope.brand)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">供应商身份</span><div class="is-vals" data-key="supplier">'+opts(['全部','品牌商','授权经销商','贸易商'],SIM_CTX.scope.supplier)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">Band 等级</span><div class="is-vals" data-key="band">'+opts(['A','B','C','D','E','F'],SIM_CTX.scope.band)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">加白 SKU</span><div class="is-vals is-radio">'
+      +'<label class="ic-check"><input type="radio" name="'+cardId+'-w" '+(SIM_CTX.scope.white==='排除加白'?'checked':'')+' data-w="排除加白"> 排除加白</label>'
+      +'<label class="ic-check"><input type="radio" name="'+cardId+'-w" '+(SIM_CTX.scope.white==='包含加白'?'checked':'')+' data-w="包含加白"> 包含加白</label>'
+      +'</div></div>'
+      +'</div>'
+      +'<div class="is-tip">&#128172; 也可以直接一句话调整，例如「品类=家纺，品牌=华信，band A/B，剔除贸易商」，我会解析后二次确认。</div>'
+      +'</div>';
+  }
+  function bindInlineSimConfig(cardId){
+    var card=document.getElementById(cardId); if(!card) return;
+    /* 规则要求 select */
+    card.querySelectorAll('select.is-sel').forEach(function(sel){
+      sel.onchange=function(){ SIM_CTX.threshold=sel.value; if(typeof addUser==='function') addUser('规则改为「'+sel.value+'」'); };
+    });
+    /* 商品池 checkbox */
+    card.querySelectorAll('.is-vals[data-key]').forEach(function(row){
+      var key=row.getAttribute('data-key');
+      row.querySelectorAll('input[type=checkbox]').forEach(function(i){
+        i.onchange=function(){
+          var v=i.getAttribute('data-v');
+          var arr=SIM_CTX.scope[key].filter(function(x){return x!==v;});
+          if(i.checked) arr.push(v);
+          SIM_CTX.scope[key]=arr.length?arr:['全部'];
+        };
+      });
+    });
+    /* 加白 radio */
+    card.querySelectorAll('input[type=radio]').forEach(function(i){
+      i.onchange=function(){ if(i.checked) SIM_CTX.scope.white=i.getAttribute('data-w'); };
+    });
+  }
+  function startSimFromRule(r){
+    SIM_CTX={ mode:'rule', fromRule:r, threshold:r.threshold, scope:defaultScope() };
+    /* 右侧保留在规则清单/详情画面，配置改在会话区做 */
+    if(typeof addAI!=='function') return;
+    var cardId='simcfg-'+Date.now();
+    addAI('已进入「<b>'+r.name+'</b>」的仿真配置，我把<b>规则要求</b>与<b>商品池</b>都放在下面这张卡片里，您可以直接勾选调整，也可以一句话告诉我要改什么（例如「只保留 A/B band，剔除贸易商」）。参数调整完请点「确认并开始仿真」。',
+      [
+        {label:'只保留 A/B band', onclick:function(){ SIM_CTX.scope.band=['A','B']; if(typeof addUser==='function')addUser('只保留 A/B band'); reAskConfirm(); }},
+        {label:'剔除贸易商供应商', onclick:function(){ SIM_CTX.scope.supplier=['品牌商','授权经销商']; if(typeof addUser==='function')addUser('剔除贸易商供应商'); reAskConfirm(); }},
+        {label:'确认并开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); runSimulation(); }}
+      ], null, simConfigInlineHtml(cardId));
+    setTimeout(function(){ bindInlineSimConfig(cardId); },20);
+  }
+  function startCustomSim(){
+    SIM_CTX={ mode:'custom', fromRule:null, threshold:'采购价 > 30 天众数成交价', scope:defaultScope() };
+    if(typeof addAI!=='function') return;
+    var cardId='simcfg-'+Date.now();
+    addAI('已进入<b>自定义仿真策略</b>配置。请在下方卡片中设置规则要求（对标口径 + 阈值）与商品池范围，或直接用自然语言描述，我会解析后二次确认。',
+      [
+        {label:'规则改为「偏离度 > 10%」', onclick:function(){ SIM_CTX.threshold='偏离度 > 10%'; if(typeof addUser==='function')addUser('规则改为偏离度 > 10%'); reAskConfirm(); }},
+        {label:'商品池加上品牌=华信', onclick:function(){ SIM_CTX.scope.brand=['华信']; if(typeof addUser==='function')addUser('商品池加品牌=华信'); reAskConfirm(); }},
+        {label:'确认并开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); runSimulation(); }}
+      ], null, simConfigInlineHtml(cardId));
+    setTimeout(function(){ bindInlineSimConfig(cardId); },20);
+  }
+  function reAskConfirm(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      if(typeof addAI!=='function') return;
+      var cardId='simcfg-'+Date.now();
+      addAI('已更新配置：<br>· 规则要求：<b>'+SIM_CTX.threshold+'</b><br>· 商品池：'+scopeSummary()+'<br>下方是最新的配置卡片，如需继续调整请直接勾选或告诉我；确认无误就开始仿真。',
+        [
+          {label:'继续在卡片调整', onclick:function(){ if(typeof addAI==='function')addAI('好的，直接在下方最新的配置卡片上调整即可。'); }},
+          {label:'确认并开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); runSimulation(); }}
+        ], null, simConfigInlineHtml(cardId));
+      setTimeout(function(){ bindInlineSimConfig(cardId); },20);
+    });
+  }
+
+  /* --- 综毛目标拆解与仿真 --- */
+  var GT_CTX=null; // { target, base, dim, coverage:['前毛','销售差','广告','返利'] }
+  function startGrossTarget(){
+    GT_CTX={ target:12.5, base:9.6, dim:'C2', coverage:['前毛','销售差','广告','返利'] };
+    if(typeof addUser==='function') addUser('我想做综毛目标拆解与仿真');
+    if(typeof delay!=='function') return;
+    delay(function(){
+      if(typeof addAI!=='function') return;
+      addAI('好的，先明确综毛目标与拆解口径。当前部门综毛率为 <b>9.6%</b>，请设定目标：',
+        [
+          {label:'目标 12.5%（默认）', onclick:function(){ GT_CTX.target=12.5; if(typeof addUser==='function')addUser('综毛目标 12.5%'); askGtDim(); }},
+          {label:'目标 11.0%（稳健）', onclick:function(){ GT_CTX.target=11.0; if(typeof addUser==='function')addUser('综毛目标 11.0%'); askGtDim(); }},
+          {label:'目标 14.0%（激进）', onclick:function(){ GT_CTX.target=14.0; if(typeof addUser==='function')addUser('综毛目标 14.0%'); askGtDim(); }}
+        ], null,
+        '<div class="fold intent" onclick="tgl(this)">&#129504; 意图理解 <span class="arrow">&#9662;</span></div>'
+        +'<div class="fold-content" style="display:none">意图分类：综毛目标拆解与仿真（置信 94%）\n参数澄清：\n · 综毛目标（默认沿用部门 H2 目标）\n · 拆解维度（C2 / C3 / 品类 / 品牌 / 采销）\n · 贡献口径 = 前毛 + 销售差 + 广告 + 返利</div>');
+    });
+  }
+  function askGtDim(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      if(typeof addAI!=='function') return;
+      addAI('目标锁定：综毛 <b class="num-green">'+GT_CTX.target+'%</b>（当前 '+GT_CTX.base+'%，缺口 '+(GT_CTX.target-GT_CTX.base).toFixed(1)+'pt）。<br>接下来您想按哪个维度拆解？',
+        [
+          {label:'按 C2 拆解（默认）', onclick:function(){ GT_CTX.dim='C2'; if(typeof addUser==='function')addUser('按 C2 拆解'); runGrossBreakdown(); }},
+          {label:'按 C3 拆解', onclick:function(){ GT_CTX.dim='C3'; if(typeof addUser==='function')addUser('按 C3 拆解'); runGrossBreakdown(); }},
+          {label:'按品牌拆解', onclick:function(){ GT_CTX.dim='品牌'; if(typeof addUser==='function')addUser('按品牌拆解'); runGrossBreakdown(); }},
+          {label:'按采销拆解', onclick:function(){ GT_CTX.dim='采销'; if(typeof addUser==='function')addUser('按采销拆解'); runGrossBreakdown(); }}
+        ]);
+    });
+  }
+  function runGrossBreakdown(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      if(typeof addAI!=='function') return;
+      addAI('正在按 <b>'+GT_CTX.dim+'</b> 维度做综毛拆解…',
+        null,
+        [{type:'tool', text:'调用 Skill: gross_margin_target_split\n · target = '+GT_CTX.target+'%\n · dim = '+GT_CTX.dim+'\n · levers = 前毛 + 销售差 + 广告 + 返利'}]);
+      delay(function(){
+        var html=grossReportHtml();
+        if(typeof addAI==='function') addAI('已完成拆解，可查看下方卡片。可继续对话：<br>· 「换成按 C3 拆」<br>· 「聚焦华信品牌做仿真」<br>· 「广告贡献不动，其他项如何补齐」',
+          [
+            {label:'对华信品牌做仿真', onclick:function(){ if(typeof addUser==='function')addUser('对华信品牌做仿真'); delay(function(){ if(typeof addAI==='function')addAI('已锁定华信品牌，前毛缺口 0.8pt 中 <b>0.5pt 可通过采购价议价</b>、0.3pt 可通过返利谈判获得。是否触发采购价仿真？'); }); }},
+            {label:'换成按 C3 拆解', onclick:function(){ GT_CTX.dim='C3'; if(typeof addUser==='function')addUser('换成按 C3 拆'); runGrossBreakdown(); }},
+            {label:'导出综毛拆解报告', onclick:function(){ if(typeof addUser==='function')addUser('导出综毛拆解报告'); delay(function(){ if(typeof addAI==='function')addAI('已导出综毛拆解报告到产物区。'); }); }}
+          ], null, html);
+      });
+    });
+  }
+  function grossReportHtml(){
+    var rows=[
+      ['家纺', '9.2%','12.4%','+3.2','+1.8','+0.6','+0.4','+0.4'],
+      ['家居', '9.8%','12.0%','+2.2','+1.2','+0.4','+0.3','+0.3'],
+      ['厨具', '10.4%','12.6%','+2.2','+1.0','+0.5','+0.4','+0.3'],
+      ['个护', '10.8%','13.0%','+2.2','+0.9','+0.5','+0.4','+0.4']
+    ];
+    var rowsHtml=rows.map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="num-green"><b>'+r[2]+'</b></td><td class="num-red">'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td><td>'+r[6]+'</td><td>'+r[7]+'</td></tr>'; }).join('');
+    return ''
+      +'<div class="in-report">'
+      +'<div class="ir-head"><div class="ir-title">&#127919; 综毛目标拆解与仿真</div>'
+      +'<div class="ir-meta">目标 '+GT_CTX.target+'% · 当前 '+GT_CTX.base+'% · 按 <b>'+GT_CTX.dim+'</b> 维度 · 四杠杆：前毛 + 销售差 + 广告 + 返利</div></div>'
+      +'<div class="ir-sec"><div class="ir-sec-t">目标拆解表</div>'
+      +'<table class="ir-tbl"><thead><tr><th>'+GT_CTX.dim+'</th><th>当前综毛</th><th>目标综毛</th><th>缺口 (pt)</th><th>前毛贡献</th><th>销售差贡献</th><th>广告贡献</th><th>返利贡献</th></tr></thead>'
+      +'<tbody>'+rowsHtml+'</tbody></table></div>'
+      +'<div class="ir-sec"><div class="ir-sec-t">仿真洞察</div>'
+      +'<div class="ir-hint">&#128200; 前毛贡献最大（占比 45%），建议优先启动采购价议价场景；返利谈判需与供应商合同挂钩，落地周期较长。</div>'
+      +'</div>'
+      +'<div class="ir-foot">&#128101; 由 gross_margin_target_split Skill 拆解 · 数据源 dwd_gross_margin_daily</div>'
+      +'</div>';
+  }
+
+  /* --- 仿真结果：Tab（原策略 / 当前策略），自定义模式仅一份结果 --- */
+  var SIM_TAB='current';
+  function runSimulation(){
+    showWs('操作区域 · 仿真结果 · '+(SIM_CTX.mode==='rule'?'基于「'+SIM_CTX.fromRule.name+'」':'自定义策略'));
+    var body=document.getElementById('wsBody'); if(!body) return;
+    body.innerHTML=simResultHtml();
+    bindSimResult();
+    if(typeof addAI==='function') addAI('仿真测算完成。当前策略下预计影响 <b class="num-red">324 个 SKU / 68 家供应商</b>，预计降本 <b class="num-red">¥ 42.8 万</b>。可在右侧切换「原策略 vs 当前策略」查看差异，或导出商品明细 EXCEL。');
+  }
+  function simMetrics(which){
+    if(which==='orig') return { skus:458, sups:86, purBefore:'¥ 780.4 万', purAfter:'¥ 728.5 万', save:'¥ 51.9 万' };
+    return { skus:324, sups:68, purBefore:'¥ 615.2 万', purAfter:'¥ 572.4 万', save:'¥ 42.8 万' };
+  }
+  function simRows(){
+    return [
+      { id:'100010023', img:'&#127907;', name:'华信 纯棉四件套 200×230cm', pool:'一品多商', stop:false,
+        supplier:'华信官方旗舰', supCode:'HX001', supType:'品牌商', defaultSup:true, cur:'CNY 128.00',
+        brand:'华信家纺（BR20031）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'四件套（100121）', cat4:'',
+        chan:'C 采购渠道', dc:'北京大兴中心仓', whQuote:'CNY 125.00', rmb:'¥ 128.00', margin:'-2.4%',
+        forecast:'月均 1,240 件', target:'¥ 112.00', save:'¥ 4,960' },
+      { id:'100010047', img:'&#127907;', name:'暖冬 冬被加厚 220×240', pool:'一品一商', stop:false,
+        supplier:'暖冬直营', supCode:'ND003', supType:'授权经销商', defaultSup:true, cur:'CNY 268.00',
+        brand:'暖冬（BR20087）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'冬被（100122）', cat4:'',
+        chan:'C 采购渠道', dc:'上海嘉定中心仓', whQuote:'CNY 265.00', rmb:'¥ 268.00', margin:'+1.2%',
+        forecast:'月均 620 件', target:'¥ 245.00', save:'¥ 3,542' },
+      { id:'100010061', img:'&#127793;', name:'洁丽雅 毛巾 3 条装', pool:'一品多商', stop:true,
+        supplier:'洁丽雅旗舰', supCode:'JLY002', supType:'品牌商', defaultSup:false, cur:'CNY 58.00',
+        brand:'洁丽雅（BR20015）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'毛巾（100123）', cat4:'纯棉（1001231）',
+        chan:'B 采购渠道', dc:'广州白云中心仓', whQuote:'CNY 56.50', rmb:'¥ 58.00', margin:'-3.8%',
+        forecast:'月均 1,860 件', target:'¥ 52.50', save:'¥ 1,023' }
+    ];
+  }
+  function simResultHtml(){
+    var isRule=SIM_CTX.mode==='rule';
+    var tabs=isRule?
+      '<div class="sim-tabs" id="simTabs">'
+      +'<div class="sim-tab'+(SIM_TAB==='orig'?' active':'')+'" data-t="orig">原策略</div>'
+      +'<div class="sim-tab'+(SIM_TAB==='current'?' active':'')+'" data-t="current">当前策略</div>'
+      +'</div>':'';
+    var m=simMetrics(isRule?SIM_TAB:'current');
+    var rows=simRows().map(function(r){
+      return ''
+        +'<tr>'
+        +'<td class="freeze"><div class="cell-goods">'
+        +'<div class="cg-img">'+r.img+'</div>'
+        +'<div class="cg-info"><div class="cg-name">'+r.name+'</div>'
+        +'<div class="cg-meta">SKU '+r.id+' · '+r.pool+(r.stop?' <span class="tag-stop">售止</span>':'')+'</div>'
+        +'</div></div></td>'
+        +'<td><div>'+r.supplier+'</div><div class="c-sub">'+r.supCode+' · '+r.supType+(r.defaultSup?' · <span class="c-default">默认</span>':'')+'</div></td>'
+        +'<td>'+r.cur+'</td>'
+        +'<td>'+r.brand+'</td>'
+        +'<td><div>一级：'+r.cat1+'</div><div>二级：'+r.cat2+'</div><div>三级：'+r.cat3+'</div><div>四级：'+(r.cat4||'-')+'</div></td>'
+        +'<td>'+r.chan+'</td>'
+        +'<td>'+r.dc+'</td>'
+        +'<td>'+r.whQuote+'</td>'
+        +'<td>'+r.rmb+'</td>'
+        +'<td><b>'+r.margin+'</b><div class="c-sub" title="（众数成交价 - 采购价）/ 众数成交价"><u>释义</u></div></td>'
+        +'<td>'+r.forecast+'</td>'
+        +'<td><b class="num-green">'+r.target+'</b></td>'
+        +'<td class="num-red">'+r.save+'</td>'
+        +'</tr>';
+    }).join('');
+    var head=''
+      +'<tr>'
+      +'<th class="freeze">商品基础信息</th>'
+      +'<th>供应商</th>'
+      +'<th>生效中采购价</th>'
+      +'<th>品牌</th>'
+      +'<th>品类（一/二/三/四）</th>'
+      +'<th>采购渠道</th>'
+      +'<th>配送中心</th>'
+      +'<th>仓报价</th>'
+      +'<th>生效中 RMB 采购价</th>'
+      +'<th>前毛率</th>'
+      +'<th>补货量预测<br><span class="c-sub">未来 30 天 · 全国</span></th>'
+      +'<th>建议采购价</th>'
+      +'<th>预计降本</th>'
+      +'</tr>';
+    return ''
+      +'<div class="qf-sysinfo"><span>模式：<b>'+(isRule?'基于「'+SIM_CTX.fromRule.name+'」（含原策略对比）':'自定义策略')+'</b></span>'
+      +'<span class="qf-sep">｜</span><span>规则要求：<b>'+SIM_CTX.threshold+'</b></span>'
+      +'<span class="qf-sep">｜</span><span>商品池：<b>品牌 '+SIM_CTX.scope.brand.join('/')+' · Band '+SIM_CTX.scope.band.join('/')+' · '+SIM_CTX.scope.white+'</b></span></div>'
+      +tabs
+      +'<div class="sim-kpis">'
+      +'<div class="sm-k"><div class="sm-l">涉及 SKU · 商数</div><div class="sm-v">'+m.skus+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">涉及供应商数</div><div class="sm-v">'+m.sups+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">预计当前下采金额</div><div class="sm-v">'+m.purBefore+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">预计议价后下采金额</div><div class="sm-v num-green">'+m.purAfter+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">预计可降本</div><div class="sm-v num-red">'+m.save+'</div></div>'
+      +'</div>'
+      +'<div class="sim-tbl-wrap"><table class="sim-tbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'
+      +'<div class="rn-foot"><div class="rn-tip">&#128190; 明细共 '+m.skus+' 条，当前展示前 3 条</div>'
+      +'<button class="rn-custom" id="simExport">&#8595; 导出 EXCEL</button></div>';
+  }
+  function bindSimResult(){
+    var tabs=document.getElementById('simTabs');
+    if(tabs) tabs.querySelectorAll('.sim-tab').forEach(function(t){
+      t.onclick=function(){ SIM_TAB=t.getAttribute('data-t'); document.getElementById('wsBody').innerHTML=simResultHtml(); bindSimResult(); };
+    });
+    var ex=document.getElementById('simExport'); if(ex) ex.onclick=function(){ if(typeof addAI==='function') addAI('已导出仿真商品明细 EXCEL 到产物区（含 13 个字段）。'); };
+  }
+
+  function progressShellHtml(){
+    return ''
+    +'<div class="qf-sysinfo">'
+    +'<span>部门：<b>'+deptName()+'</b></span>'
+    +'<span class="qf-sep">｜</span><span>规则：<b>30天众数成交价倒挂</b></span>'
+    +'<span class="qf-sep">｜</span><span>测算时间：<b>2026-07-03</b></span>'
+    +'<span class="qf-edit" id="qfEdit">&#9998; 对话修改口径 / 展示内容</span>'
+    +'</div>'
+    +'<div class="prog-tabs" id="progTabs">'
+    +'  <div class="prog-tab'+(PROG_TAB==='rank'?' active':'')+'" data-tab="rank">&#128200; 周度降价商品数量排名</div>'
+    +'  <div class="prog-tab'+(PROG_TAB==='trend'?' active':'')+'" data-tab="trend">&#128202; 近 4 周降价商品数量变化</div>'
+    +'  <div class="prog-tab'+(PROG_TAB==='h2'?' active':'')+'" data-tab="h2">&#128203; H2 至今采购价降价情况</div>'
+    +'  <div class="prog-tab'+(PROG_TAB==='list'?' active':'')+'" data-tab="list">&#128196; 近 28 天降价商品清单</div>'
+    +'</div>'
+    +'<div class="prog-panel" id="progPanel"></div>';
+  }
+  function bindProgressShell(){
+    var e=document.getElementById('qfEdit');
+    if(e)e.onclick=function(){ if(typeof addAI==='function')addAI('您可以直接输入例如「切到明细清单」「过去 15 天」「只看家居用品」「隐藏 band 列」，我会重新加载对应 Tab 或调整展示内容。'); };
+    var tabs=document.getElementById('progTabs');
+    if(tabs){
+      tabs.querySelectorAll('.prog-tab').forEach(function(t){
+        t.onclick=function(){ PROG_TAB=t.getAttribute('data-tab');
+          tabs.querySelectorAll('.prog-tab').forEach(function(x){x.classList.remove('active');});
+          t.classList.add('active');
+          renderProgTab();
+        };
+      });
+    }
+  }
+  function renderProgTab(){
+    var p=document.getElementById('progPanel'); if(!p)return;
+    if(PROG_TAB==='rank') p.innerHTML=progRankHtml();
+    else if(PROG_TAB==='trend') p.innerHTML=progTrendHtml();
+    else if(PROG_TAB==='h2') p.innerHTML=progH2Html();
+    else p.innerHTML=progListHtml();
+    bindProgTab();
+  }
+  function bindProgTab(){
+    if(PROG_TAB==='rank'){
+      document.querySelectorAll('.days-btn').forEach(function(b){
+        b.onclick=function(){ PROG_DAYS=parseInt(b.getAttribute('data-days'),10);
+          document.querySelectorAll('.days-btn').forEach(function(x){x.classList.remove('sel');});
+          b.classList.add('sel');
+          renderProgTab();
+        };
+      });
+    }
+    if(PROG_TAB==='h2'){
+      document.querySelectorAll('.h2-btn').forEach(function(b){
+        b.onclick=function(){ PROG_H2=b.getAttribute('data-h2');
+          document.querySelectorAll('.h2-btn').forEach(function(x){x.classList.remove('sel');});
+          b.classList.add('sel');
+          renderProgTab();
+        };
+      });
+    }
+  }
+  /* Tab 1: 周度降价商品数量排名 */
+  function progRankHtml(){
+    var factor=PROG_DAYS/7;
+    var rows=[
+      ['XX部/家纺组', 500, Math.round(12*factor),  '2.4%',  '8.2%',   Math.round(8*factor),  '+4',  '2.4%'],
+      ['XX部/家居组', 500, Math.round(9*factor),   '1.8%',  '6.5%',   Math.round(15*factor), '-6',  '1.1%',true],
+      ['XX部/厨具组', 1818,Math.round(20*factor),  '1.1%',  '10.1%',  Math.round(6*factor),  '+1',  '1.8%'],
+      ['XX部/个护组', 556, Math.round(5*factor),   '0.9%',  '5.2%',   Math.round(7*factor),  '-2',  '0.9%',true]
+    ];
+    var body=rows.map(function(r,i){
+      var netCls=r[6].indexOf('-')===0?'num-red':'num-green';
+      var risk=r[8]?' <span class="tag tag-red">Risk</span>':'';
+      return '<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>xpp</td><td>'+r[4]+'</td><td>'+r[5]+'</td><td class="'+netCls+'">'+r[6]+risk+'</td><td>'+r[7]+'</td></tr>';
+    }).join('');
+    var total='<tr style="font-weight:700;background:#fafbfc;"><td>—</td><td>总计</td><td>2500</td><td>'+Math.round(30*factor)+'</td><td>0.6%</td><td>xpp</td><td>12.0%</td><td>4</td><td class="num-red">-1 <span class="tag tag-red">Risk</span></td><td>0.6%</td></tr>';
+    return ''
+    +'<div class="prog-controls">'
+    +'  <span class="ctl-label">时间窗口：</span>'
+    +'  <span class="days-btn'+(PROG_DAYS===7?' sel':'')+'" data-days="7">过去 7 天</span>'
+    +'  <span class="days-btn'+(PROG_DAYS===15?' sel':'')+'" data-days="15">过去 15 天</span>'
+    +'  <span class="days-btn'+(PROG_DAYS===30?' sel':'')+'" data-days="30">过去 30 天</span>'
+    +'</div>'
+    +'<div class="tbl-wrap"><table>'
+    +'<thead><tr><th>排名</th><th>部门</th><th>部门上架商品数</th><th>过去'+PROG_DAYS+'天降价SKU数</th><th>占部门上架SKU比例</th><th>环比</th><th>采购价降价幅度</th><th>周新增预警商品数</th><th>净变化</th><th>净增占部门SKU比例</th></tr></thead>'
+    +'<tbody>'+body+total+'</tbody></table></div>'
+    +'<div class="prog-note">'
+    +'<b>净变化 = 降价SKU数 − 新增问题SKU数</b>；<br>'
+    +'① 净变化为<span class="num-green">正</span> → 部门在"消化"问题池，改善速度赶超新增速度；<br>'
+    +'② 净变化为<span class="num-red">负</span> → 新增问题在堆积，改善速度跟不上，需要特别关注；<br>'
+    +'降价幅度 = Σ(降价SKU降幅) / 降价SKU数'
+    +'</div>';
+  }
+  /* Tab 2: 近 4 周降价商品数量变化 */
+  function sparkline(nums, color){
+    var w=140,h=36,max=Math.max.apply(null,nums),min=Math.min.apply(null,nums);
+    var pts=nums.map(function(v,i){
+      var x=(i/(nums.length-1))*w;
+      var y=h - (max===min?h/2:(v-min)/(max-min)*h*0.8+h*0.1);
+      return x.toFixed(1)+','+y.toFixed(1);
+    }).join(' ');
+    var dots=nums.map(function(v,i){
+      var x=(i/(nums.length-1))*w;
+      var y=h - (max===min?h/2:(v-min)/(max-min)*h*0.8+h*0.1);
+      return '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="2.2" fill="'+color+'"/>';
+    }).join('');
+    return '<svg width="'+w+'" height="'+h+'"><polyline points="'+pts+'" fill="none" stroke="'+color+'" stroke-width="1.8"/>'+dots+'</svg>';
+  }
+  function progTrendHtml(){
+    var data=[
+      ['XX部/家纺组',[8,10,12,18],[1.2,1.5,1.8,2.4],'📈',38,'2.1%'],
+      ['XX部/家居组',[5,6,7,10], [0.8,1.0,1.2,1.6],'📈',28,'1.4%'],
+      ['XX部/厨具组',[4,5,5,6],  [0.6,0.7,0.7,0.9],'➡️',20,'0.7%'],
+      ['XX部/个护组',[6,5,4,3],  [1.0,0.8,0.7,0.5],'📉',18,'0.7%']
+    ];
+    var rows=data.map(function(r,i){
+      var c1=r[0].indexOf('家纺')>-1?'#1677ff':(r[0].indexOf('家居')>-1?'#722ed1':(r[0].indexOf('厨具')>-1?'#8a9099':'#12a150'));
+      return '<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td><td>'+r[3]+' '+sparkline(r[1],c1)+'<div class="trend-nums">'+r[1].join(' → ')+'</div></td>'
+        +'<td>'+r[3]+' '+sparkline(r[2],c1)+'<div class="trend-nums">'+r[2].map(function(x){return x+'%';}).join(' → ')+'</div></td>'
+        +'<td>'+r[4]+'</td><td>'+r[5]+'</td></tr>';
+    }).join('');
+    var totalNums=[23,26,28,37], totalPct=[0.9,1.0,1.1,1.4];
+    var totalRow='<tr style="font-weight:700;background:#fafbfc;"><td>—</td><td>总计</td><td>📈 '+sparkline(totalNums,'#cf1322')+'<div class="trend-nums">'+totalNums.join(' → ')+'</div></td>'
+      +'<td>📈 '+sparkline(totalPct,'#cf1322')+'<div class="trend-nums">'+totalPct.map(function(x){return x+'%';}).join(' → ')+'</div></td>'
+      +'<td>104</td><td>1.0%</td></tr>';
+    return '<div class="tbl-wrap"><table>'
+    +'<thead><tr><th>序号</th><th>部门</th><th>数量趋势（周新增降价SKU数）</th><th>占比趋势（周新增降价商品占比）</th><th>近28天累计降价商品数</th><th>近28天累计降价数占比</th></tr></thead>'
+    +'<tbody>'+rows+totalRow+'</tbody></table></div>';
+  }
+  /* Tab 3: H2 至今采购价降价情况 */
+  function progH2Html(){
+    var mul=PROG_H2==='m'?1:(PROG_H2==='q'?3:6);
+    var rows=[
+      ['家纺组',  186*mul, 32*mul,  '186万', '-8.2%', 12*mul, 8*mul,  42*mul, '22.6%', 18*mul, '312万', 24*mul, 18*mul, 6*mul],
+      ['家居组',  92*mul,  18*mul,  '112万', '-6.4%', 8*mul,  5*mul,  22*mul, '23.9%', 10*mul, '186万', 12*mul, 8*mul,  4*mul],
+      ['厨具组',  138*mul, 26*mul,  '148万', '-5.8%', 6*mul,  4*mul,  30*mul, '21.7%', 12*mul, '228万', 18*mul, 10*mul, 6*mul]
+    ];
+    var body=rows.map(function(r,i){
+      return '<tr><td>'+(i+1)+'</td><td>'+r[0]+'</td>'
+        +'<td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td>'
+        +'<td>'+r[5]+'</td><td>'+r[6]+'</td>'
+        +'<td class="num-red">'+r[7]+'</td><td>'+r[8]+'</td><td>'+r[9]+'</td><td>'+r[10]+'</td>'
+        +'<td>'+r[11]+'</td><td>'+r[12]+'</td><td>'+r[13]+'</td>'
+        +'</tr>';
+    }).join('');
+    return ''
+    +'<div class="prog-controls">'
+    +'  <span class="ctl-label">时间口径：</span>'
+    +'  <span class="h2-btn'+(PROG_H2==='m'?' sel':'')+'" data-h2="m">月至今</span>'
+    +'  <span class="h2-btn'+(PROG_H2==='q'?' sel':'')+'" data-h2="q">季至今</span>'
+    +'  <span class="h2-btn'+(PROG_H2==='h2'?' sel':'')+'" data-h2="h2">H2 至今</span>'
+    +'</div>'
+    +'<div class="tbl-wrap"><table>'
+    +'<thead>'
+    +'<tr>'
+    +'<th rowspan="2">序号</th><th rowspan="2">部门</th>'
+    +'<th colspan="4">问题总览</th>'
+    +'<th colspan="2">✅ 成功（已降价）</th>'
+    +'<th colspan="4">❌ 失败（供应商驳回）</th>'
+    +'<th colspan="3">🔄 进行中（分状态）</th>'
+    +'</tr>'
+    +'<tr>'
+    +'<th>累计预警<br>商品数</th><th>累计降价<br>商品数</th><th>实际降本<br>金额</th><th>实际降价<br>幅度</th>'
+    +'<th>拒绝议价<br>商品数</th><th>拒绝<br>供应商数</th>'
+    +'<th>当前未<br>改善商品数</th><th>占比</th><th>对应<br>供应商数</th><th>预估节降<br>金额</th>'
+    +'<th>预警中</th><th>议价中</th><th>7天无反馈</th>'
+    +'</tr></thead>'
+    +'<tbody>'+body+'</tbody></table></div>'
+    +'<div class="prog-note">'
+    +'<b>关键口径</b>：<br>'
+    +'• 实际降本金额：Σ(价差 × 调价后的采购量)，按实际下采购单的天数计算<br>'
+    +'• 实际降价幅度：Σ(降价SKU降幅) / 降价SKU数<br>'
+    +'• 拒绝议价商品数：采销录入结果为"拒绝降价"的 SKU 数<br>'
+    +'• 预警中：已触发预警但尚未进入议价状态的 SKU 数<br>'
+    +'• 议价中：已进入议价流程但尚未有最终结果的 SKU 数<br>'
+    +'• 供应商 7 天无反馈：议价任务下发后供应商超过 7 天未响应的 SKU 数'
+    +'</div>';
+  }
+  /* Tab 4: 近 28 天降价商品清单 */
+  function progListHtml(){
+    var mock=[
+      ['家纺','纯棉四件套','华信','华信官方旗舰','品牌商','P1-高端家纺','A','王采销','李采控','赵买手','52.8万','89.00','82.00','2026-06-28','89.00','-7.9%','83.50','80.20','85.00','12.5%'],
+      ['家居','收纳置物架','纳川','纳川自营','非品牌商','P2-家居收纳','B','张采销','孙采控','钱买手','36.4万','156.00','142.00','2026-06-25','156.00','-9.0%','148.50','139.00','150.00','-8.6%'],
+      ['厨具','不粘炒锅','苏泊尔','苏泊尔官方','品牌商','P1-厨具主流','A','吴采销','郑采控','冯买手','128.6万','268.00','248.00','2026-06-22','268.00','-7.5%','256.80','249.00','260.00','15.2%'],
+      ['家纺','羽绒被','水星','水星家纺自营','品牌商','P1-高端家纺','A','王采销','李采控','赵买手','86.2万','598.00','548.00','2026-06-20','598.00','-8.4%','568.00','552.00','580.00','9.6%'],
+      ['个护','洗衣液大桶','蓝月亮','蓝月亮官方','品牌商','P3-个护补货','C','冯采销','陈采控','杨买手','24.8万','48.00','42.00','2026-06-18','48.00','-12.5%','44.50','43.00','45.00','-4.8%'],
+      ['数码','快充充电器','绿联','绿联官方','品牌商','P2-数码配件','B','杨采销','钱采控','孙买手','18.6万','68.00','62.00','2026-06-15','68.00','-8.8%','64.20','63.00','65.00','6.8%']
+    ];
+    var body=mock.map(function(r){
+      var neg=r[19].indexOf('-')===0;
+      return '<tr>'+r.map(function(c,i){
+        if(i===19) return '<td class="'+(neg?'num-red':'num-green')+'">'+c+'</td>';
+        if(i===15) return '<td class="num-green">'+c+'</td>';
+        return '<td>'+c+'</td>';
+      }).join('')+'</tr>';
+    }).join('');
+    return ''
+    +'<div class="list-hint">'
+    +'  &#128172; 支持在会话区通过对话调整展示内容，例如：'
+    +'  <span class="list-chip">隐藏 band 列</span>'
+    +'  <span class="list-chip">按降价幅度降序</span>'
+    +'  <span class="list-chip">只看家居用品</span>'
+    +'  <span class="list-chip">最近 7 天修改</span>'
+    +'</div>'
+    +'<div class="tbl-wrap tbl-scroll"><table><thead><tr>'
+    +'<th>部门</th><th>品类</th><th>商品信息</th><th>品牌</th><th>供货商</th><th>供应商身份</th><th>货盘</th><th>band</th>'
+    +'<th>责任采销</th><th>责任采控</th><th>责任买手</th>'
+    +'<th>近30天销售额</th><th>近30天采购价</th><th>当前生效采购价</th><th>修改时间</th>'
+    +'<th>调价前采购价</th><th>降价幅度</th>'
+    +'<th>30天众数成交价</th><th>30天件单价</th><th>基准价</th><th>SKU前毛率</th>'
+    +'</tr></thead><tbody>'+body+'</tbody></table></div>';
+  }
+
+  /* ===== 4.2 诊断策略仿真：当前策略 → 配置 → 4 类测算场景 → 仿真对比 ===== */
+  var RULES=[
+    {id:'r1',name:'前毛倒挂',def:'默认对比30天众数成交价',opts:['30天众数成交价','7天众数价','30天件单价'],extra:'支持调整阈值'},
+    {id:'r2',name:'高于基准价',def:'默认巡检逻辑',opts:['是否包含同品'],extra:'支持调整阈值（高多少钱 / 高 XX%）'},
+    {id:'r3',name:'采购成本上升',def:'默认高于上次采购价',opts:['高于上次采购价'],extra:'支持调整阈值（高多少钱 / 高 XX%）'},
+    {id:'r4',name:'非多商最低价',def:'默认巡检逻辑',opts:['是否包含品牌商'],extra:'支持调整阈值（高多少钱 / 高 XX%）'},
+    {id:'r5',name:'采购价无行业优势',def:'默认巡检逻辑',opts:['对比30天最低价','众数价','测算采购价'],extra:'支持修改计算逻辑；支持调整阈值'},
+    {id:'r6',name:'采购价无POP优势',def:'默认巡检逻辑',opts:['对比7天最低价','30天最低价','众数价','测算采购价'],extra:'支持修改计算逻辑；支持调整阈值'},
+    {id:'r7',name:'自定义场景',def:'自己输入规则进行交互',opts:[],extra:'在对话中描述自定义巡检规则'}
+  ];
+  var SCEN='hit'; // hit | benefit | change | query
+  var STRAT_STATE='overview'; // overview | config
+  function openStrategy(){
+    showWs('操作区域 · 诊断策略仿真');
+    STRAT_STATE='overview';
+    var b=document.getElementById('wsBody'); if(!b)return;
+    b.innerHTML=stratOverviewHtml();
+    bindStratOverview();
+    if(typeof addUser==='function'){ addUser('配置'+deptName()+'的诊断策略并仿真命中'); }
+    if(typeof addAI==='function'){ addAI('已打开<b>诊断策略仿真</b>操作区。当前展示的是「<b>生效中策略</b>」概览，如需调整规则口径/阈值/剔除逻辑，点击「进入策略配置」或直接在对话中描述改动，例如「前毛倒挂改成 7 天众数」「加剔除不动销」。'); }
+  }
+  function stratOverviewHtml(){
+    return ''
+    +'<div class="strat-section">'
+    +'  <div class="strat-h">&#127919; 当前生效中策略 <span class="strat-tag">GENERATION</span></div>'
+    +'  <div class="cur-strat">'
+    +'    <div class="cs-row">'
+    +'      <div class="cs-item"><div class="cs-l">部门</div><div class="cs-v">'+deptName()+'</div></div>'
+    +'      <div class="cs-item"><div class="cs-l">生效时间</div><div class="cs-v">2026-06-01</div></div>'
+    +'      <div class="cs-item"><div class="cs-l">上次调整</div><div class="cs-v">2026-06-28（王运营）</div></div>'
+    +'      <div class="cs-item"><div class="cs-l">当前命中 SKU</div><div class="cs-v"><b style="color:#cf1322;">459</b></div></div>'
+    +'    </div>'
+    +'    <hr style="border:none;border-top:1px dashed #d3f0df;margin:10px 0;">'
+    +'    <div><b>已开启规则</b>：前毛倒挂（30天众数）· 高于基准价（含同品）· 非多商最低价（含品牌商）· 采购成本上升（>5%）</div>'
+    +'    <div><b>剔除逻辑</b>：流水倒扣商品 · 不动销商品</div>'
+    +'    <div><b>加白范围</b>：签约独家供应商 · 战略亏损 SKU 池</div>'
+    +'  </div>'
+    +'</div>'
+    +'<div class="strat-config-hint">如需查询/修改规则、调整口径与阈值、剔除逻辑，请进入策略配置：</div>'
+    +'<button class="enter-config-btn" id="enterCfg">&#9881; 进入策略配置 &amp; 仿真 &#8594;</button>';
+  }
+  function bindStratOverview(){
+    var e=document.getElementById('enterCfg');
+    if(e)e.onclick=function(){ STRAT_STATE='config';
+      var b=document.getElementById('wsBody'); b.innerHTML=stratConfigHtml();
+      bindStratConfig();
+      if(typeof addAI==='function')addAI('已进入策略配置。当前测算场景默认为「<b>规则命中测算</b>」，共 <b>7 类</b>可查询/修改的规则场景 + 剔除逻辑。您可点击场景 Tab 切换到「效果测算 / 规则变更影响 / 数据查询」，或展开任一规则调整口径与阈值。');
+    };
+  }
+  function stratConfigHtml(){
+    var scens=[
+      {k:'hit',    n:'规则命中测算',   d:'定范围·命中量级'},
+      {k:'benefit',n:'效果测算',       d:'定目标·测节降'},
+      {k:'change', n:'规则变更影响',   d:'新增/释放对比'},
+      {k:'query',  n:'数据查询（查数）',d:'自定义维度查询'}
+    ];
+    var scenTabs=scens.map(function(s){
+      return '<div class="scen-tab'+(SCEN===s.k?' sel':'')+'" data-scen="'+s.k+'"><b>'+s.n+'</b><span class="st-desc">'+s.d+'</span></div>';
+    }).join('');
+    var rows=RULES.map(function(r){
+      var opts=r.opts.map(function(o,i){ return '<span class="rb-opt'+(i===0?' sel':'')+'">'+o+'</span>'; }).join('');
+      return '<div class="rule-row" data-id="'+r.id+'"><div class="rule-head"><span class="rh-name">'+r.name+'</span><span class="rh-def">'+r.def+'</span><span class="rh-caret">&#9656;</span></div>'
+        +'<div class="rule-body">'
+        +(opts?'<div><span class="rb-k">对比 / 计算口径：</span>'+opts+'</div>':'<div>'+r.def+'</div>')
+        +'<div style="margin-top:8px;"><span class="rb-k">阈值：</span>'+r.extra+'</div>'
+        +'</div></div>';
+    }).join('');
+    return ''
+    +'<div class="strat-section">'
+    +'  <div class="strat-h">&#128203; 测算场景（选择本次仿真的目的）</div>'
+    +'  <div class="scen-tabs">'+scenTabs+'</div>'
+    +'  <div class="scen-desc" id="scenDesc" style="font-size:12px;color:#8a9099;margin-bottom:6px;"></div>'
+    +'</div>'
+    +'<div class="strat-section rule-cfg">'
+    +'  <div class="strat-h">&#9881; 7 类规则（点击展开配置口径与阈值）</div>'
+    +'  '+rows
+    +'  <div class="rule-exclude"><div class="re-h">&#9988; 支持剔除逻辑</div>'
+    +'  <div><span class="rb-opt sel">流水倒扣商品</span><span class="rb-opt sel">不动销商品</span><span class="rb-opt">供应商身份非品牌商</span><span class="rb-opt">自定义范围…</span></div>'
+    +'  <div style="font-size:12px;color:#8a9099;margin-top:8px;">剔除某些不包含的商品范围，如流水倒扣、不动销商品等</div></div>'
+    +'  <div class="rule-actions">'
+    +'    <button class="rule-btn primary" id="ruleSim">&#9654; 仿真对比</button>'
+    +'    <button class="rule-btn ghost" id="ruleReset">重置默认</button>'
+    +'    <button class="rule-btn ghost" id="backOverview">&#8592; 返回概览</button>'
+    +'  </div>'
+    +'</div>'
+    +'<div class="strat-section" id="simCompareHost"></div>';
+  }
+  var SCEN_DESC={
+    hit:'摘要展示命中 SKU 数 / 供应商数 / 部门数；命中清单展示当前采购价和价差；统计分析展示品类/价差分布；洞察展示主要问题集中领域。',
+    benefit:'摘要展示预计节降金额（含按部门/品类的节降分布）；命中清单展示目标价和预计节降金额；统计分析展示各品类节降占比；洞察展示优先处理建议和达成率预测。',
+    change:'摘要新增「新增命中 SKU 数」「释放 SKU 数」两个卡片；命中清单区分「新增命中」「释放」两类；统计分析展示变更前后 SKU 状态变化对比。',
+    query:'摘要展示查询结果核心聚合；命中清单展示明细数据；统计分析按查询维度自动聚合。'
+  };
+  function bindStratConfig(){
+    var b=document.getElementById('wsBody');
+    /* 规则展开 */
+    b.querySelectorAll('.rule-head').forEach(function(h){ h.onclick=function(){ h.parentNode.classList.toggle('open'); }; });
+    b.querySelectorAll('.rule-body').forEach(function(bd){
+      bd.querySelectorAll('.rb-opt').forEach(function(o){ o.onclick=function(e){ e.stopPropagation();
+        var grp=o.parentNode; if(grp.querySelector('.rb-k')){ grp.querySelectorAll('.rb-opt').forEach(function(x){x.classList.remove('sel');}); }
+        o.classList.toggle('sel'); }; });
+    });
+    /* 场景 Tab 切换 */
+    var descEl=document.getElementById('scenDesc');
+    function refreshDesc(){ if(descEl)descEl.textContent=SCEN_DESC[SCEN]||''; }
+    refreshDesc();
+    b.querySelectorAll('.scen-tab').forEach(function(t){
+      t.onclick=function(){ SCEN=t.getAttribute('data-scen');
+        b.querySelectorAll('.scen-tab').forEach(function(x){x.classList.remove('sel');});
+        t.classList.add('sel'); refreshDesc();
+      };
+    });
+    /* 剔除逻辑 chip */
+    var excludeGroup=b.querySelector('.rule-exclude div');
+    if(excludeGroup)excludeGroup.querySelectorAll('.rb-opt').forEach(function(o){ o.onclick=function(){ o.classList.toggle('sel'); }; });
+    /* 仿真对比 */
+    var sim=document.getElementById('ruleSim');
+    if(sim)sim.onclick=function(){ renderSimCompare(); };
+    var rs=document.getElementById('ruleReset');
+    if(rs)rs.onclick=function(){ SCEN='hit'; openStrategy(); setTimeout(function(){ document.getElementById('enterCfg').click(); },50); };
+    var back=document.getElementById('backOverview');
+    if(back)back.onclick=function(){ openStrategy(); };
+  }
+  function renderSimCompare(){
+    var host=document.getElementById('simCompareHost'); if(!host)return;
+    var data={
+      hit:    { cur:['459 个','86 家','12 个','316 万'], nw:['512 个','94 家','13 个','362 万'], keys:['命中 SKU 数','涉及供应商数','涉及部门数','预估节降金额'] },
+      benefit:{ cur:['316 万','-6.4%','+2.8pt','-1.5pt'], nw:['362 万','-7.1%','+3.2pt','-1.7pt'], keys:['预估节降金额','预计采购价降幅','预计前毛率提升','预计返利占比降低'] },
+      change: { cur:['—','—','—','—'],           nw:['+68 个','15 个','—','—'],         keys:['新增命中 SKU','释放 SKU','净变化','命中率变化'] },
+      query:  { cur:['459 个','3,860 万','42.6 万件','86 家'], nw:['512 个','4,240 万','48.2 万件','94 家'], keys:['SKU 数','近30天销售额','30天预估采购量','供应商数'] }
+    };
+    var d=data[SCEN]||data.hit;
+    var cur=d.keys.map(function(k,i){ return '<div class="sim-metric"><span class="sm-l">'+k+'</span><span class="sm-v">'+d.cur[i]+'</span></div>'; }).join('');
+    var nw=d.keys.map(function(k,i){
+      var upDown='';
+      var m1=parseFloat((d.cur[i]||'').replace(/[^\-\d\.]/g,''));
+      var m2=parseFloat((d.nw[i]||'').replace(/[^\-\d\.]/g,''));
+      if(!isNaN(m1)&&!isNaN(m2)&&m1!==m2) upDown=' '+(m2>m1?'up':'down');
+      return '<div class="sim-metric"><span class="sm-l">'+k+'</span><span class="sm-v'+upDown+'">'+d.nw[i]+'</span></div>';
+    }).join('');
+    host.innerHTML=''
+    +'<div class="strat-h">&#128260; 仿真对比 · '+({hit:'规则命中测算',benefit:'效果测算',change:'规则变更影响测算',query:'数据查询'}[SCEN])+'</div>'
+    +'<div class="sim-compare">'
+    +'  <div class="sim-col cur"><div class="sc-title">生效中策略 <span class="sc-tag">CURRENT</span></div>'+cur+'</div>'
+    +'  <div class="sim-col new"><div class="sc-title">本次策略 <span class="sc-tag">SIMULATED</span></div>'+nw+'</div>'
+    +'</div>'
+    +'<div style="margin-top:12px;font-size:12px;color:#8a9099;">对比结论：本次策略较生效中策略命中量级更大，可覆盖更多改善空间。建议先在部分品类灰度后再全量下发。</div>';
+    if(typeof addAI==='function')addAI('已完成「'+({hit:'规则命中测算',benefit:'效果测算',change:'规则变更影响测算',query:'数据查询'}[SCEN])+'」仿真对比。可切到「改善进度 & 明细」查看命中商品清单，或直接说「下发本次策略」执行落地。');
+  }
+})();
+</script>
+</body>
+</html>
