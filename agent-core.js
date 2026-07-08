@@ -189,10 +189,10 @@ function parseIntent(text){
     if(hit>0) scores[r.intent]={n:hit,label:r.label};
   });
   var keys=Object.keys(scores);
-  var intent=null,label='',conf=0,ambiguous=false;
+  var intent=null,label='',conf=0,ambiguous=false,unknown=false;
   if(keys.length===0){
-    // 无明确关键词：默认落到诊断，但低置信
-    intent='diagnose'; label='采购价诊断'; conf=0.45;
+    // 无明确关键词：不臆断意图，标记 unknown → 走开放式反问确认「您是不是想做XX」
+    intent='diagnose'; label='采购价诊断'; conf=0.3; unknown=true;
   } else {
     keys.sort(function(a,b){ return scores[b].n-scores[a].n; });
     intent=keys[0]; label=scores[intent].label;
@@ -203,8 +203,11 @@ function parseIntent(text){
     if(ambiguous) conf=Math.min(conf,0.55);
   }
   var slots=extractSlots(text);
-  return { intent:intent, label:label, confidence:conf, ambiguous:ambiguous,
-           candidates:keys.slice(0,2).map(function(k){return {intent:k,label:scores[k].label};}),
+  var cands = unknown
+    ? INTENT_RULES.map(function(r){return {intent:r.intent,label:r.label};})
+    : keys.slice(0,2).map(function(k){return {intent:k,label:scores[k].label};});
+  return { intent:intent, label:label, confidence:conf, ambiguous:ambiguous, unknown:unknown,
+           candidates:cands,
            slots:slots };
 }
 
@@ -371,6 +374,7 @@ function addDoc(d){ if(SESSION.docs.indexOf(d)<0)SESSION.docs.push(d); renderCon
 /* ============ 5.2 意图澄清引擎（6 子策略） ============ */
 // ① 触发判定：意图层/参数层/置信层
 function needClarify(res){
+  if(res.unknown) return {type:'unknown', reason:'未能理解具体意图'};
   if(res.ambiguous) return {type:'intent', reason:'多意图边界不清'};
   if(res.confidence<CONF_THRESHOLD) return {type:'confidence', reason:'置信度低于阈值'};
   var miss=missingSlots();
@@ -383,6 +387,10 @@ function missingSlots(){
 }
 /* ============ 用户输入总入口（每轮都重新做意图理解，链路不写死） ============ */
 function handleInput(text){
+  /* 输入拦截钩子：处于报告上下文时，增维需求走小Y四步思考链（返回 true 表示已接管，不再走通用意图理解） */
+  if(typeof window.__reportInputHook==='function'){
+    try{ if(window.__reportInputHook(text)===true) return; }catch(e){}
+  }
   addUser(text);
   document.getElementById('hintChips').innerHTML='';
   delay(function(){ understand(text); });
@@ -406,7 +414,7 @@ function understand(text){
     }
   }
   var intentFold={type:'intent', text:
-    '意图分类：'+res.label+'（置信 '+Math.round(res.confidence*100)+'%）'+(switched?' [已从上一意图切换]':'')+'\n'+
+    '意图分类：'+res.label+'（置信 '+Math.round(res.confidence*100)+'%）'+(switched?' [已从上一意图切换]':'')+(res.unknown?' — 未明确识别，将开放式反问':'')+'\n'+
     (res.ambiguous?'候选意图：'+res.candidates.map(function(c){return c.label;}).join(' / ')+'（边界不清，需消歧）\n':'')+
     (res.intent==='diagnose'?('槽位抽取：\n'+
     DIAG_SLOTS.map(function(sl){ var v=slotText(sl.key,SESSION.slots[sl.key]);return '· '+sl.name+'：'+(v==null?'（缺失）':v); }).join('\n')):'该意图无需诊断三槽位，可直接执行或做参数级澄清') };
@@ -426,9 +434,16 @@ function understand(text){
     addAI('多轮澄清已达上限，我已对未确认项采用<b>安全默认值</b>并继续执行（可在结果中调整）。', null, [intentFold]);
     execute(); return;
   }
+  if(clar.type==='unknown'){ clarifyUnknownIntent(res,intentFold); return; }
   if(clar.type==='intent'){ clarifyIntentAmbiguity(res,intentFold); return; }
   if(clar.type==='confidence'){ clarifyConfidence(res,intentFold); return; }
   clarifyParams(clar.slots,intentFold);
+}
+/* 策略⑦ 未理解：开放式反问确认「您是不是想做XX」，列出全部可选意图 */
+function clarifyUnknownIntent(res,fold){
+  addAI('抱歉，我没太确定您想做的是什么。您是不是想做下面某一项？点选后我立即为您执行：',
+    res.candidates.map(function(c){ return {label:c.label, onclick:function(){ addUser('我想：'+c.label); SESSION.intent=c.intent; SESSION.intentLabel=c.label; SESSION.confidence=0.9; SESSION.clarifyRounds=0; renderContext(); delay(function(){ routeAfterIntent(); }); }}; }),
+    [fold]);
 }
 /* 策略⑥ 消歧：给 1-2 个候选意图 */
 function clarifyIntentAmbiguity(res,fold){
@@ -1027,6 +1042,233 @@ function buildBroadcastHtml(dims){
     '<div class="hd"><h1>采购价诊断治理 · 通晒报告</h1><p>治理周期：2026-06-24 → 2026-07-01 ｜ 供应链Agent 即时生成 ｜ 维度：'+dims.map(function(d){return d.l;}).join('、')+'</p></div>'+
     '<div class="wrap">'+secs+'</div></body></html>';
 }
+
+/* ==========================================================================
+ * 综毛目标拆解仿真 · Mock 数据 & 三级测算引擎
+ * 对齐《综毛目标拆解仿真方案-V1.md》L1/L2/L3
+ * ========================================================================== */
+
+/* -------- 3.1 基线财务盘（部门 × C3 × 财务科目） --------
+   科目对齐《导出科目树_副本.XLSX》：
+   REV(IN0009) / M_综(IN0118) / M_前(IN0125) / M_返(IN0082+IN0083+IN0086)
+   / M_广(IN0117) / M_其(IN0116+IN0595) / C_采(IN0081)
+   单位：万元 */
+var GT_BASELINE = {
+  '家纺家居事业部': {
+    dept:'家纺家居事业部', c2:'C2-1001', period:'近28天',
+    REV_0: 128500, M_综_0: 12850, M_前_0: 7067, M_返_0: 4497, M_广_0: 1156, M_其_0: 130, C_采_0: 96660,
+    c3s: [
+      { code:'C3-100121', name:'四件套', REV:38550, M_前:2313, M_返:1234, C_采:29100, supRatio:0.32, purRatio:0.30 },
+      { code:'C3-100122', name:'冬被',   REV:24415, M_前:1587, M_返:1050, C_采:18300, supRatio:0.23, purRatio:0.19 },
+      { code:'C3-100123', name:'毛巾',   REV:19275, M_前: 906, M_返: 675, C_采:14520, supRatio:0.15, purRatio:0.15 },
+      { code:'C3-100131', name:'收纳',   REV:25700, M_前:1156, M_返: 810, C_采:19340, supRatio:0.18, purRatio:0.20 },
+      { code:'C3-100141', name:'家具',   REV:20560, M_前:1105, M_返: 728, C_采:15400, supRatio:0.12, purRatio:0.16 }
+    ]
+  },
+  '厨卫生活事业部': {
+    dept:'厨卫生活事业部', c2:'C2-1002', period:'近28天',
+    REV_0: 96200, M_综_0: 10101, M_前_0: 5290, M_返_0: 3271, M_广_0: 1443, M_其_0: 97, C_采_0: 72400,
+    c3s: [
+      { code:'C3-100211', name:'锅具',   REV:33670, M_前:1893, M_返:1177, C_采:25340, supRatio:0.34, purRatio:0.35 },
+      { code:'C3-100212', name:'刀具',   REV:19240, M_前:1039, M_返: 654, C_采:14500, supRatio:0.22, purRatio:0.20 },
+      { code:'C3-100213', name:'保温杯', REV:24050, M_前:1275, M_返: 802, C_采:18100, supRatio:0.28, purRatio:0.25 },
+      { code:'C3-100214', name:'蒸锅',   REV:19240, M_前:1083, M_返: 638, C_采:14460, supRatio:0.16, purRatio:0.20 }
+    ]
+  },
+  '个护清洁事业部': {
+    dept:'个护清洁事业部', c2:'C2-1003', period:'近28天',
+    REV_0: 84300, M_综_0: 9694, M_前_0: 4636, M_返_0: 2529, M_广_0: 2445, M_其_0: 84, C_采_0: 63500,
+    c3s: [
+      { code:'C3-100311', name:'洗衣液', REV:29505, M_前:1620, M_返: 885, C_采:22225, supRatio:0.30, purRatio:0.32 },
+      { code:'C3-100312', name:'牙膏',   REV:20232, M_前:1131, M_返: 607, C_采:15250, supRatio:0.24, purRatio:0.22 },
+      { code:'C3-100313', name:'沐浴露', REV:16860, M_前: 918, M_返: 505, C_采:12700, supRatio:0.20, purRatio:0.19 },
+      { code:'C3-100314', name:'消毒液', REV:17703, M_前: 967, M_返: 532, C_采:13325, supRatio:0.26, purRatio:0.27 }
+    ]
+  }
+};
+var GT_DEPT_LIST = Object.keys(GT_BASELINE);
+
+/* -------- L1 · 财务恒等换算 --------
+   输入：dept, r_target(小数), 分摊 α(0=按采购金额占比 / 1=按返利额占比 / 0.5=加权)
+   输出：每 C3 的 { REV, M_返_0, r_0, M_返_new, ΔM_返, ΔM_前, ΔC_采, new_M_前, new_前毛率 } */
+function gtRunL1(dept, rTarget, alpha){
+  var bl = GT_BASELINE[dept]; if(!bl) return null;
+  var r0 = bl.M_返_0 / bl.REV_0;
+  var M_返_new = bl.REV_0 * rTarget;
+  var ΔM_返_total = bl.M_返_0 - M_返_new;
+  var rows = bl.c3s.map(function(c){
+    // 两口径分摊
+    var share = alpha * c.supRatio + (1-alpha) * c.purRatio;
+    var ΔM_返 = ΔM_返_total * share;
+    return {
+      code: c.code, name: c.name, REV: c.REV,
+      M_返_0: c.M_返, r_0: c.M_返 / c.REV,
+      share: share, ΔM_返: ΔM_返,
+      M_返_new: c.M_返 - ΔM_返,
+      ΔM_前: ΔM_返,           // 恒等
+      ΔC_采: ΔM_返,           // 售价不变假设
+      M_前_0: c.M_前, new_M_前: c.M_前 + ΔM_返,
+      r_前_0: c.M_前 / c.REV, r_前_new: (c.M_前 + ΔM_返) / c.REV,
+      C_采_0: c.C_采
+    };
+  });
+  return {
+    dept: dept, baseline: bl, r_0: r0, r_target: rTarget, alpha: alpha,
+    M_返_0_total: bl.M_返_0, M_返_new_total: M_返_new, ΔM_返_total: ΔM_返_total,
+    ΔM_前_total: ΔM_返_total, ΔC_采_total: ΔM_返_total,
+    new_M_前_total: bl.M_前_0 + ΔM_返_total,
+    new_前毛率: (bl.M_前_0 + ΔM_返_total) / bl.REV_0,
+    old_前毛率: bl.M_前_0 / bl.REV_0,
+    综毛率: bl.M_综_0 / bl.REV_0,    // 应恒等
+    rows: rows
+  };
+}
+
+/* -------- 3.2/3.3 SKU × 供应商候选池 --------
+   为每个 C3 程序化生成一组候选 SKU（供 L2/L3 使用）*/
+var GT_SKU_POOL_CACHE = {};
+function gtGenSkuPool(c3code, count){
+  if(GT_SKU_POOL_CACHE[c3code]) return GT_SKU_POOL_CACHE[c3code];
+  var s = {v: seed(c3code+'sim')};
+  // 通过 C3 编码定位 C2 / 品类 / 品牌池
+  var meta = null;
+  Object.keys(GT_BASELINE).forEach(function(dn){
+    var bl = GT_BASELINE[dn];
+    bl.c3s.forEach(function(c){ if(c.code===c3code) meta = { dept:dn, c2:bl.c2, c3:c }; });
+  });
+  if(!meta) return [];
+  // 从 CAT_META 找匹配的品牌/词根
+  var catKey = Object.keys(CAT_META).find(function(k){ return CAT_META[k].dept===meta.dept; }) || Object.keys(CAT_META)[0];
+  var cm = CAT_META[catKey];
+  var supStock = [
+    {code:'SUP-A01', name:cm.brands[0]+'官方旗舰',   type:'品牌商',    replace:1, exclusive:0.85},
+    {code:'SUP-A02', name:cm.brands[0]+'京东旗舰',   type:'授权经销商', replace:2, exclusive:0.50},
+    {code:'SUP-B03', name:cm.brands[1]+'官方旗舰',   type:'品牌商',    replace:1, exclusive:0.80},
+    {code:'SUP-B04', name:cm.brands[1]+'华北代理',   type:'授权经销商', replace:3, exclusive:0.30},
+    {code:'SUP-C05', name:cm.brands[2]+'直营',       type:'品牌商',    replace:2, exclusive:0.65},
+    {code:'SUP-C06', name:cm.brands[2]+'专营',       type:'贸易商',    replace:4, exclusive:0.20},
+    {code:'SUP-D07', name:cm.brands[3]+'旗舰',       type:'品牌商',    replace:2, exclusive:0.55},
+    {code:'SUP-D08', name:cm.brands[3]+'联合代理',   type:'贸易商',    replace:5, exclusive:0.15},
+    {code:'SUP-E09', name:'华东优品(贸易)',           type:'贸易商',    replace:6, exclusive:0.10},
+    {code:'SUP-E10', name:'环球优选(贸易)',           type:'贸易商',    replace:5, exclusive:0.12}
+  ];
+  var pool = [], N = count || 220;
+  for(var i=0;i<N;i++){
+    var brand = cm.brands[Math.floor(rnd(s)*cm.brands.length)];
+    var word  = cm.words[Math.floor(rnd(s)*cm.words.length)];
+    var sup   = supStock[Math.floor(rnd(s)*supStock.length)];
+    var band  = ['一类货','二类货','三类货'][ Math.floor(rnd(s)*3) ];
+    var lo=cm.base[0], hi=cm.base[1];
+    var pref = +(lo + rnd(s)*(hi-lo)).toFixed(2);
+    // 当前采购价 = 参考价 × (1 + 8~22% 溢价)
+    var premium = 0.05 + rnd(s)*0.18;
+    var pCur = +(pref * (1+premium)).toFixed(2);
+    // 4 参考价
+    var pModeMin = +(pref * (1 - rnd(s)*0.02)).toFixed(2);   // 多商最低
+    var pInd     = +(pref * (1 + (rnd(s)-0.5)*0.03)).toFixed(2);  // 行业基准
+    var pPOP     = +(pref * (0.94 + rnd(s)*0.05)).toFixed(2);  // POP
+    var pHisMin  = +(pref * (0.96 + rnd(s)*0.03)).toFixed(2);
+    var arr = [pModeMin, pInd, pPOP, pHisMin].sort(function(a,b){return a-b;});
+    var pRef = +((arr[1]+arr[2])/2).toFixed(2);
+    var Δp_max = Math.max(0, +(pCur - pRef).toFixed(2));
+    // 5 特征
+    var x1 = +rnd(s).toFixed(2);              // 近12月降价成功率 0~1
+    var x2 = Math.floor(1 + rnd(s)*18);        // 距上次降价月数
+    var x3 = sup.replace;
+    var x4 = sup.exclusive;
+    var x5 = sup.type==='品牌商' ? 1 : 0;
+    // Logistic：先验权重
+    var z = -1.2 + 1.8*x1 + 0.12*Math.min(x2,12)/12 + 0.20*x3 - 1.4*x4 - 0.9*x5;
+    var s_neg = 1/(1+Math.exp(-z));
+    s_neg = Math.max(0.05, Math.min(0.95, +s_neg.toFixed(2)));
+    var Q28 = Math.floor(120 + rnd(s)*4200);
+    var E_ΔC = Math.round(Δp_max * s_neg * Q28);   // 元
+    var E_ΔC_low  = Math.round(Δp_max * Math.max(0, s_neg-0.15) * Q28);
+    var E_ΔC_high = Math.round(Δp_max * Math.min(1, s_neg+0.15) * Q28);
+    // 谈判成本（用于排序）
+    var costNeg = 1*(1-s_neg) + 0.3*x5 + 0.5*(x4>0.6?1:0);
+    var score = E_ΔC / Math.max(0.1, costNeg);
+    pool.push({
+      id: 'SKU-'+c3code.replace('C3-','')+'-'+String(i).padStart(3,'0'),
+      name: brand+' '+word, brand: brand, c3: meta.c3.code, c3Name: meta.c3.name,
+      supCode: sup.code, supName: sup.name, supType: sup.type, isBrand: x5===1,
+      band: band, replace: sup.replace, exclusive: sup.exclusive,
+      pCur: pCur, pModeMin: pModeMin, pInd: pInd, pPOP: pPOP, pHisMin: pHisMin,
+      pRef: pRef, Δp_max: Δp_max, pTarget: +(pCur - Δp_max).toFixed(2),
+      x1:x1, x2:x2, x3:x3, x4:x4, x5:x5,
+      s_neg: s_neg, Q28: Q28, E_ΔC: E_ΔC, E_ΔC_low: E_ΔC_low, E_ΔC_high: E_ΔC_high,
+      costNeg: +costNeg.toFixed(2), score: score,
+      talkTag: (sup.type==='贸易商'?'替代威胁':(sup.type==='品牌商'?'季度联合谈判':'返利拆解'))
+    });
+  }
+  // 按 score 降序
+  pool.sort(function(a,b){ return b.score - a.score; });
+  GT_SKU_POOL_CACHE[c3code] = pool;
+  return pool;
+}
+
+/* -------- L3 · 分层贪心 --------
+   输入：c3code, 目标降本额（元）, 配额 quota={one:0.4, two:0.3, three:0.2}, K=同供应商上限
+   输出：{ selected, buckets, gap, suppliers, meta } */
+function gtRunL3(c3code, targetYuan, quota, K){
+  quota = quota || {one:0.40, two:0.30, three:0.20};
+  K = K || 20;
+  var pool = gtGenSkuPool(c3code);
+  var buckets = { '一类货':[], '二类货':[], '三类货':[] };
+  pool.forEach(function(p){ if(buckets[p.band]) buckets[p.band].push(p); });
+  var quotaMap = { '一类货': targetYuan*quota.one, '二类货': targetYuan*quota.two, '三类货': targetYuan*quota.three };
+  var selected = [], supCount = {};
+  var accum = { '一类货':0, '二类货':0, '三类货':0 };
+  // 每桶按 score 降序（gtGenSkuPool 已排序）
+  Object.keys(buckets).forEach(function(b){ buckets[b].sort(function(a,c){ return c.score-a.score; }); });
+  // 阶段1：按配额抢占
+  Object.keys(buckets).forEach(function(b){
+    for(var i=0;i<buckets[b].length;i++){
+      if(accum[b] >= quotaMap[b]) break;
+      var p = buckets[b][i];
+      supCount[p.supCode] = supCount[p.supCode]||0;
+      if(supCount[p.supCode] >= K) continue;
+      selected.push(p); supCount[p.supCode]++; accum[b] += p.E_ΔC;
+    }
+  });
+  // 阶段2：补充直至总目标
+  var picked = {}; selected.forEach(function(p){ picked[p.id]=1; });
+  var total = accum['一类货']+accum['二类货']+accum['三类货'];
+  if(total < targetYuan){
+    var remain = pool.filter(function(p){ return !picked[p.id]; });
+    for(var j=0;j<remain.length && total<targetYuan; j++){
+      var p = remain[j];
+      supCount[p.supCode] = supCount[p.supCode]||0;
+      if(supCount[p.supCode] >= K) continue;
+      selected.push(p); supCount[p.supCode]++; accum[p.band] += p.E_ΔC; total += p.E_ΔC;
+    }
+  }
+  // 汇总供应商
+  var supMap = {};
+  selected.forEach(function(p){
+    var s = supMap[p.supCode]||(supMap[p.supCode]={ code:p.supCode, name:p.supName, type:p.supType, skus:0, save:0, snegSum:0 });
+    s.skus++; s.save += p.E_ΔC; s.snegSum += p.s_neg;
+  });
+  var suppliers = Object.keys(supMap).map(function(k){
+    var s = supMap[k]; s.avgSneg = +(s.snegSum/s.skus).toFixed(2);
+    s.tier = (s.avgSneg>=0.6 && s.save>=500000) ? 'P0' : (s.avgSneg>=0.4 ? 'P1' : 'P2');
+    return s;
+  }).sort(function(a,b){ return b.save - a.save; });
+  return {
+    c3code: c3code, target: targetYuan, K: K, quota: quota,
+    selected: selected, buckets: accum, total: total,
+    gap: Math.max(0, targetYuan - total),
+    suppliers: suppliers,
+    supTierCount: suppliers.reduce(function(o,s){ o[s.tier]=(o[s.tier]||0)+1; return o; }, {})
+  };
+}
+
+/* 供 HTML 引用 */
+window.GT_BASELINE = GT_BASELINE;
+window.GT_DEPT_LIST = GT_DEPT_LIST;
+window.gtRunL1 = gtRunL1;
+window.gtGenSkuPool = gtGenSkuPool;
+window.gtRunL3 = gtRunL3;
 
 /* ============ 输入发送与初始化 ============ */
 (function init(){
