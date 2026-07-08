@@ -203,12 +203,14 @@ th { color:#8a9099; font-weight:600; background:#fafbfc; }
 
 @keyframes blink { 0%,60%,100%{opacity:.3}30%{opacity:1} }
 
-/* ===== 操作区域「插件框架」范式 ===== */
+/* ===== 工作面板「插件框架」范式 ===== */
 .workspace { flex:1; display:flex; flex-direction:column; background:#fff; overflow:hidden; min-width:0; }
 .ws-head { height:58px; display:flex; align-items:center; padding:0 24px; border-bottom:1px solid #eceef1; flex-shrink:0; }
 .ws-head .wt { font-size:16px; font-weight:700; }
 .ws-head .spacer { flex:1; }
 .ws-head .hi { color:#b0b4bb; cursor:pointer; }
+.ws-head .ws-close { display:inline-flex; align-items:center; gap:5px; font-size:13px; font-weight:600; color:#8a9099; cursor:pointer; padding:6px 12px; border:1px solid #e3e6eb; border-radius:8px; transition:all .15s; user-select:none; }
+.ws-head .ws-close:hover { color:#cf1322; border-color:#f0b3b3; background:#fff5f5; }
 .ws-body { flex:1; overflow-y:auto; padding:20px 24px; }
 
 /* 黄金流程导航 */
@@ -437,6 +439,85 @@ body.ws-open .msgs { padding:16px; }
 .in-report .ir-hint { font-size:12px; color:#5c6169; margin-top:8px; }
 .in-report .ir-hint .pos { color:#12a150; }
 .in-report .ir-foot { padding:10px 16px; font-size:11.5px; color:#8a9099; background:#fafbfc; border-top:1px solid #eceef1; }
+/* ===== 报告表格增强：列组多表头 / 迷你折线 / Excel 清单（图片样式） ===== */
+.in-report .ir-scroll { overflow-x:auto; }
+.in-report .ir-tbl.ir-grp th, .in-report .ir-tbl.ir-grp td { text-align:center; white-space:nowrap; }
+.in-report .ir-tbl td.g { color:#12a150; font-weight:600; }
+.in-report .ir-tbl td.r { color:#e5484d; font-weight:600; }
+.in-report .ir-tbl td.pu { color:#6b46f5; font-weight:600; }
+.in-report .ir-tbl tr.tot td { background:#f7f8fa; font-weight:700; }
+.in-report .ir-grp thead th.grp-a { background:#e8f0fe; }
+.in-report .ir-grp thead th.grp-b { background:#f3e8ff; }
+.in-report .ir-grp thead th.grp-c { background:#fdecc8; }
+.in-report .ir-grp thead th.grp-d { background:#d7f2e3; }
+.in-report .ir-grp thead th.grp-g { background:#d7f2e3; }
+.in-report .ir-grp thead th.grp-r { background:#f4f4f5; }
+.in-report .ir-grp thead th.grp-p { background:#e5d9ff; }
+.in-report .ir-grp thead th.grp-p2 { background:#f3edff; }
+.in-report .ml-wrap { display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
+.in-report .ml-svg { width:64px; height:22px; }
+.in-report .ml-tag { font-size:12px; }
+.in-report .d2-trend { text-align:left; }
+.in-report .d2-seq { display:block; font-size:11px; color:#5c6169; margin-top:2px; }
+.in-report .xl-export { border:1px solid #1f7a3d; background:#e6f6ec; color:#12833f; font-size:11.5px; font-weight:600; border-radius:6px; padding:3px 10px; cursor:pointer; margin-left:8px; }
+.in-report .xl-export:hover { background:#d7f2e3; }
+.in-report .xl-bar { display:flex; align-items:center; gap:8px; background:#f2f8f4; border:1px solid #cfe8d8; border-radius:6px; padding:6px 10px; font-size:11.5px; margin-bottom:8px; }
+.in-report .xl-tag { background:#12833f; color:#fff; border-radius:4px; padding:1px 6px; font-weight:700; }
+.in-report .xl-file { color:#1f2329; font-weight:600; }
+.in-report .xl-cnt { color:#8a9099; margin-left:auto; }
+.in-report .xl-tbl th { background:#eef5ee; text-align:center; white-space:nowrap; }
+.in-report .xl-tbl td { white-space:nowrap; }
+.in-report .xl-tbl td.xl-idx { background:#f7f8fa; color:#8a9099; text-align:center; }
+.in-report .xl-tbl td.xl-l { text-align:left; }
+.in-report .xl-tbl td.xl-num { text-align:right; font-variant-numeric:tabular-nums; }
+.in-report .xl-ok { background:#e6f6ec; color:#12833f; border-radius:8px; padding:1px 8px; font-size:11px; font-weight:600; }
+/* ===== 对话区 HTML 文档卡（点击右侧面板展开） ===== */
+.doc-card { border:1px solid #eceef1; border-radius:12px; background:#fff; margin:10px 0 4px; overflow:hidden; cursor:pointer; transition:box-shadow .15s,border-color .15s; }
+.doc-card:hover { border-color:#6b46f5; box-shadow:0 4px 16px rgba(107,70,245,.12); }
+.doc-card .dc-top { display:flex; align-items:center; gap:12px; padding:14px 16px; }
+.doc-card .dc-ic { flex:0 0 44px; height:44px; border-radius:10px; background:linear-gradient(135deg,#6b46f5,#8a6bff); color:#fff; display:flex; align-items:center; justify-content:center; font-size:22px; }
+.doc-card .dc-info { flex:1; min-width:0; }
+.doc-card .dc-title { font-size:14px; font-weight:800; color:#1f2329; }
+.doc-card .dc-sub { font-size:12px; color:#8a9099; margin-top:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.doc-card .dc-open { flex:0 0 auto; font-size:12px; font-weight:600; color:#6b46f5; background:#faf9ff; border:1px solid #ece8ff; border-radius:8px; padding:6px 12px; }
+.doc-card .dc-tags { padding:0 16px 12px; display:flex; flex-wrap:wrap; gap:6px; }
+.doc-card .dc-tag { font-size:11px; color:#5c6169; background:#f5f6fa; border-radius:8px; padding:3px 9px; }
+.doc-card .dc-tag.new { color:#6b46f5; background:#f0ebff; font-weight:600; }
+/* ===== 小Y思考链（四步） ===== */
+.xy-think { border:1px solid #ece8ff; border-radius:12px; background:#fbfaff; margin:10px 0 4px; overflow:hidden; }
+.xy-think .xt-step { padding:12px 16px; border-bottom:1px dashed #ece8ff; }
+.xy-think .xt-step:last-child { border-bottom:0; }
+.xy-think .xt-h { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:700; color:#6b46f5; }
+.xy-think .xt-n { flex:0 0 20px; height:20px; border-radius:50%; background:#6b46f5; color:#fff; font-size:11px; display:flex; align-items:center; justify-content:center; }
+.xy-think .xt-b { font-size:12.5px; color:#3d424b; line-height:1.7; margin:7px 0 0 28px; }
+.xy-think .xt-src { margin:7px 0 0 28px; font-size:11.5px; color:#5c6169; }
+.xy-think .xt-src .src-item { display:inline-block; background:#fff; border:1px solid #ece8ff; border-radius:8px; padding:3px 9px; margin:3px 5px 0 0; }
+.xy-think .xt-src .src-item b { color:#6b46f5; }
+.xy-think .xt-step.typing { animation:xtIn .2s ease; }
+@keyframes xtIn { from{opacity:0;transform:translateY(4px);} to{opacity:1;transform:none;} }
+.xy-think .xt-cursor { color:#6b46f5; font-weight:400; animation:xtBlink .8s steps(1) infinite; }
+@keyframes xtBlink { 50%{opacity:0;} }
+/* 发送预览卡 */
+.send-card { border:1px solid #eceef1; border-radius:12px; background:#fff; overflow:hidden; margin-top:8px; }
+.send-card .sp-top { display:flex; align-items:center; gap:8px; padding:12px 14px; background:linear-gradient(135deg,#f5f2ff,#faf9ff); border-bottom:1px solid #eceef1; }
+.send-card .sp-ic { font-size:16px; }
+.send-card .sp-title { font-weight:800; font-size:14px; }
+.send-card .sp-badge { margin-left:auto; font-size:11px; font-weight:600; color:#6b46f5; background:#f0ebff; border-radius:8px; padding:2px 8px; }
+.send-card .sp-sec-t { font-size:12px; color:#8a9099; font-weight:700; padding:10px 14px 4px; }
+.send-card .sp-recips { padding:0 14px; }
+.send-card .sp-row { display:flex; align-items:center; gap:10px; padding:6px 0; border-bottom:1px dashed #f0f1f3; }
+.send-card .sp-role { font-size:12px; font-weight:700; color:#6b46f5; background:#f0ebff; border-radius:6px; padding:1px 8px; min-width:38px; text-align:center; }
+.send-card .sp-note { font-size:12.5px; color:#5c6169; }
+.send-card .sp-chan { padding:0 14px 4px; font-size:12.5px; color:#5c6169; }
+.send-card .sp-msg { margin:4px 14px 0; border:1px solid #eceef1; border-radius:8px; background:#fafbfc; padding:10px; }
+.send-card .sp-msg-h { font-size:11.5px; color:#8a9099; }
+.send-card .sp-msg-t { font-size:13px; font-weight:700; margin:4px 0; }
+.send-card .sp-msg-b { font-size:12px; color:#5c6169; line-height:1.5; }
+.send-card .sp-msg-lk { font-size:12px; color:#6b46f5; margin-top:6px; }
+.send-card .sp-acts { display:flex; gap:8px; padding:12px 14px; }
+.send-card .sp-btn { font-size:12.5px; border:1px solid #e0e2e6; background:#fff; color:#1f2329; border-radius:8px; padding:7px 14px; cursor:pointer; }
+.send-card .sp-btn.primary { background:#6b46f5; color:#fff; border-color:#6b46f5; }
+.send-card .sp-btn:hover { opacity:.9; }
 .tb-wrap { display:flex; align-items:flex-end; gap:14px; height:120px; padding:6px 4px; border-bottom:1px dashed #eceef1; }
 .tb-col { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; height:100%; justify-content:flex-end; }
 .tb-bar { width:32px; background:linear-gradient(180deg,#6b46f5,#8a7bff); border-radius:4px 4px 0 0; }
@@ -473,8 +554,69 @@ body.ws-open .msgs { padding:16px; }
 .rd-t { font-size:12.5px; font-weight:700; color:#1f2329; margin-bottom:8px; }
 .rd-v { font-size:12.5px; color:#5c6169; line-height:1.8; }
 .rd-chip { display:inline-block; background:#f5f6fa; border:1px solid #eceef1; border-radius:14px; padding:2px 10px; font-size:11.5px; color:#3d424b; margin:2px 4px 2px 0; }
+.rd-chip.on { background:#e8f3ff; border-color:#a3cfff; color:#1868d6; font-weight:600; }
+.rd-chip.off { opacity:.4; }
+/* ===== 圈品详情右侧抽屉 ===== */
+.cd-mask { position:fixed; inset:0; background:rgba(15,18,22,.32); opacity:0; visibility:hidden; transition:opacity .22s; z-index:80; }
+.cd-mask.open { opacity:1; visibility:visible; }
+.cd-drawer { position:fixed; top:0; right:0; height:100%; width:440px; max-width:88vw; background:#fff; box-shadow:-8px 0 28px rgba(15,18,22,.14); transform:translateX(100%); transition:transform .26s cubic-bezier(.4,0,.2,1); z-index:81; display:flex; flex-direction:column; }
+.cd-drawer.open { transform:translateX(0); }
+.cd-head { flex:0 0 auto; display:flex; align-items:center; padding:16px 18px; border-bottom:1px solid #eef0f3; }
+.cd-title { font-size:15px; font-weight:700; color:#1f2329; flex:1; }
+.cd-close { font-size:13px; font-weight:600; color:#8a9099; cursor:pointer; padding:6px 12px; border:1px solid #e3e6eb; border-radius:8px; transition:all .15s; user-select:none; }
+.cd-close:hover { color:#cf1322; border-color:#f0b3b3; background:#fff5f5; }
+.cd-body { flex:1; overflow-y:auto; padding:16px 18px 24px; }
+.cd-tag { display:inline-block; background:#eef1f5; color:#5c6169; border-radius:6px; padding:2px 8px; font-size:11.5px; margin-left:8px; font-weight:500; }
+.cd-rulebar { background:#f7f9fc; border:1px solid #eef0f3; border-radius:10px; padding:10px 12px; font-size:12.5px; color:#3d424b; line-height:1.7; margin-bottom:14px; }
+.cd-rulebar b { color:#1f2329; }
+.cd-sec { border:1px solid #eceef1; border-radius:10px; padding:11px 13px; margin-bottom:10px; }
+.cd-sec-t { font-size:12.5px; font-weight:700; color:#1f2329; margin-bottom:8px; display:flex; align-items:center; gap:6px; }
+.cd-sec-t .cd-hit { font-size:11px; font-weight:500; color:#1868d6; background:#e8f3ff; border-radius:10px; padding:1px 8px; }
+.cd-sec-v { font-size:12.5px; color:#5c6169; line-height:1.9; }
+.cd-note { font-size:11.5px; color:#8a9099; margin-top:6px; line-height:1.6; }
+.cd-foot { margin-top:12px; }
+.cd-foot .cd-sim { display:block; text-align:center; background:#1868d6; color:#fff; border-radius:9px; padding:10px; font-size:13px; font-weight:600; cursor:pointer; }
+.cd-foot .cd-sim:hover { background:#1259bd; }
 .rd-btn { margin-top:8px; border:1px solid #6b46f5; color:#6b46f5; background:#fff; border-radius:7px; padding:5px 12px; font-size:12px; cursor:pointer; }
 .rd-btn:hover { background:#6b46f5; color:#fff; }
+
+/* ===== 会话内嵌表格 / 前毛分层现状 / 圈品详情（异常识别诊断新流程） ===== */
+.chat-card { border:1px solid #eceef1; border-radius:12px; background:#fff; margin:10px 0; overflow:hidden; }
+.chat-card .cc-head { background:#faf9ff; border-bottom:1px solid #eceef1; padding:10px 14px; font-size:13px; font-weight:700; color:#6b46f5; display:flex; align-items:center; gap:8px; }
+.chat-card .cc-head .cc-tag { margin-left:auto; font-size:11px; font-weight:600; color:#8a9099; background:#f5f6fa; border-radius:10px; padding:2px 9px; }
+.chat-tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
+.chat-tbl th, .chat-tbl td { padding:9px 12px; text-align:left; border-bottom:1px solid #f0f1f3; vertical-align:middle; white-space:nowrap; }
+.chat-tbl thead th { background:#fafbfc; font-weight:700; color:#5c6169; font-size:12px; position:sticky; top:0; }
+.chat-tbl tbody tr:hover { background:#faf9ff; }
+.chat-tbl .ct-sub { font-size:11px; color:#8a9099; margin-top:2px; white-space:normal; }
+.chat-tbl-scroll { max-height:340px; overflow:auto; }
+.chat-tbl .cn-btn { display:inline-block; border:1px solid #d9dce1; border-radius:6px; padding:4px 9px; font-size:11.5px; color:#5c6169; cursor:pointer; margin-right:5px; background:#fff; white-space:nowrap; }
+.chat-tbl .cn-btn:hover { border-color:#6b46f5; color:#6b46f5; }
+.chat-tbl .cn-btn.primary { border-color:#6b46f5; color:#6b46f5; background:#faf9ff; }
+.chat-tbl .cn-btn.primary:hover { background:#6b46f5; color:#fff; }
+.c3-band { background:#f6fbff; }
+.c3-band td:first-child { padding-left:22px; color:#1677ff; }
+/* 前毛分层现状条 */
+.mt-wrap { padding:12px 14px; }
+.mt-tier { display:flex; align-items:center; gap:10px; margin:8px 0; }
+.mt-tier .mt-l { flex:0 0 96px; font-size:12.5px; font-weight:600; color:#3d424b; }
+.mt-tier .mt-bar { flex:1; height:20px; border-radius:5px; background:#f0f1f3; overflow:hidden; position:relative; }
+.mt-tier .mt-fill { height:100%; border-radius:5px; }
+.mt-tier .mt-v { flex:0 0 150px; font-size:12px; color:#8a9099; text-align:right; }
+.mt-legend { font-size:11.5px; color:#8a9099; margin-top:8px; }
+/* 部门前毛率分层表 */
+.mg-tbl { width:100%; border-collapse:collapse; font-size:12.5px; }
+.mg-tbl th, .mg-tbl td { padding:8px 10px; text-align:right; border-bottom:1px solid #f0f1f3; white-space:nowrap; }
+.mg-tbl th:first-child, .mg-tbl td:first-child { text-align:left; }
+.mg-tbl thead th { background:#fafbfc; font-weight:700; color:#5c6169; font-size:12px; text-align:right; }
+.mg-tbl thead th:first-child { text-align:left; }
+.mg-tbl tbody tr:hover { background:#faf9ff; }
+.mg-tier { display:inline-flex; align-items:center; gap:7px; }
+.mg-dot { width:9px; height:9px; border-radius:50%; flex:0 0 9px; }
+.mg-tbl .mg-neg { color:#cf1322; font-weight:700; }
+.mg-thr { font-size:11.5px; color:#8a9099; margin-top:10px; display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.mg-thr .mg-chip { border:1px solid #e6d3ff; background:#faf9ff; color:#6b46f5; border-radius:12px; padding:2px 10px; font-size:11px; cursor:pointer; }
+.mg-thr .mg-chip:hover { background:#6b46f5; color:#fff; }
 
 /* ===== 会话内仿真配置卡（规则要求 + 圈品，全部在对话区调整） ===== */
 .in-sim { border:1px solid #e6d3ff; border-radius:12px; background:#faf9ff; margin:10px 0; overflow:hidden; }
@@ -510,6 +652,45 @@ body.ws-open .msgs { padding:16px; }
 .sim-tbl thead th { background:#fafbfc; color:#5c6169; font-weight:700; font-size:11.5px; position:sticky; top:0; z-index:2; }
 .sim-tbl th.freeze, .sim-tbl td.freeze { position:sticky; left:0; background:#fff; z-index:3; border-right:2px solid #eceef1; }
 .sim-tbl thead th.freeze { background:#fafbfc; z-index:4; }
+/* --- 仿真结果：原策略 vs 新策略 单页对比 --- */
+.sc-strat { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.sc-card { border:1px solid #eceef1; border-radius:12px; background:#fff; overflow:hidden; }
+.sc-card.new { border-color:#c9b8ff; box-shadow:0 0 0 1px #ede7ff inset; }
+.sc-hd { padding:10px 14px; font-size:13px; font-weight:800; color:#1f2329; background:#fafbfc; border-bottom:1px solid #eceef1; display:flex; align-items:center; gap:8px; }
+.sc-card.new .sc-hd { background:#f5f1ff; color:#6b46f5; }
+.sc-badge { font-size:11px; font-weight:700; padding:1px 8px; border-radius:20px; background:#eceef1; color:#5c6169; }
+.sc-card.new .sc-badge { background:#6b46f5; color:#fff; }
+.sc-bd { padding:12px 14px; }
+.sc-lbl { font-size:11.5px; color:#8a9099; margin:8px 0 4px; }
+.sc-lbl:first-child { margin-top:0; }
+.sc-rule { font-size:12.5px; color:#1f2329; line-height:1.6; }
+.sc-rule b { color:#6b46f5; }
+.sc-chips { display:flex; flex-wrap:wrap; gap:5px; }
+.sc-chip { font-size:11.5px; padding:2px 9px; border-radius:20px; background:#f2f3f5; color:#5c6169; }
+.sc-card.new .sc-chip { background:#ede7ff; color:#6b46f5; }
+.sc-krow { display:flex; align-items:baseline; gap:6px; font-size:12.5px; color:#3c4149; }
+.sc-krow b { font-size:15px; color:#1f2329; }
+/* 指标对比表 */
+.sc-cmp { width:100%; border-collapse:collapse; font-size:12.5px; margin:6px 0 4px; border:1px solid #eceef1; border-radius:10px; overflow:hidden; }
+.sc-cmp th, .sc-cmp td { padding:9px 12px; border-bottom:1px solid #eceef1; text-align:left; }
+.sc-cmp thead th { background:#fafbfc; color:#5c6169; font-weight:700; font-size:11.5px; }
+.sc-cmp td.metric { color:#3c4149; }
+.sc-cmp td.metric .sub { color:#8a9099; font-size:11px; padding-left:14px; }
+.sc-cmp td.val { font-weight:700; color:#1f2329; text-align:right; }
+.sc-cmp td.val.new { color:#6b46f5; }
+.sc-cmp tr.sub-row td { padding-top:3px; padding-bottom:3px; background:#fcfcfd; }
+.sc-cmp tr.head-metric td { font-weight:800; }
+.sc-hl { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:14px 0; }
+.sc-hl-k { border-radius:12px; padding:16px; text-align:center; }
+.sc-hl-k.save { background:#fef2f2; border:1px solid #fddcdc; }
+.sc-hl-k.rate { background:#f0fdf4; border:1px solid #ccf0d8; }
+.sc-hl-l { font-size:12px; color:#8a9099; }
+.sc-hl-v { font-size:28px; font-weight:800; margin-top:6px; }
+.sc-hl-k.save .sc-hl-v { color:#e5484d; }
+.sc-hl-k.rate .sc-hl-v { color:#12a150; }
+.sc-exports { display:flex; gap:10px; flex-wrap:wrap; }
+.sc-exp { flex:1; min-width:170px; border:1px solid #d9d2f5; background:#f7f5ff; color:#6b46f5; border-radius:10px; padding:11px 14px; font-size:12.5px; font-weight:700; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+.sc-exp:hover { background:#efeaff; }
 .cell-goods { display:flex; gap:8px; align-items:flex-start; min-width:220px; }
 .cell-goods .cg-img { font-size:24px; width:32px; text-align:center; }
 .cell-goods .cg-name { font-weight:700; color:#1f2329; }
@@ -564,10 +745,15 @@ body.ws-open .msgs { padding:16px; }
 </div>
 
 <div class="workspace" id="workspace" style="display:none;">
-  <div class="ws-head"><span class="wt" id="wsTitle">操作区域 · 采购价治理</span><span class="spacer"></span><span class="hi">&#9776;</span></div>
+  <div class="ws-head"><span class="wt" id="wsTitle">工作面板 · 采购价治理</span><span class="spacer"></span><span class="ws-close" id="wsClose" title="关闭工作面板">&#10005; 关闭</span></div>
   <div class="ws-body" id="wsBody"></div>
 </div>
 
+<div class="cd-mask" id="cdMask"></div>
+<div class="cd-drawer" id="cdDrawer" aria-hidden="true">
+  <div class="cd-head"><span class="cd-title" id="cdTitle">圈品详情</span><span class="cd-close" id="cdClose" title="关闭">&#10005; 关闭</span></div>
+  <div class="cd-body" id="cdBody"></div>
+</div>
 <div class="toast" id="toast"></div>
 <div class="modal-mask" id="modalMask"><div class="modal"><div class="modal-head"><span id="modalTitle">预览</span><span class="mc" onclick="closeModal()">&times;</span></div><div class="modal-body" id="modalBody"></div></div></div>
 <script src="agent-core.js"></script>
@@ -648,6 +834,20 @@ body.ws-open .msgs { padding:16px; }
     }
     var t2=document.getElementById('wsTitle'); if(t2&&title)t2.textContent=title;
   }
+  function hideWs(){
+    var ws=document.getElementById('workspace'); if(ws)ws.style.display='none';
+    document.body.classList.remove('ws-open');
+    /* 关闭工作面板后恢复首屏激发卡片 */
+    var host=document.getElementById('homePanelHost');
+    if(host){
+      host.classList.remove('collapsed');
+      var t=host.querySelector('.hp-fold-txt'); if(t) t.textContent='收起';
+    }
+  }
+  (function bindWsClose(){
+    var btn=document.getElementById('wsClose');
+    if(btn) btn.onclick=function(){ hideWs(); };
+  })();
   function deptName(){ return (DEPT[curDept]||DEPT['all']).name.replace(/[│└　]/g,'').trim(); }
 
   /* ===== 4.1 改善进度 & 明细：4 Tab（周排名 / 4周趋势 / H2至今 / 明细清单） ===== */
@@ -655,7 +855,7 @@ body.ws-open .msgs { padding:16px; }
   var PROG_DAYS=7;     // 7 / 15 / 30
   var PROG_H2='m';     // m 月至今 / q 季至今 / h2 H2至今
   function openProgress(){
-    showWs('操作区域 · 改善进度 & 明细查看');
+    showWs('工作面板 · 改善进度 & 明细查看');
     var b=document.getElementById('wsBody'); if(!b)return;
     b.innerHTML=progressShellHtml();
     bindProgressShell();
@@ -742,105 +942,593 @@ body.ws-open .msgs { padding:16px; }
       addAI('参数已就绪。正在为 <b>'+REPORT_CTX.dept+'</b> 按 <b>'+REPORT_CTX.granularity+'</b> 维度生成采购价预警改善结果报告（'+REPORT_CTX.compareDate+' vs '+REPORT_CTX.baseDate+'）…',
         null,
         [{type:'tool', text:'调用 Skill: improvement_progress_track\n · granularity = '+REPORT_CTX.granularity+'\n · compareDate = '+REPORT_CTX.compareDate+'\n · baseDate = '+REPORT_CTX.baseDate+'\n · dims = '+REPORT_CTX.dims.join(',')+'\n\n调用 Tool: query_sku_snapshot(compareDate) / query_sku_snapshot(baseDate)\n调用 Tool: query_improvement_effect(compareDate, baseDate)'}]);
-      delay(function(){
-        var report=buildReportHtml(REPORT_CTX);
-        if(typeof addAI==='function'){
-          addAI('报告已生成，可在下方查看，如需调整维度直接告诉我即可（例如「改成 C3」「隐藏 H2」「加上按品类拆分」）：',
-            [
-              {label:'导出 HTML 报告', onclick:function(){ if(typeof addUser==='function')addUser('导出报告'); delay(function(){ if(typeof addAI==='function')addAI('已导出报告到产物区。'); }); }},
-              {label:'推送到京Me机器人', onclick:function(){ if(typeof addUser==='function')addUser('推送到京Me机器人'); delay(function(){ if(typeof addAI==='function')addAI('已按 P0/P1 分层推送到「家纺家居事业部通晒群」，采销可点击对应 SKU 查看明细。'); }); }},
-              {label:'改成 C3 维度', onclick:function(){ REPORT_CTX.granularity='C3'; if(typeof addUser==='function')addUser('改成 C3 维度'); confirmAndBuildReport(); }}
-            ], null, report);
-        }
-      });
+      delay(function(){ emitReportDocCard(false); });
     });
   }
-  function buildReportHtml(ctx){
-    var rankRows=[
-      ['1','四件套',   '312','+38','680','45.9%','↑ 4.2pt','7.2%','58','-20'],
-      ['2','冬被加厚', '246','+21','410','60.0%','↑ 2.6pt','8.1%','35','-14'],
-      ['3','抱枕套',   '184','+12','520','35.4%','↑ 1.8pt','5.6%','42','+8'],
-      ['4','实木书架', '142','+9', '380','37.4%','→ 0.5pt','6.3%','28','-5']
-    ];
-    var rankRowsC2=[
-      ['1','家纺（家居事业部）', '598','+62','1,180','50.7%','↑ 3.1pt','7.5%','98','-34'],
-      ['2','家居（家居事业部）', '346','+25','820',  '42.2%','↑ 2.0pt','6.1%','66','-11'],
-      ['3','家电事业部',         '288','+18','940',  '30.6%','↑ 1.2pt','5.4%','54','-6'],
-      ['4','厨具（厨卫事业部）', '204','+14','560',  '36.4%','↑ 1.5pt','5.8%','38','-3']
-    ];
+  /* 报告产物存入 HTML_STORE，对话区出「HTML 文档卡」，点击右侧面板展开；注册输入增维钩子 */
+  var REPORT_EXTRA_DIMS = [];   // 用户对话新增的分析维度 [{l,src,val}]
+  var REPORT_VERSION = 0;
+  function reportName(){ return '采购价预警改善结果报告' + (REPORT_VERSION>1?(' v'+REPORT_VERSION):''); }
+  function emitReportDocCard(isRevision){
+    REPORT_VERSION++;
+    var name=reportName();
+    var fullHtml=buildReportFullHtml(REPORT_CTX, REPORT_EXTRA_DIMS);
+    if(typeof HTML_STORE==='object') HTML_STORE[name]=fullHtml;
+    var dimCnt = REPORT_CTX.dims.length + REPORT_EXTRA_DIMS.length;
+    var tags = REPORT_DIMS_ALL.filter(function(x){return REPORT_CTX.dims.indexOf(x.k)>=0;}).map(function(x){return '<span class="dc-tag">'+x.l.replace(/（.*）/,'')+'</span>';})
+      .concat(REPORT_EXTRA_DIMS.map(function(e){return '<span class="dc-tag new">+ '+e.l+'</span>';})).join('');
+    var card='<div class="doc-card" data-report="'+name+'">'
+      +'<div class="dc-top"><div class="dc-ic">&#128196;</div>'
+      +'<div class="dc-info"><div class="dc-title">'+name+'</div>'
+      +'<div class="dc-sub">'+REPORT_CTX.dept+' · '+REPORT_CTX.granularity+' 维度 · '+dimCnt+' 个分析维度 · '+REPORT_CTX.compareDate+'</div></div>'
+      +'<div class="dc-open">点击展开 &#8594;</div></div>'
+      +'<div class="dc-tags">'+tags+'</div></div>';
+    var tip = isRevision
+      ? '已按您的要求生成 <b>新版复盘报告</b>（新增维度已并入）。点击下方文档卡可在右侧工作面板展开查看，也可继续在对话框告诉我要增加的分析维度。'
+      : '报告已生成。点击下方文档卡可在右侧工作面板<b>展开查看完整报告</b>。<br>如需新增分析维度，直接在对话框输入即可（例如「<span style="color:#6b46f5;">在报告里增加预警商品数过去 30 天的 GMV</span>」）。';
+    addAI(tip, null, null, card);
+   /* 绑定文档卡点击 → 右侧面板展开 */
+    setTimeout(function(){
+      var cards=document.querySelectorAll('.doc-card[data-report="'+name+'"]');
+      var c=cards[cards.length-1];
+      if(c) c.onclick=function(){ openReportInWs(name); };
+    },30);
+    /* 注册输入钩子：后续用户在对话框输入增维需求 → 小Y四步思考链 */
+    window.__reportInputHook = reportInputHook;
+    /* 首次生成自动在右侧展开一次 */
+    if(!isRevision){ openReportInWs(name); }
+  }
+  function openReportInWs(name){
+    showWs('工作面板 · '+name);
+    var b=document.getElementById('wsBody'); if(!b)return;
+    b.innerHTML='<div style="padding:16px;">'+ (typeof HTML_STORE==='object'&&HTML_STORE[name] ? extractReportBody(HTML_STORE[name]) : buildReportHtml(REPORT_CTX)) +'</div>';
+    bindReportInner(b, name);
+  }
+  /* 绑定报告内部交互：三、H2 至今的「月/季/H2」切换 + 四、SKU 清单「导出 Excel」 */
+  function bindReportInner(root, name){
+    if(!root) return;
+    root.querySelectorAll('.in-report .ir-toggle a[data-h2]').forEach(function(a){
+      a.onclick=function(){
+        var v=a.getAttribute('data-h2'); PROG_H2 = (v==='all')?'h2':v;
+        if(name){ if(typeof HTML_STORE==='object') HTML_STORE[name]=buildReportFullHtml(REPORT_CTX, REPORT_EXTRA_DIMS); openReportInWs(name); }
+        else { var b2=document.getElementById('wsBody'); }
+      };
+    });
+    root.querySelectorAll('.in-report .xl-export').forEach(function(btn){
+      btn.onclick=function(e){
+        e.stopPropagation();
+        if(typeof addAI==='function') addAI('已导出「近 28 天降价 SKU 清单」EXCEL（13 字段，含 SKU 编码/商品/品类/供应商/原价·现价/降幅/降价金额/生效日/状态）到产物区，共 '+(REPORT_CTX&&REPORT_CTX.granularity==='C3'?'826':'1,204')+' 条。');
+      };
+    });
+  }
+  /* 从完整 HTML 中取出报告主体（复用对话区 .in-report 渲染，右侧直接内联展示） */
+  function extractReportBody(){ return buildReportHtml(REPORT_CTX, REPORT_EXTRA_DIMS); }
+  function buildReportHtml(ctx, extraDims){
     var useC3 = ctx.granularity==='C3';
-    var rankHead='<tr><th>排名</th><th>'+(useC3?'C3 部门/组':'C2 部门')+'</th><th>过去 7 天降价 SKU</th><th>本周新增降价</th><th>部门上架 SKU</th><th>降价占比</th><th>环比</th><th>降价幅度</th><th>新增预警</th><th>净变化</th></tr>';
-    var rankBody=(useC3?rankRows:rankRowsC2).map(function(r){ return '<tr><td>'+r.join('</td><td>')+'</td></tr>'; }).join('');
-    var trendData=[
-      ['第 22 周', 68, '3.2%'],
-      ['第 23 周', 84, '4.0%'],
-      ['第 24 周', 96, '4.6%'],
-      ['第 25 周', 112,'5.4%']
+    /* 第1部分：部门维度预警改善表（四大列组：上周期预警 / 本周期预警 / 预警变化 / 采购价降价及环比变化）
+       每行列：部门, ①部门商品数, ②预警商品数, ③预警占比, ④部门商品数, ⑤预警商品数, ⑥预警占比,
+               ⑦SKU改善变化(⑤-②，负=改善), ⑧改善占比((⑤-②)/④), ⑨上周期降价SKU数, ⑩本周期降价SKU数, 降价SKU占比(⑩/⑤), 降价SKU环比((⑩-⑨)/⑨) */
+    var d1RowsC3=[
+      ['家纺/四件套组', 680,68,'10.0%', 690,58,'8.4%', -10,'-1.4%', 42,58,'100.0%','+38.1%'],
+      ['家居/收纳组',   520,42,'8.1%',  530,50,'9.4%',  +8,'+1.5%', 40,42,'84.0%','+5.0%'],
+      ['家纺/冬被组',   410,35,'8.5%',  418,28,'6.7%', -7,'-1.7%',  30,35,'125.0%','+16.7%'],
+      ['家居/家具组',   380,28,'7.4%',  388,23,'5.9%', -5,'-1.3%',  22,28,'121.7%','+27.3%']
     ];
-    var maxV=Math.max.apply(null,trendData.map(function(r){return r[1];}));
-    var trendBars=trendData.map(function(r){
-      var h=Math.round(r[1]/maxV*72);
-      return '<div class="tb-col"><div class="tb-bar" style="height:'+h+'px"></div><div class="tb-v">'+r[1]+'</div><div class="tb-l">'+r[0]+'</div><div class="tb-p">'+r[2]+'</div></div>';
-    }).join('');
-    var h2Items=[
-      ['&#128200; 累计预警商品数','1,246','环比 -84 条'],
-      ['&#128200; 累计降价商品数','684','环比 +52 条'],
-      ['&#128176; 实际降本金额','¥ 218.6 万','环比 +32 万'],
-      ['&#128200; 实际降价幅度','6.4%','环比 +0.5pt'],
-      ['&#9989; 已降价成功','684 个','占累计 54.9%'],
-      ['&#10060; 供应商拒绝','92 个 · 38 家','占累计 7.4%'],
-      ['&#128260; 议价中','338 个','含 7 天无反馈 46 个'],
-      ['&#9203; 未处理预警','132 个','占累计 10.6%']
+    var d1RowsC2=[
+      ['家纺（家居事业部）', 1180,98,'8.3%', 1195,88,'7.4%', -10,'-0.8%', 76,98,'111.4%','+28.9%'],
+      ['家居（家居事业部）', 820,66,'8.0%',  830,55,'6.6%',  -11,'-1.3%', 48,66,'120.0%','+37.5%'],
+      ['家电事业部',         940,54,'5.7%',  948,48,'5.1%',  -6,'-0.6%',  40,54,'112.5%','+35.0%'],
+      ['厨具（厨卫事业部）', 560,38,'6.8%',  568,42,'7.4%',  +4,'+0.7%',  35,38,'90.5%','+8.6%']
     ];
-    var h2Html=h2Items.map(function(a){ return '<div class="h2-cell"><div class="h2-l">'+a[0]+'</div><div class="h2-v">'+a[1]+'</div><div class="h2-e">'+a[2]+'</div></div>'; }).join('');
+    var d1Rows = useC3?d1RowsC3:d1RowsC2;
+    /* 合计行 */
+    var d1Total=(function(){var s=[0,0,0,0,0,0,0,0,0];d1Rows.forEach(function(r){s[0]+=r[1];s[1]+=r[2];s[2]+=r[4];s[3]+=r[5];s[4]+=(r[5]-r[2]);s[5]+=r[9];s[6]+=r[10];});
+      var p3=(s[1]/s[0]*100).toFixed(1)+'%', p6=(s[3]/s[2]*100).toFixed(1)+'%', p8=(s[4]/s[2]*100).toFixed(1)+'%', p10r=((s[6]-s[5])/s[5]*100).toFixed(1)+'%', p10s=(s[6]/s[3]*100).toFixed(1)+'%';
+      return ['总计',s[0],s[1],p3,s[2],s[3],p6,s[4],p8,s[5],s[6],p10s,'+'+p10r];})();
+    var d1RowFn=function(idx,r,isTotal){
+      var cls7=(typeof r[7]==='number'&&r[7]<0)?' class="g"':((typeof r[7]==='number'&&r[7]>0)?' class="r"':'');
+      var v7=(typeof r[7]==='number'&&r[7]>0?'+':'')+r[7];
+      return '<tr'+(isTotal?' class="tot"':'')+'><td>'+(isTotal?'合计':idx)+'</td><td>'+r[0]+'</td>'
+        +'<td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td>'
+        +'<td>'+r[4]+'</td><td>'+r[5]+'</td><td>'+r[6]+'</td>'
+        +'<td'+cls7+'>'+v7+'</td><td>'+r[8]+'</td>'
+        +'<td>'+r[9]+'</td><td>'+r[10]+'</td><td>'+r[11]+'</td><td class="g">'+r[12]+'</td></tr>';
+    };
+    var d1Body=d1Rows.map(function(r,i){return d1RowFn(i+1,r);}).join('')+d1RowFn('',d1Total,true);
+    var d1Head1='<tr><th rowspan="2">序号</th><th rowspan="2">'+(useC3?'C3 部门/组':'C2 部门')+'</th>'
+      +'<th colspan="3" class="grp-a">上周期预警（默认 7 天）</th>'
+      +'<th colspan="3" class="grp-b">本周期预警（默认 7 天）</th>'
+      +'<th colspan="2" class="grp-c">预警变化</th>'
+      +'<th colspan="4" class="grp-d">采购价降价及环比变化</th></tr>';
+    var d1Head2='<tr>'
+      +'<th class="grp-a">①部门商品数</th><th class="grp-a">②预警商品数</th><th class="grp-a">③预警占比</th>'
+      +'<th class="grp-b">④部门商品数</th><th class="grp-b">⑤预警商品数</th><th class="grp-b">⑥预警占比</th>'
+      +'<th class="grp-c">⑦SKU改善变化</th><th class="grp-c">⑧改善占比</th>'
+      +'<th class="grp-d">⑨上周期降价SKU数</th><th class="grp-d">⑩本周期降价SKU数</th><th class="grp-d">降价SKU占比</th><th class="grp-d">降价SKU环比</th></tr>';
+    /* ===== 第2部分：近 4 周降价商品数量变化 ===== */
+    var wk=['第22周','第23周','第24周','第25周'];
+    var d2RowsC3=[
+      ['家纺/四件套组', [8,10,12,18],   ['1.2%','1.5%','1.8%','2.4%'], 48, '4.2%'],
+      ['家居/收纳组',   [5,6,7,10],     ['0.8%','1.0%','1.2%','1.6%'], 28, '2.4%'],
+      ['家纺/冬被组',   [4,5,5,6],      ['0.6%','0.7%','0.7%','0.9%'], 20, '1.8%'],
+      ['家居/家具组',   [6,5,4,3],      ['1.0%','0.8%','0.7%','0.5%'], 18, '1.6%']
+    ];
+    var d2RowsC2=[
+      ['家纺（家居事业部）', [18,22,26,32], ['1.4%','1.7%','2.0%','2.4%'], 98, '4.2%'],
+      ['家居（家居事业部）', [12,14,15,18], ['1.2%','1.4%','1.5%','1.8%'], 59, '3.2%'],
+      ['家电事业部',         [10,11,12,14], ['0.9%','1.0%','1.1%','1.3%'], 47, '2.6%'],
+      ['厨具（厨卫事业部）', [9,8,7,6],     ['1.3%','1.1%','0.9%','0.8%'], 30, '2.1%']
+    ];
+    var d2Rows = useC3?d2RowsC3:d2RowsC2;
+    /* 迷你折线图 SVG：给一组数值生成趋势线，末值上升=绿↗ 下降=蓝↘ 持平=灰→ */
+    function miniLine(vals){
+      var n=vals.length, mn=Math.min.apply(null,vals), mx=Math.max.apply(null,vals), rng=(mx-mn)||1;
+      var W=90,H=26,pts=vals.map(function(v,i){var x=(i/(n-1))*(W-4)+2;var y=H-2-((v-mn)/rng)*(H-6);return x.toFixed(1)+','+y.toFixed(1);}).join(' ');
+      var up=vals[n-1]-vals[0], col=up>0?'#12a150':(up<0?'#3b82f6':'#8a9099'), arrow=up>0?'&#8599;':(up<0?'&#8600;':'&#8594;');
+      return '<span class="ml-wrap"><svg class="ml-svg" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none"><polyline points="'+pts+'" fill="none" stroke="'+col+'" stroke-width="1.6"/></svg><span class="ml-tag" style="color:'+col+'">'+arrow+'</span></span>';
+    }
+    var d2Head1='<tr><th rowspan="2">序号</th><th rowspan="2">部门</th>'
+      +'<th class="grp-a">数量趋势</th><th class="grp-b">占比趋势</th>'
+      +'<th colspan="2" class="grp-d">累计贡献</th></tr>';
+    var d2Head2='<tr><th class="grp-a">周新增降价 SKU 数量</th><th class="grp-b">周新增降价商品占比</th>'
+      +'<th class="grp-d">近 28 天累计降价商品数</th><th class="grp-d">近 28 天累计降价数占比</th></tr>';
+    var d2RowFn=function(idx,r,isTot){
+      var cntTxt=r[1].join('&#8594;'), pctTxt=r[2].join('&#8594;');
+      var pctVals=r[2].map(function(p){return parseFloat(p);});
+      return '<tr'+(isTot?' class="tot"':'')+'><td>'+(isTot?'合计':idx)+'</td><td>'+r[0]+'</td>'
+        +'<td class="d2-trend">'+miniLine(r[1])+'<span class="d2-seq">'+cntTxt+'</span></td>'
+        +'<td class="d2-trend">'+miniLine(pctVals)+'<span class="d2-seq">'+pctTxt+'</span></td>'
+        +'<td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';
+    };
+    var d2Total=(function(){
+      var sc=[0,0,0,0],cum=0;d2Rows.forEach(function(r){r[1].forEach(function(v,i){sc[i]+=v;});cum+=r[3];});
+      var base=d1Total[4]||1000; var pct=sc.map(function(v){return (v/base*100).toFixed(1)+'%';});
+      return ['总计',sc,pct,cum,(cum/base*100).toFixed(1)+'%'];
+    })();
+    var d2Body=d2Rows.map(function(r,i){return d2RowFn(i+1,r);}).join('')+d2RowFn('',d2Total,true);
+    /* ===== 第3部分：H2 至今采购价降价情况（问题总览 / 成功 / 失败 / 进行中总计 / 进行中分状态） =====
+       列：部门, 累计预警商品数, 累计降价商品数, 实际降本金额, 实际降价幅度,
+           供应商拒绝议价商品数, 拒绝供应商数, 当前未改善商品数, 占比部门, 对应供应商数, 预估节降金额,
+           预警中商品, 议价中商品, 供应商超时反馈 */
+    var d3RowsC3=[
+      ['家纺/四件套组', 320,196,'¥ 68.4 万','7.2%', 24,'12 家', 68,'21.3%','32 家','¥ 22.5 万', 28,32,8],
+      ['家居/收纳组',   248,132,'¥ 41.2 万','6.1%', 18,'9 家',  54,'21.8%','26 家','¥ 16.8 万', 22,26,6],
+      ['家纺/冬被组',   186,108,'¥ 33.6 万','8.1%', 12,'7 家',  38,'20.4%','18 家','¥ 12.4 万', 16,18,4],
+      ['家居/家具组',   142,84, '¥ 24.8 万','6.3%', 10,'6 家',  32,'22.5%','15 家','¥ 10.2 万', 14,15,3]
+    ];
+    var d3RowsC2=[
+      ['家纺（家居事业部）', 506,304,'¥ 102.0 万','7.5%', 42,'21 家', 122,'24.1%','58 家','¥ 39.3 万', 50,58,14],
+      ['家居（家居事业部）', 390,216,'¥ 66.0 万', '6.6%', 28,'15 家', 86,'22.1%','41 家','¥ 27.0 万', 36,41,9],
+      ['家电事业部',         288,168,'¥ 52.6 万', '5.4%', 22,'12 家', 60,'20.8%','30 家','¥ 18.6 万', 26,30,6],
+      ['厨具（厨卫事业部）', 202,120,'¥ 38.2 万', '5.8%', 16,'9 家',  46,'22.8%','22 家','¥ 14.8 万', 20,22,5]
+    ];
+    var d3Rows = useC3?d3RowsC3:d3RowsC2;
+    var money=function(s){return parseFloat(String(s).replace(/[^\d.]/g,''))||0;};
+    var d3Total=(function(){
+      var a=[0,0,0,0,0,0,0,0,0];d3Rows.forEach(function(r){a[0]+=r[1];a[1]+=r[2];a[2]+=money(r[3]);a[3]+=r[5];a[4]+=r[7];a[5]+=money(r[10]);a[6]+=r[11];a[7]+=r[12];a[8]+=r[13];});
+      var fap=(a[1]&&d3Rows.reduce(function(s,r){return s+parseFloat(r[4])*r[2];},0)/a[1]).toFixed(1)+'%';
+      return ['总计',a[0],a[1],'¥ '+a[2].toFixed(1)+' 万',fap, a[3],'—', a[4],(a[4]/a[0]*100).toFixed(1)+'%','—','¥ '+a[5].toFixed(1)+' 万', a[6],a[7],a[8]];
+    })();
+    var d3Head1='<tr><th rowspan="2">序号</th><th rowspan="2">部门</th>'
+      +'<th class="grp-a">问题总览</th>'
+      +'<th colspan="3" class="grp-g">&#9989; 成功（已降价）</th>'
+      +'<th colspan="2" class="grp-r">&#10060; 失败（供应商驳回）</th>'
+      +'<th colspan="4" class="grp-p">&#128260; 进行中（总计）</th>'
+      +'<th colspan="3" class="grp-p2">进行中（分状态）</th></tr>';
+    var d3Head2='<tr>'
+      +'<th class="grp-a">累计预警商品数</th>'
+      +'<th class="grp-g">累计降价商品数</th><th class="grp-g">实际降本金额</th><th class="grp-g">实际降价幅度</th>'
+      +'<th class="grp-r">供应商拒绝议价商品数</th><th class="grp-r">拒绝供应商数</th>'
+      +'<th class="grp-p">当前未改善商品数</th><th class="grp-p">占比部门</th><th class="grp-p">对应供应商数</th><th class="grp-p">预估节降金额</th>'
+      +'<th class="grp-p2">预警中商品</th><th class="grp-p2">议价中商品</th><th class="grp-p2">供应商超时反馈</th></tr>';
+    var d3RowFn=function(idx,r,isTot){
+      return '<tr'+(isTot?' class="tot"':'')+'><td>'+(isTot?'合计':idx)+'</td><td>'+r[0]+'</td>'
+        +'<td>'+r[1]+'</td>'
+        +'<td class="g">'+r[2]+'</td><td class="g">'+r[3]+'</td><td class="g">'+r[4]+'</td>'
+        +'<td class="r">'+r[5]+'</td><td class="r">'+r[6]+'</td>'
+        +'<td>'+r[7]+'</td><td>'+r[8]+'</td><td>'+r[9]+'</td><td class="pu">'+r[10]+'</td>'
+        +'<td>'+r[11]+'</td><td>'+r[12]+'</td><td>'+r[13]+'</td></tr>';
+    };
+    var d3Body=d3Rows.map(function(r,i){return d3RowFn(i+1,r);}).join('')+d3RowFn('',d3Total,true);
+    /* 月至今 / 季至今 / H2至今 切换文案（原型仅切换标题，数据保持一致演示） */
+    var h2Label = PROG_H2==='m'?'月至今':(PROG_H2==='q'?'季至今':'H2 至今');
+    /* ===== 第4部分：近 28 天降价 SKU 清单（Excel 样式，支持导出） =====
+       列：SKU编码, 商品名称, C3品类, 部门/组, 供应商, 供应商身份, 原采购价, 现采购价, 降幅, 降价金额, 首次预警日, 降价生效日, 状态 */
     var listItems=[
-      ['100010023','华信 纯棉四件套','家纺 / 四件套','品牌商','128.00→115.00','-10.2%','2026-07-01'],
-      ['100010047','暖冬 冬被加厚','家纺 / 冬被','授权经销商','268.00→245.00','-8.6%','2026-06-30'],
-      ['100010061','洁丽雅 毛巾3条装','家纺 / 毛巾','品牌商','58.00→52.50','-9.5%','2026-06-29'],
-      ['100010128','纳川 收纳箱','家居 / 收纳','贸易商','89.00→81.20','-8.8%','2026-06-28']
+      ['100010023','华信 纯棉四件套 1.8m','家纺/四件套','家纺/四件套组','华信家纺','品牌商','128.00','115.00','-10.2%','13.00','2026-06-12','2026-07-01','已生效'],
+      ['100010047','暖冬 冬被加厚 200×230','家纺/冬被','家纺/冬被组','暖冬寝具','授权经销商','268.00','245.00','-8.6%','23.00','2026-06-13','2026-06-30','已生效'],
+      ['100010061','洁丽雅 毛巾 3 条装','家纺/毛巾','家纺/四件套组','洁丽雅','品牌商','58.00','52.50','-9.5%','5.50','2026-06-15','2026-06-29','已生效'],
+      ['100010128','纳川 收纳箱 66L','家居/收纳','家居/收纳组','纳川家居','贸易商','89.00','81.20','-8.8%','7.80','2026-06-16','2026-06-28','已生效'],
+      ['100010153','简致 实木书架 5 层','家居/家具','家居/家具组','简致木业','品牌商','329.00','299.00','-9.1%','30.00','2026-06-18','2026-06-27','已生效'],
+      ['100010188','棉朵 枕芯 一对装','家纺/枕芯','家纺/冬被组','棉朵家纺','授权经销商','79.00','72.00','-8.9%','7.00','2026-06-19','2026-06-26','已生效'],
+      ['100010214','雅居 遮光窗帘 2×2.7m','家居/窗帘','家居/收纳组','雅居布艺','贸易商','159.00','142.00','-10.7%','17.00','2026-06-20','2026-06-25','已生效'],
+      ['100010256','恒源 抱枕套 45×45','家纺/抱枕','家纺/四件套组','恒源纺织','品牌商','29.90','26.50','-11.4%','3.40','2026-06-21','2026-06-24','已生效'],
+      ['100010301','木言 餐边柜','家居/家具','家居/家具组','木言家具','品牌商','899.00','829.00','-7.8%','70.00','2026-06-22','2026-06-23','已生效'],
+      ['100010342','安睡 乳胶枕','家纺/枕芯','家纺/冬被组','安睡科技','授权经销商','189.00','169.00','-10.6%','20.00','2026-06-23','2026-06-24','已生效']
     ];
-    var listHead='<tr><th>SKU</th><th>商品</th><th>C3 品类</th><th>供应商身份</th><th>采购价变化</th><th>降幅</th><th>修改时间</th></tr>';
-    var listBody=listItems.map(function(r){ return '<tr><td>'+r.join('</td><td>')+'</td></tr>'; }).join('');
+    var listHead='<tr><th>SKU 编码</th><th>商品名称</th><th>C3 品类</th><th>部门/组</th><th>供应商</th><th>供应商身份</th><th>原采购价</th><th>现采购价</th><th>降幅</th><th>降价金额(¥)</th><th>首次预警日</th><th>降价生效日</th><th>状态</th></tr>';
+    var listBody=listItems.map(function(r,i){
+      return '<tr><td class="xl-idx">'+(i+1)+'</td><td>'+r[0]+'</td><td class="xl-l">'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td>'
+        +'<td class="xl-num">'+r[6]+'</td><td class="xl-num">'+r[7]+'</td><td class="g">'+r[8]+'</td><td class="xl-num g">'+r[9]+'</td>'
+        +'<td>'+r[10]+'</td><td>'+r[11]+'</td><td><span class="xl-ok">'+r[12]+'</span></td></tr>';
+    }).join('');
     var include={}; ctx.dims.forEach(function(k){include[k]=1;});
     var html='<div class="in-report">'
       +'<div class="ir-head"><div class="ir-title">&#128203; 采购价预警改善结果报告</div>'
       +'<div class="ir-meta">'+ctx.dept+' · 按 <b>'+ctx.granularity+'</b> 维度 · '+ctx.compareDate+' vs '+ctx.baseDate+'</div></div>';
-    if(include.rank) html+='<div class="ir-sec"><div class="ir-sec-t">1. 周度降价商品数量排名</div>'
-      +'<table class="ir-tbl"><thead>'+rankHead+'</thead><tbody>'+rankBody+'</tbody></table></div>';
-    if(include.trend) html+='<div class="ir-sec"><div class="ir-sec-t">2. 近 4 周降价商品数量变化</div>'
-      +'<div class="tb-wrap">'+trendBars+'</div>'
-      +'<div class="ir-hint">近 28 天累计降价商品数：360 个，占比 4.3% <span class="pos">↑ 上升趋势</span></div></div>';
-    if(include.h2) html+='<div class="ir-sec"><div class="ir-sec-t">3. H2 至今采购价降价情况'
-      +' <span class="ir-toggle"><a data-h2="m">月至今</a> <a data-h2="q">季至今</a> <a data-h2="all" class="on">H2 至今</a></span></div>'
-      +'<div class="h2-grid">'+h2Html+'</div></div>';
-    if(include.list) html+='<div class="ir-sec"><div class="ir-sec-t">4. 预警改善商品明细（'+listItems.length+' / 显示前 4 · 完整 826 条可导出）</div>'
-      +'<table class="ir-tbl"><thead>'+listHead+'</thead><tbody>'+listBody+'</tbody></table></div>';
+    if(include.rank) html+='<div class="ir-sec"><div class="ir-sec-t">一、部门维度预警改善情况</div>'
+      +'<div class="ir-scroll"><table class="ir-tbl ir-grp"><thead>'+d1Head1+d1Head2+'</thead><tbody>'+d1Body+'</tbody></table></div></div>';
+    if(include.trend) html+='<div class="ir-sec"><div class="ir-sec-t">二、近 4 周降价商品数量变化</div>'
+      +'<div class="ir-scroll"><table class="ir-tbl ir-grp"><thead>'+d2Head1+d2Head2+'</thead><tbody>'+d2Body+'</tbody></table></div>'
+      +'<div class="ir-hint">近 28 天累计降价商品数：'+d2Total[3]+' 个，占比 '+d2Total[4]+' <span class="pos">↑ 整体上升趋势</span></div></div>';
+    if(include.h2) html+='<div class="ir-sec"><div class="ir-sec-t">三、'+h2Label+'采购价降价情况'
+      +' <span class="ir-toggle"><a data-h2="m"'+(PROG_H2==='m'?' class="on"':'')+'>月至今</a> <a data-h2="q"'+(PROG_H2==='q'?' class="on"':'')+'>季至今</a> <a data-h2="all"'+(PROG_H2==='h2'||PROG_H2==='all'?' class="on"':'')+'>H2 至今</a></span></div>'
+      +'<div class="ir-scroll"><table class="ir-tbl ir-grp"><thead>'+d3Head1+d3Head2+'</thead><tbody>'+d3Body+'</tbody></table></div></div>';
+    if(include.list) html+='<div class="ir-sec"><div class="ir-sec-t">四、近 28 天降价 SKU 清单'
+      +' <button class="xl-export" data-export="close-sku">&#128229; 导出 Excel</button></div>'
+      +'<div class="xl-bar"><span class="xl-tag">&#128202; EXCEL</span><span class="xl-file">近28天降价SKU清单_'+ctx.dept.replace(/[\/\s]/g,'')+'.xlsx</span><span class="xl-cnt">共 '+listItems.length+' / 完整 '+(useC3?'826':'1,204')+' 条</span></div>'
+      +'<div class="ir-scroll xl-wrap"><table class="ir-tbl xl-tbl"><thead>'+listHead+'</thead><tbody>'+listBody+'</tbody></table></div>'
+      +'<div class="ir-hint">显示前 '+listItems.length+' 条 · 点击「导出 Excel」下载完整清单</div></div>';
+    /* 用户通过对话新增的分析维度（追加在标准维度之后） */
+    (extraDims||[]).forEach(function(e,i){
+      html+='<div class="ir-sec"><div class="ir-sec-t">'+(5+i)+'. '+e.l+' <span style="margin-left:8px;font-size:11px;font-weight:600;color:#6b46f5;background:#f0ebff;border-radius:8px;padding:2px 8px;">对话新增</span></div>'
+        + (e.html || '<table class="ir-tbl"><thead>'+(e.head||'')+'</thead><tbody>'+(e.body||'')+'</tbody></table>')
+        + (e.src?'<div class="ir-hint">数据来源：'+e.src+'</div>':'') +'</div>';
+    });
     html+='<div class="ir-foot">&#128101; 报告由 improvement_progress_track Skill 生成 · 数据源 dwd_purchase_price / dwd_task_snapshot</div>'
       +'</div>';
     return html;
+  }
+  /* 完整独立 HTML（含 doctype/style），存入 HTML_STORE 供导出/预览弹窗 */
+  function buildReportFullHtml(ctx, extraDims){
+    var body=buildReportHtml(ctx, extraDims);
+    return '<!doctype html><html><head><meta charset="utf-8"><title>采购价预警改善结果报告</title>'
+      +'<style>body{font-family:-apple-system,"PingFang SC",sans-serif;margin:0;background:#f5f6fa;padding:16px;color:#1f2329}'
+      +'.in-report{border:1px solid #eceef1;border-radius:12px;background:#fff;overflow:hidden}'
+      +'.ir-head{background:linear-gradient(135deg,#f5f2ff,#faf9ff);padding:14px 16px;border-bottom:1px solid #eceef1}'
+      +'.ir-title{font-size:15px;font-weight:800}.ir-meta{font-size:12px;color:#5c6169;margin-top:4px}'
+      +'.ir-sec{padding:14px 16px;border-top:1px dashed #eceef1}.ir-sec-t{font-size:13.5px;font-weight:700;margin-bottom:10px}'
+      +'.ir-tbl{width:100%;border-collapse:collapse;font-size:12px}.ir-tbl th,.ir-tbl td{border:1px solid #eceef1;padding:6px 8px;text-align:center;white-space:nowrap}'
+      +'.ir-tbl thead th{background:#fafbfc;color:#5c6169;font-weight:600}.ir-hint{font-size:12px;color:#5c6169;margin-top:8px}.ir-hint .pos{color:#12a150}'
+      +'.ir-scroll{overflow-x:auto}.ir-tbl td.g{color:#12a150;font-weight:600}.ir-tbl td.r{color:#e5484d;font-weight:600}.ir-tbl td.pu{color:#6b46f5;font-weight:600}'
+      +'.ir-tbl tr.tot td{background:#f7f8fa;font-weight:700}'
+      +'.ir-grp thead th.grp-a{background:#e8f0fe}.ir-grp thead th.grp-b{background:#f3e8ff}.ir-grp thead th.grp-c{background:#fdecc8}.ir-grp thead th.grp-d{background:#d7f2e3}'
+      +'.ir-grp thead th.grp-g{background:#d7f2e3}.ir-grp thead th.grp-r{background:#f4f4f5}.ir-grp thead th.grp-p{background:#e5d9ff}.ir-grp thead th.grp-p2{background:#f3edff}'
+      +'.ml-wrap{display:inline-flex;align-items:center;gap:4px;vertical-align:middle}.ml-svg{width:64px;height:22px}.ml-tag{font-size:12px}.d2-trend{text-align:left}.d2-seq{display:block;font-size:11px;color:#5c6169;margin-top:2px}'
+      +'.xl-export{border:1px solid #1f7a3d;background:#e6f6ec;color:#12833f;font-size:11.5px;font-weight:600;border-radius:6px;padding:3px 10px;cursor:pointer;margin-left:8px}'
+      +'.xl-bar{display:flex;align-items:center;gap:8px;background:#f2f8f4;border:1px solid #cfe8d8;border-radius:6px;padding:6px 10px;font-size:11.5px;margin-bottom:8px}.xl-tag{background:#12833f;color:#fff;border-radius:4px;padding:1px 6px;font-weight:700}.xl-file{color:#1f2329;font-weight:600}.xl-cnt{color:#8a9099;margin-left:auto}'
+      +'.xl-tbl th{background:#eef5ee}.xl-tbl td.xl-idx{background:#f7f8fa;color:#8a9099}.xl-tbl td.xl-l{text-align:left}.xl-tbl td.xl-num{text-align:right;font-variant-numeric:tabular-nums}.xl-ok{background:#e6f6ec;color:#12833f;border-radius:8px;padding:1px 8px;font-size:11px;font-weight:600}'
+      +'.h2-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.h2-cell{background:#fafbfc;border-radius:8px;padding:10px}.h2-l{font-size:12px;color:#8a9099}.h2-v{font-size:16px;font-weight:800;margin:4px 0}.h2-e{font-size:11px;color:#8a9099}'
+      +'.tb-wrap{display:flex;gap:14px;align-items:flex-end;height:120px}.tb-col{flex:1;text-align:center}.tb-bar{background:#6b46f5;border-radius:4px 4px 0 0;margin:0 auto}.tb-v{font-size:12px;font-weight:700}.tb-l{font-size:11px;color:#8a9099}.tb-p{font-size:11px;color:#6b46f5}'
+      +'.ir-foot{padding:10px 16px;font-size:11.5px;color:#8a9099;background:#fafbfc;border-top:1px solid #eceef1}</style></head><body>'
+      +body+'</body></html>';
+  }
+  /* ============ 输入增维钩子 + 小Y四步思考链 ============
+   *  用户在对话框输入「增加XX维度」→ 拦截 → 小Y思考：识别理解→澄清确认→数据追溯加工→输出新HTML
+   *  关键约束：不主动提问，仅响应用户输入 */
+  function reportInputHook(text){
+    if(!REPORT_CTX) return false;            // 未生成报告，不接管
+    var t=(text||'').trim();
+    /* —— 发送/通知类意图识别（分层置信）——
+     *  动词：发送/发给/推/推给/转发/转给/知会/告知/同步/发到…群/@…
+     *  对象：采销/采控/同事/群/负责人/经理/所有/全部/相关…
+     *  高置信=动词+对象 → 直接走思考链；中置信=只命中一侧且疑似指向报告 → 反问确认；低置信 → 放行 */
+    var hasVerb = /(发送|发给|发一?下|推送|推给|推一?下|转发|转给|下发|同步给|同步到|发到|群发|知会|告知|通知|@)/.test(t);
+    var hasTarget = /(采销|采购|采控|同事|同学|老板|领导|群|群里|所有|全部|全体|相关|负责人|对接人|经理|主管)/.test(t);
+    /* 指代当前报告：这个/该报告/报告/它，或裸动词但正处于报告上下文 */
+    var refReport = /(这个|该|此|报告|它|结果|文档)/.test(t) || hasTarget;
+    var sendConf = 0;
+    if(hasVerb && hasTarget) sendConf = 2;                 // 高置信
+    else if(hasVerb && refReport) sendConf = 1;            // 中置信（动词明确、对象模糊）
+    else if(hasTarget && /(报告|这个|它|文档|结果)/.test(t)) sendConf = 1; // 有对象+指代但动词弱
+    if(sendConf===2){
+      addUser(text);
+      document.getElementById('hintChips').innerHTML='';
+      if(typeof delay==='function') delay(function(){ runReportSendThink(text); });
+      return true;
+    }
+    if(sendConf===1){
+      addUser(text);
+      document.getElementById('hintChips').innerHTML='';
+      if(typeof delay==='function') delay(function(){ confirmSendIntent(text); });
+      return true;
+    }
+    /* 识别是否为「增维/加数据」类需求：命中关键词才接管，否则放行给通用意图理解 */
+    var isAdd = /(增加|加上|加个|新增|补充|再加|想在报告|加进|添加).*(维度|数据|指标|GMV|gmv|销售额|销量|库存|周转|毛利|退货|动销|供应商)/.test(t)
+             || /(增加|加上|新增|补充).{0,12}(过去|近|最近)?\s*\d+\s*天/.test(t)
+             || /报告.*(增加|加|补充|新增)/.test(t);
+    if(!isAdd) return false;
+    addUser(text);
+    document.getElementById('hintChips').innerHTML='';
+    if(typeof delay==='function') delay(function(){ runReportDimThink(text); });
+    return true;                             // 已接管
+  }
+  /* 中置信：意图疑似发送但不完全确定 → 反问用户确认「您是不是想把报告发送给XX？」 */
+  function confirmSendIntent(text){
+    var s=parseSendIntent(text);
+    var guessTarget = s.recips.length
+      ? s.recips.map(function(r){ return r.role==='群'?r.note:r.role; }).join('、')
+      : (/(采销|采购)/.test(text)?'相关采销':(/采控/.test(text)?'相关采控':'预警相关的采销/采控'));
+    var card='<div class="send-card"><div class="sp-top"><span class="sp-ic">&#129300;</span>'
+      +'<span class="sp-title">意图确认</span><span class="sp-badge">待您确认</span></div>'
+      +'<div class="sp-sec-t" style="padding-top:12px;">我的理解</div>'
+      +'<div class="sp-chan">您是不是想把 <b>'+reportName()+'</b> 发送/推送给 <b>'+guessTarget+'</b>？</div>'
+      +'<div class="sp-acts">'
+      +'<button class="sp-btn primary" data-act="yes">是的，去发送</button>'
+      +'<button class="sp-btn" data-act="no">不是，我说别的</button>'
+      +'</div></div>';
+    var aiEl=addAI('我理解您可能想<b>发送这份报告</b>，但表述不完全明确，先跟您确认一下：', null,
+      [{type:'intent', text:'意图分类：疑似报告发送/通知（置信 68%，需确认）\n识别到的线索：'+ (/(发|推|转|同步|知会|告知)/.test(text)?'发送类动词':'') + (/(采销|采控|群|所有|相关)/.test(text)?' / 收件对象线索':'') +'\n推测收件对象：'+guessTarget}],
+      card);
+    setTimeout(function(){
+      var c=aiEl?aiEl.querySelector('.send-card'):null;
+      if(!c){ var all=document.querySelectorAll('.send-card'); c=all[all.length-1]; }
+      if(!c) return;
+      c.querySelectorAll('.sp-btn').forEach(function(btn){
+        btn.onclick=function(){
+          var act=btn.getAttribute('data-act');
+          c.querySelectorAll('.sp-btn').forEach(function(b){ b.disabled=true; b.style.opacity=.5; });
+          if(act==='yes'){
+            if(typeof addUser==='function') addUser('是的，去发送');
+            if(typeof delay==='function') delay(function(){ runReportSendThink(text); });
+          } else {
+            if(typeof addUser==='function') addUser('不是');
+            if(typeof delay==='function') delay(function(){ addAI('好的，那您可以直接告诉我想做什么，比如「在报告里增加过去30天GMV」或「把报告发给家纺预警群」。'); });
+          }
+        };
+      });
+    },30);
+  }
+  /* 解析发送意图：收件对象 + 渠道 + 是否明确 */
+  function parseSendIntent(text){
+    var t=text||'';
+    var toSales   = /采销/.test(t);
+    var toControl = /采控/.test(t);
+    var group     = t.match(/(发到|发送到|发去|同步到)?\s*([^\s，,。]{2,12})群/);
+    var groupName = group?group[2]+'群':'';
+    var all       = /(所有|全部|全体|相关|预警)/.test(t);
+    var recips=[];
+    if(toSales)   recips.push({role:'采销', cnt:all?12:1, note:all?'预警覆盖的全部采销':'指定采销'});
+    if(toControl) recips.push({role:'采控', cnt:all?4:1, note:all?'预警覆盖的全部采控':'指定采控'});
+    if(groupName) recips.push({role:'群', cnt:1, note:groupName});
+    /* 是否需澄清：没识别到明确收件对象，或"某某群"占位不清 */
+    var clarify = recips.length===0 || /某某|xx|XX|哪个|谁/.test(t);
+    return { recips:recips, groupName:groupName, all:all, clarify:clarify, raw:t };
+  }
+  /* 从用户自然语言解析出新增维度（演示：识别 GMV / 销量等常见诉求） */
+  function parseExtraDim(text){
+    var t=text||'';
+    var mDays=t.match(/(\d+)\s*天/); var days=mDays?mDays[1]:'30';
+    if(/GMV|gmv|销售额|成交额/.test(t)){
+      return { key:'gmv', l:'预警商品过去 '+days+' 天 GMV', clarify:false,
+        src:'query_sku_gmv(sku_list, window='+days+'d) · 数据源 dwd_trade_order_detail',
+        head:'<tr><th>C3 品类</th><th>预警商品数</th><th>近 '+days+' 天 GMV</th><th>GMV 占部门</th><th>件单价</th><th>动销率</th></tr>',
+        body:[['四件套','58','¥ 1,286 万','18.6%','¥ 118','82%'],
+              ['冬被','35','¥ 942 万','13.6%','¥ 256','74%'],
+              ['毛巾','42','¥ 508 万','7.3%','¥ 46','91%'],
+              ['收纳','28','¥ 366 万','5.3%','¥ 79','68%']].map(function(r){return '<tr><td>'+r.join('</td><td>')+'</td></tr>';}).join('') };
+    }
+    if(/销量|销售件数|动销/.test(t)){
+      return { key:'sales', l:'预警商品过去 '+days+' 天销量', clarify:false,
+        src:'query_sku_sales_qty(sku_list, window='+days+'d) · 数据源 dwd_trade_order_detail',
+        head:'<tr><th>C3 品类</th><th>预警商品数</th><th>近 '+days+' 天销量</th><th>环比</th><th>动销率</th></tr>',
+        body:[['四件套','58','10.9 万件','+12%','82%'],['冬被','35','3.7 万件','+6%','74%'],['毛巾','42','11.0 万件','+18%','91%']].map(function(r){return '<tr><td>'+r.join('</td><td>')+'</td></tr>';}).join('') };
+    }
+    /* 兜底：无法精确解析口径 → 标记需澄清 */
+    return { key:'unknown', l:t.replace(/^.*?(增加|加上|新增|补充|添加)/,'').trim()||'新增分析维度', clarify:true };
+  }
+  function runReportDimThink(text){
+    var dim=parseExtraDim(text);
+    /* 四步内容，逐步（打字式）依次追加，不一次性全出 */
+    var steps=[
+      { n:1, t:'识别与理解',
+        b:'语义识别：您希望在<b>现有采购价预警改善报告</b>基础上，新增分析维度「<b>'+dim.l+'</b>」。已定位到当前报告上下文（'+REPORT_CTX.dept+' · '+REPORT_CTX.granularity+' 维度），可在现有预警商品范围内追加该维度。' },
+      { n:2, t:'澄清确认',
+        b:(dim.clarify
+          ? '该诉求口径尚不明确（缺少统计对象或时间窗口），已按<b>安全默认口径</b>处理：对当前预警商品、默认近 30 天窗口取数，可在结果中再调整。'
+          : '口径清晰（统计对象＝当前预警商品，指标＝'+dim.l+'），<b>无需二次澄清</b>，直接进入取数加工。') },
+      { n:3, t:'数据追溯与加工',
+        b:'a. 数据获取来源：<div class="xt-src"><span class="src-item">Tool <b>'+(dim.src||'query_metric(sku_list)')+'</b></span><span class="src-item">关联当前预警 SKU 清单（826 条）</span></div>b. 在新的 HTML 报告中加工整理：按 '+REPORT_CTX.granularity+' 维度聚合，作为「'+dim.l+'」区块并入原报告，与既有 4 项维度对齐排版。' },
+      { n:4, t:'结果输出',
+        b:'已生成<b>新版复盘结果报告</b>，新增维度已并入。见下方文档卡（点击右侧展开）。' }
+    ];
+    var el=addAI('收到，我来为报告新增分析维度。以下是我的思考过程：', null,
+      [{type:'intent', text:'意图分类：报告维度扩展（置信 94%）\n目标报告：'+reportName()+'\n新增维度：'+dim.l+'\n是否需澄清：'+(dim.clarify?'是（已用安全默认口径）':'否')}],
+      '<div class="xy-think" id="xyThinkBox"></div>');
+    var box=el?el.querySelector('#xyThinkBox'):document.getElementById('xyThinkBox');
+    var i=0;
+    function typeStep(){
+      if(!box) return;
+      if(i>=steps.length){
+        REPORT_EXTRA_DIMS.push(dim);
+        if(typeof delay==='function') delay(function(){ emitReportDocCard(true); });
+        return;
+      }
+      var s=steps[i];
+      var stepEl=document.createElement('div');
+      stepEl.className='xt-step typing';
+      stepEl.innerHTML='<div class="xt-h"><span class="xt-n">'+s.n+'</span>'+s.t+' <span class="xt-cursor">&#9613;</span></div><div class="xt-b"></div>';
+      box.appendChild(stepEl);
+      if(typeof scrollBottom==='function') scrollBottom();
+      var bodyEl=stepEl.querySelector('.xt-b');
+      var full=s.b, p=0;
+      var timer=setInterval(function(){
+        p=Math.min(full.length, p+Math.max(6, Math.round(full.length/8)));
+        bodyEl.innerHTML=full.slice(0,p);
+        if(typeof scrollBottom==='function') scrollBottom();
+        if(p>=full.length){
+          clearInterval(timer);
+          var cur=stepEl.querySelector('.xt-cursor'); if(cur) cur.remove();
+          stepEl.classList.remove('typing');
+          i++;
+          setTimeout(typeStep, 420);
+        }
+      }, 55);
+    }
+    setTimeout(typeStep, 380);
+  }
+  function __runReportDimThink_legacy(text){
+    return; /* 已废弃：改用逐步打字式 runReportDimThink */
+    var dim=parseExtraDim(text);
+    /* 组装小Y四步思考链（folds 折叠 + 对话区思考卡） */
+    var think='<div class="xy-think">'
+      +'<div class="xt-step"><div class="xt-h"><span class="xt-n">1</span>识别与理解</div>'
+      +'<div class="xt-b">语义识别：您希望在<b>现有采购价预警改善报告</b>基础上，新增分析维度「<b>'+dim.l+'</b>」。已定位到当前报告上下文（'+REPORT_CTX.dept+' · '+REPORT_CTX.granularity+' 维度），可在现有预警商品范围内追加该维度。</div></div>'
+      +'<div class="xt-step"><div class="xt-h"><span class="xt-n">2</span>澄清确认</div>'
+      +'<div class="xt-b">'+(dim.clarify
+          ? '该诉求口径尚不明确（缺少统计对象或时间窗口），已按<b>安全默认口径</b>处理：对当前预警商品、默认近 30 天窗口取数，可在结果中再调整。'
+          : '口径清晰（统计对象＝当前预警商品，指标＝'+dim.l+'），<b>无需二次澄清</b>，直接进入取数加工。')+'</div></div>'
+      +'<div class="xt-step"><div class="xt-h"><span class="xt-n">3</span>数据追溯与加工</div>'
+      +'<div class="xt-b">a. 数据获取来源：</div>'
+      +'<div class="xt-src"><span class="src-item">Tool <b>'+(dim.src||'query_metric(sku_list)')+'</b></span><span class="src-item">关联当前预警 SKU 清单（826 条）</span></div>'
+      +'<div class="xt-b">b. 在新的 HTML 报告中加工整理：按 '+REPORT_CTX.granularity+' 维度聚合，作为「'+dim.l+'」区块并入原报告，与既有 4 项维度对齐排版。</div></div>'
+      +'<div class="xt-step"><div class="xt-h"><span class="xt-n">4</span>结果输出</div>'
+      +'<div class="xt-b">已生成<b>新版复盘结果报告</b>，新增维度已并入。见下方文档卡（点击右侧展开）。</div></div>'
+      +'</div>';
+    addAI('收到，我来为报告新增分析维度。以下是我的思考过程：', null,
+      [{type:'intent', text:'意图分类：报告维度扩展（置信 94%）\n目标报告：'+reportName()+'\n新增维度：'+dim.l+'\n是否需澄清：'+(dim.clarify?'是（已用安全默认口径）':'否')}],
+      think);
+    /* 记录新增维度并重新出「新版报告」文档卡 */
+    REPORT_EXTRA_DIMS.push(dim);
+    if(typeof delay==='function') delay(function(){ emitReportDocCard(true); });
+  }
+
+  /* ============ 发送/通知 思考链（打字式）============
+   * 用户在对话框说「把报告发给所有预警的采销和采控」「发到XX群」
+   * → 意图识别 → 不确定则确认是否调用小Y机器人发送 → 明确则展示调用工具 + 支持预览 */
+  function runReportSendThink(text){
+    var s=parseSendIntent(text);
+    var recipTxt = s.recips.length
+      ? s.recips.map(function(r){ return r.role+(r.role==='群'?'（'+r.note+'）':'（'+r.cnt+' 人 · '+r.note+'）'); }).join('、')
+      : '（未识别到明确收件对象）';
+    var steps=[
+      { n:1, t:'识别与理解',
+        b:'语义识别：您希望把<b>'+reportName()+'</b>作为消息<b>发送/通知</b>给相关同事。识别到收件对象：<b>'+recipTxt+'</b>。此类操作会触发外发动作，需先确认发送范围与渠道后再执行。' },
+      { n:2, t:'澄清确认',
+        b:(s.clarify
+          ? '发送对象<b>尚不明确</b>（未识别到具体采销/采控或群名）。为避免误发，我不会自动发送——<b>需要您确认：是否调用助理小 Y 的机器人代为发送通知？</b>确认后请告知具体收件对象或群名。'
+          : '发送对象清晰（'+recipTxt+'）。将通过<b>助理小 Y 机器人</b>以工作通知形式下发，附报告文档卡链接，<b>无需二次澄清</b>，进入工具调用。') },
+      { n:3, t:'调用工具',
+        b:'a. 调用工具：<div class="xt-src"><span class="src-item">Tool <b>xiaoy_bot.send_notice(report, recipients, channel=IM)</b></span><span class="src-item">收件解析 resolve_receivers(预警 SKU → 归属采销/采控)</span></div>b. 组装消息：报告标题 + 关键指标摘要 + 文档卡跳转链接，按收件对象拆分单发/群发。' },
+      { n:4, t:'发送预览',
+        b:'已生成<b>发送预览</b>（尚未真正发出）。请在下方卡片核对收件范围与消息内容，确认无误后点击「确认发送」。' }
+    ];
+    var el=addAI('收到，这是一个发送/通知类操作。以下是我的思考过程：', null,
+      [{type:'intent', text:'意图分类：报告发送/通知（置信 '+(s.clarify?'82':'95')+'%）\n收件对象：'+recipTxt+'\n发送渠道：助理小Y机器人（IM 工作通知）\n是否需澄清：'+(s.clarify?'是（需确认是否调用小Y机器人及收件对象）':'否')}],
+      '<div class="xy-think" id="xySendBox"></div>');
+    var box=el?el.querySelector('#xySendBox'):document.getElementById('xySendBox');
+    var i=0;
+    function typeStep(){
+      if(!box) return;
+      if(i>=steps.length){ if(typeof delay==='function') delay(function(){ emitSendPreviewCard(s); }); return; }
+      var st=steps[i];
+      var stepEl=document.createElement('div');
+      stepEl.className='xt-step typing';
+      stepEl.innerHTML='<div class="xt-h"><span class="xt-n">'+st.n+'</span>'+st.t+' <span class="xt-cursor">&#9613;</span></div><div class="xt-b"></div>';
+      box.appendChild(stepEl);
+      if(typeof scrollBottom==='function') scrollBottom();
+      var bodyEl=stepEl.querySelector('.xt-b');
+      var full=st.b, p=0;
+      var timer=setInterval(function(){
+        p=Math.min(full.length, p+Math.max(6, Math.round(full.length/8)));
+        bodyEl.innerHTML=full.slice(0,p);
+        if(typeof scrollBottom==='function') scrollBottom();
+        if(p>=full.length){
+          clearInterval(timer);
+          var cur=stepEl.querySelector('.xt-cursor'); if(cur) cur.remove();
+          stepEl.classList.remove('typing');
+          i++;
+          setTimeout(typeStep, 420);
+        }
+      }, 55);
+    }
+    setTimeout(typeStep, 380);
+  }
+  /* 发送预览卡：明确 → 展示调用工具+预览+确认发送；不确定 → 出确认是否调用小Y机器人 */
+  function emitSendPreviewCard(s){
+    var recipRows = s.recips.length
+      ? s.recips.map(function(r){ return '<div class="sp-row"><span class="sp-role">'+r.role+'</span><span class="sp-note">'+(r.role==='群'?r.note:(r.cnt+' 人 · '+r.note))+'</span></div>'; }).join('')
+      : '<div class="sp-row"><span class="sp-role" style="color:#e0a800;">待确认</span><span class="sp-note">未识别到具体收件对象</span></div>';
+    var msgBody='<div class="sp-msg"><div class="sp-msg-h">&#128276; 助理小 Y · 工作通知</div>'
+      +'<div class="sp-msg-t">【采购价预警改善报告】'+REPORT_CTX.dept+' · '+REPORT_CTX.granularity+' 维度</div>'
+      +'<div class="sp-msg-b">本期累计预警 1,246 项、已降价成功 684 项、实际降本 ¥218.6 万。详情见报告文档 &#8594;</div>'
+      +'<div class="sp-msg-lk">&#128196; 点击查看：'+reportName()+'</div></div>';
+    var card='<div class="send-card">'
+      +'<div class="sp-top"><span class="sp-ic">&#128233;</span><span class="sp-title">发送预览</span>'
+   +'<span class="sp-badge">'+(s.clarify?'待确认收件对象':'即将发送')+'</span></div>'
+      +'<div class="sp-sec-t">收件范围</div><div class="sp-recips">'+recipRows+'</div>'
+      +'<div class="sp-sec-t">发送渠道</div><div class="sp-chan">助理小 Y 机器人 · IM 工作通知</div>'
+      +'<div class="sp-sec-t">消息预览</div>'+msgBody
+      +'<div class="sp-acts">'
+      + (s.clarify
+          ? '<button class="sp-btn primary" data-act="confirm-bot">确认调用小 Y 机器人</button><button class="sp-btn" data-act="cancel">先不发</button>'
+          : '<button class="sp-btn primary" data-act="send">确认发送</button><button class="sp-btn" data-act="cancel">取消</button>')
+      +'</div></div>';
+    var tip = s.clarify
+      ? '发送对象暂不明确。<b>是否调用助理小 Y 机器人代为发送？</b>确认后请告诉我具体收件的采销/采控或群名。'
+      : '发送预览已就绪（<b>尚未真正发出</b>）。请核对收件范围与消息内容，确认无误后点击「确认发送」。';
+    var aiEl=addAI(tip, null, null, card);
+    setTimeout(function(){
+      var c=aiEl?aiEl.querySelector('.send-card'):null;
+      if(!c){ var all=document.querySelectorAll('.send-card'); c=all[all.length-1]; }
+      if(!c) return;
+      c.querySelectorAll('.sp-btn').forEach(function(btn){
+        btn.onclick=function(){
+          var act=btn.getAttribute('data-act');
+          if(act==='send'){
+            if(typeof addUser==='function') addUser('确认发送');
+            if(typeof delay==='function') delay(function(){
+              addAI('&#9989; 已通过助理小 Y 机器人发送完成。共触达 '+s.recips.reduce(function(a,b){return a+(b.role==='群'?1:b.cnt);},0)+' 个收件对象，消息含报告文档链接。可在「消息中心」查看送达状态。');
+            });
+          } else if(act==='confirm-bot'){
+            if(typeof addUser==='function') addUser('确认调用小 Y 机器人');
+            if(typeof delay==='function') delay(function(){
+              addAI('好的，小 Y 机器人已就绪。请告诉我<b>具体收件对象</b>（例如「四件套品类的采销张三、采控李四」或「家纺预警群」），我会重新生成发送预览供您确认。');
+            });
+          } else {
+            if(typeof addUser==='function') addUser('取消发送');
+            if(typeof delay==='function') delay(function(){ addAI('好的，已取消本次发送。报告仍在，随时可以再让我发送。'); });
+          }
+          c.querySelectorAll('.sp-btn').forEach(function(b){ b.disabled=true; b.style.opacity=.5; });
+        };
+      });
+    },30);
   }
 
   /* ============================================================
    * 【核心链路 B】采购价异常识别诊断 —— 澄清部门 → 右侧展示命中规则 → 详情 → 仿真
    * ============================================================ */
   function startAnomalyDiagnose(){
+    window.__reportInputHook=null;
     var host=document.getElementById('homePanelHost');
     if(host){ host.classList.add('collapsed'); var t=host.querySelector('.hp-fold-txt'); if(t) t.textContent='展开激发卡片'; }
     if(typeof addUser==='function') addUser('我想看采购价异常识别诊断');
     if(typeof delay==='function'){
       delay(function(){
         if(typeof addAI!=='function') return;
-        addAI('好的，先明确您想看的<b>部门</b>。规则默认落到 <b>C3</b> 维度；如果选 C2，将查询该 C2 下 <b>全部 C3</b> 部门的规则。',
+        addAI('好的。先根据您的<b>部门权限</b>确认要诊断的部门维度——本次<b>仅支持选择单一 C2 或 C3</b>。'
+          +'<div class="ai-hint" style="margin-top:6px;font-size:12.5px;color:#8a9099;">选定后，您可以先「查看前毛分层现状」判断问题集中在哪层，也可以直接「查看该部门维度的巡检规则」。</div>',
           [
-            {label:'家纺（C2） · 查询全部 C3', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家纺', c3List:['四件套','冬被','抱枕套','毛巾','乳胶枕'] }; if(typeof addUser==='function')addUser('家纺 C2，全部 C3'); openAnomalyRules(); }},
-            {label:'家居（C2） · 查询全部 C3', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家居', c3List:['收纳箱','置物架','挂架','浴室置物架','垃圾桶'] }; if(typeof addUser==='function')addUser('家居 C2，全部 C3'); openAnomalyRules(); }},
-            {label:'四件套（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'四件套', c3List:['四件套'] }; if(typeof addUser==='function')addUser('四件套 C3'); openAnomalyRules(); }},
-            {label:'冬被（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'冬被', c3List:['冬被'] }; if(typeof addUser==='function')addUser('冬被 C3'); openAnomalyRules(); }}
+            {label:'家纺（C2）', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家纺', c3List:['四件套','冬被','抱枕套','毛巾','乳胶枕'] }; if(typeof addUser==='function')addUser('选择 家纺（C2）'); afterPickDept(); }},
+            {label:'家居（C2）', onclick:function(){ ANOM_CTX={ deptL:'C2', dept:'家居', c3List:['收纳箱','置物架','挂架','浴室置物架','垃圾桶'] }; if(typeof addUser==='function')addUser('选择 家居（C2）'); afterPickDept(); }},
+            {label:'四件套（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'四件套', c2:'家纺', c3List:['四件套'] }; if(typeof addUser==='function')addUser('选择 四件套（C3）'); afterPickDept(); }},
+            {label:'冬被（C3）', onclick:function(){ ANOM_CTX={ deptL:'C3', dept:'冬被', c2:'家纺', c3List:['冬被'] }; if(typeof addUser==='function')addUser('选择 冬被（C3）'); afterPickDept(); }}
           ]);
       });
     }
   }
-  var ANOM_CTX=null; // { deptL, dept, c3List }
+  var ANOM_CTX=null; // { deptL, dept, c2, c3List }
+  /* Step 后置：选定单一 C2/C3 后，提供「前毛分层现状 / 直接看巡检规则」两个入口 */
+  function afterPickDept(){
+    if(typeof delay!=='function'||typeof addAI!=='function') return;
+    delay(function(){
+      addAI('已锁定诊断维度：<b>'+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）</b>。接下来您想先看什么？',
+        [
+          {label:'查看前毛分层现状', onclick:function(){ if(typeof addUser==='function')addUser('查看前毛分层现状'); showMarginTier(); }},
+          {label:'直接查看该部门维度巡检规则', onclick:function(){ if(typeof addUser==='function')addUser('查看该部门维度巡检规则'); showDeptRules(); }}
+        ]);
+    });
+  }
 
   var RULE_DEFS = [
     { k:'r1', name:'前毛倒挂', baseline:'对比 30 天众数成交价', threshold:'采购价 > 对标价' },
@@ -850,8 +1538,467 @@ body.ws-open .msgs { padding:16px; }
     { k:'r5', name:'采购价无行业优势', baseline:'对比 30 天最低价 / 众数价 / 测算价', threshold:'高于对标 3%' },
     { k:'r6', name:'采购价无 POP 优势', baseline:'对比 7/30 天最低价 / 众数价 / 测算价', threshold:'高于对标 3%' }
   ];
+  /* ===== Step 2：前毛分层现状（对话区展示，不唤起工作面板） =====
+     分层由「断点数组 breaks（从高到低，单位 %）」驱动，区间默认「左开右闭」(a, b]；
+     端点触及 +∞ / -∞ 时系统自动改为开区间。用户可只关注某范围（如 0 以下），则只展示该范围内的分层。 */
+  /* 明细颗粒（每 2.5% 一档，带前毛率中值 mid，用于按任意断点重新聚合）；字段：[商品数, 采购额万, 销售额万] */
+  var MARGIN_GRAIN = {
+    '家纺':   [[210,690.2,1120.4,35],[176,550.3,859.8,27.5],[152,462.1,701.2,22.5],[116,380.0,540.1,17.5],[98,308.3,470.6,12.5],[86,270.5,360.8,7.5],[70,181.6,250.3,2.5],[54,150.2,180.4,-2.5],[38,131.2,148.6,-7.5],[26,120.6,110.2,-12.5],[22,108.4,101.8,-17.5],[16,80.2,64.1,-25]],
+    '家居':   [[168,548.0,860.2,35],[142,440.4,660.3,27.5],[122,360.1,540.6,22.5],[96,300.2,420.4,17.5],[80,248.3,360.1,12.5],[66,200.4,280.5,7.5],[56,160.3,210.2,2.5],[44,120.4,140.3,-2.5],[30,110.5,105.0,-7.5],[22,98.4,88.6,-12.5],[18,80.2,72.0,-17.5],[14,68.2,52.0,-25]],
+    '四件套': [[48,158.4,262.0,35],[40,130.2,210.6,27.5],[34,108.0,170.4,22.5],[28,86.3,138.2,17.5],[24,70.2,110.4,12.5],[20,58.4,88.0,7.5],[16,44.6,62.3,2.5],[12,36.2,48.0,-2.5],[8,30.4,32.1,-7.5],[6,24.3,22.4,-12.5],[4,18.2,16.0,-17.5],[3,12.1,10.0,-25]],
+    '冬被':   [[30,102.4,168.0,35],[24,82.6,130.2,27.5],[20,66.4,102.5,22.5],[16,52.3,80.4,17.5],[14,42.6,62.0,12.5],[11,34.2,48.5,7.5],[9,26.4,40.0,2.5],[7,20.3,30.2,-2.5],[5,17.0,26.0,-7.5],[3,14.2,22.4,-12.5],[3,12.0,18.0,-17.5],[2,10.0,14.0,-25]]
+  };
+  /* 边界规则：右闭左开(rightClosed=true) 或 左闭右开 */
+  var MARGIN_BREAKS = [30,20,10,0,-10,-20,-30];  /* 从高到低的断点 */
+  var MARGIN_RANGE = { hi:Infinity, lo:-Infinity }; /* 用户关注范围（%），默认全量 */
+  var MARGIN_RIGHT_CLOSED = true;                  /* 默认「左开右闭」(a,b] */
+  var TIER_COLORS = ['#0b7a3b','#12a150','#52c41a','#73d13d','#faad14','#fa8c16','#ff7a45','#ff4d4f','#cf1322','#a8071a'];
+  function fmtWan(n){ return '¥ '+n.toLocaleString('zh-CN',{minimumFractionDigits:1,maximumFractionDigits:1})+' 万'; }
+  /* 依据断点 breaks + 关注范围 range + 边界规则，生成有序区间 [{lo,hi,label,neg,c}] */
+  function buildTiers(breaks, range, rightClosed){
+    range = range || MARGIN_RANGE; rightClosed = (rightClosed!==false);
+    /* 收集范围内的有效边界（含 range 端点），去重排序（从高到低） */
+    var edges = breaks.slice().filter(function(b){ return b<range.hi && b>range.lo; });
+    var pts = [range.hi].concat(edges).concat([range.lo]);
+    pts = pts.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort(function(a,b){ return b-a; });
+    var tiers=[];
+    for(var i=0;i<pts.length-1;i++){
+      var hi=pts[i], lo=pts[i+1];
+      tiers.push({ lo:lo, hi:hi, neg:(hi<=0), c:TIER_COLORS[i]||'#cf1322', label:tierLabel(lo,hi,rightClosed) });
+    }
+    return tiers;
+  }
+  /* 生成区间文字，自动处理 ±∞ 为开区间 */
+  function tierLabel(lo, hi, rightClosed){
+    var pf=function(v){ return (v>0?'+':'')+v+'%'; };
+    var hiInf = !isFinite(hi), loInf = !isFinite(lo);
+    if(hiInf && loInf) return '全部';
+    if(hiInf) return rightClosed ? ('> '+pf(lo)) : ('≥ '+pf(lo));               /* 上端 +∞ → 开 */
+    if(loInf) return rightClosed ? ('≤ '+pf(hi)) : ('< '+pf(hi));                /* 下端 -∞ → 开 */
+    var L=rightClosed?'(':'[', R=rightClosed?']':')';
+    return L+pf(lo)+', '+pf(hi)+R;
+  }
+  /* 把明细颗粒按区间聚合，返回 [商品数,数量占比,采购额,采购占比,销额,销占比] */
+  function aggregateTiers(dept, tiers){
+    var grain = MARGIN_GRAIN[dept] || MARGIN_GRAIN['家纺'];
+    var totC=0, totP=0, totS=0;
+    grain.forEach(function(g){ totC+=g[0]; totP+=g[1]; totS+=g[2]; });
+    /* 仅统计落入 [range.lo, range.hi] 内颗粒作为占比分母（关注范围内占比） */
+    var rows = tiers.map(function(t){
+      var c=0,p=0,s=0;
+      grain.forEach(function(g){
+        var m=g[3];
+        var hit = (isFinite(t.hi)? (MARGIN_RIGHT_CLOSED? m<=t.hi : m<t.hi) : true)
+               && (isFinite(t.lo)? (MARGIN_RIGHT_CLOSED? m>t.lo : m>=t.lo) : true);
+        if(hit){ c+=g[0]; p+=g[1]; s+=g[2]; }
+      });
+      return [c,p,s];
+    });
+    /* 关注范围内的分母 = 各区间之和 */
+    var sc=0,sp=0,ss=0; rows.forEach(function(r){ sc+=r[0]; sp+=r[1]; ss+=r[2]; });
+    sc=sc||1; sp=sp||1; ss=ss||1;
+    return rows.map(function(r){ return [r[0], r[0]/sc*100, r[1], r[1]/sp*100, r[2], r[2]/ss*100]; });
+  }
+  function marginTierCard(){
+    var tiers = buildTiers(MARGIN_BREAKS, MARGIN_RANGE, MARGIN_RIGHT_CLOSED);
+    var data = aggregateTiers(ANOM_CTX.dept, tiers);
+    var trs = tiers.map(function(t,i){
+      var d = data[i] || [0,0,0,0,0,0];
+      return '<tr><td><span class="mg-tier"><span class="mg-dot" style="background:'+t.c+';"></span>'
+        +(t.neg?'<span class="mg-neg">'+t.label+'</span>':t.label)+'</span></td>'
+        +'<td>'+d[0]+'</td><td>'+d[1].toFixed(1)+'%</td><td>'+fmtWan(d[2])+'</td>'
+        +'<td>'+d[3].toFixed(1)+'%</td><td>'+fmtWan(d[4])+'</td><td>'+d[5].toFixed(1)+'%</td></tr>';
+    }).join('');
+    var negCnt = tiers.reduce(function(s,t,i){ return s + (t.neg?((data[i]||[0])[0]):0); },0);
+    /* 范围提示 */
+    var rangeTxt = (isFinite(MARGIN_RANGE.hi)||isFinite(MARGIN_RANGE.lo))
+      ? '<span class="cc-tag">仅展示 '+tierLabel(MARGIN_RANGE.lo, MARGIN_RANGE.hi, MARGIN_RIGHT_CLOSED)+'</span>'
+      : '<span class="cc-tag">全量 '+tiers.length+' 档</span>';
+    var ruleTxt = MARGIN_RIGHT_CLOSED ? '左开右闭 (a, b]' : '左闭右开 [a, b)';
+    var brkTxt = MARGIN_BREAKS.filter(function(b){ return b<MARGIN_RANGE.hi && b>MARGIN_RANGE.lo; })
+      .map(function(b){ return (b>0?'+':'')+b+'%'; }).join(' / ') || '（范围内无中间断点）';
+    return '<div class="chat-card">'
+      +'<div class="cc-head">&#128202; 部门前毛率分层现状 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）'+rangeTxt+'</div>'
+      +'<div class="chat-tbl-scroll"><table class="mg-tbl"><thead>'
+      +'<tr><th>部门前毛率分层</th><th>商品数量</th><th>数量占比</th><th>近30天采购额</th><th>采购额占比</th><th>近30天销售额</th><th>销额占比</th></tr>'
+      +'</thead><tbody>'+trs+'</tbody></table></div>'
+      +'<div class="mt-wrap" style="padding-top:0;">'
+      +'<div class="mt-legend">&#128161; 前毛率<b>为负（倒挂）</b>的商品共 <b>'+negCnt+'</b> 个，建议优先针对负毛区间查看巡检规则并仿真。</div>'
+      +'<div class="mg-thr"><span>边界规则：<b>'+ruleTxt+'</b>；断点：'+brkTxt+'（触及 ±∞ 端点自动取开区间）</span>'
+      +'<span class="mg-chip" id="mgThrBtn">&#9998; 修改分层阈值</span></div>'
+      +'</div></div>';
+  }
+  /* 用户修改分层后，先确认边界规则再展示 */
+  function confirmMarginTiers(breaks, range, hint){
+    if(typeof delay!=='function'||typeof addAI!=='function') return;
+    var pending = { breaks:breaks.slice().sort(function(a,b){ return b-a; }), range:range||{hi:Infinity,lo:-Infinity} };
+    var preview = buildTiers(pending.breaks, pending.range, true).map(function(t){ return t.label; }).join('、');
+    delay(function(){
+      addAI((hint?hint+'<br>':'')
+        +'为确保口径一致，请先确认<b>区间边界规则</b>：默认采用「<b>左开右闭</b> (a, b]」，即每一档不含下界、包含上界；'
+        +'当区间端点触及 <b>+∞ / -∞</b> 时，系统会自动按<b>开区间</b>处理（如「> +0%」「≤ -10%」）。<br>'
+        +'<span style="font-size:12px;color:#8a9099;">按此规则将分为：'+preview+'</span>',
+        [
+          {label:'确认（左开右闭）', onclick:function(){ if(typeof addUser==='function')addUser('确认左开右闭'); MARGIN_RIGHT_CLOSED=true; applyMarginTiers(pending.breaks, pending.range); }},
+          {label:'改为左闭右开', onclick:function(){ if(typeof addUser==='function')addUser('改为左闭右开'); MARGIN_RIGHT_CLOSED=false; applyMarginTiers(pending.breaks, pending.range); }}
+        ]);
+    });
+  }
+  /* 落定断点与范围并重绘（仅展示范围内分层） */
+  function applyMarginTiers(breaks, range){
+    MARGIN_BREAKS = breaks.slice().sort(function(a,b){ return b-a; });
+    MARGIN_RANGE = range || { hi:Infinity, lo:-Infinity };
+    if(typeof delay==='function'){ delay(function(){
+      var rt = (isFinite(MARGIN_RANGE.hi)||isFinite(MARGIN_RANGE.lo))
+        ? '（仅展示 '+tierLabel(MARGIN_RANGE.lo, MARGIN_RANGE.hi, MARGIN_RIGHT_CLOSED)+' 范围）' : '';
+      addAI('已按<b>'+(MARGIN_RIGHT_CLOSED?'左开右闭':'左闭右开')+'</b>规则重新统计「<b>'+ANOM_CTX.dept+'</b>」的前毛率分层现状'+rt+'：',
+        [{label:'查看该部门维度巡检规则', onclick:function(){ if(typeof addUser==='function')addUser('查看该部门维度巡检规则'); showDeptRules(); }},
+         {label:'再次修改分层', onclick:function(){ if(typeof addUser==='function')addUser('再次修改分层阈值'); askMarginThreshold(); }}], null, marginTierCard());
+      setTimeout(function(){ var b=document.getElementById('mgThrBtn'); if(b&&!b.__bound){ b.__bound=true; b.onclick=function(){ if(typeof addUser==='function')addUser('修改前毛率分层阈值'); askMarginThreshold(); }; } }, 30);
+    }); }
+  }
+  function askMarginThreshold(){
+    if(typeof delay!=='function'||typeof addAI!=='function') return;
+    delay(function(){
+      addAI('可以调整前毛率的<b>分层阈值</b>。您可以选一种常用分层，或直接在对话框告诉我断点/关注范围（例如「只看 0 以下，按 -10 / -20 分」）。修改后我会先与您确认区间边界规则再展示：',
+        [
+          {label:'粗分 4 档（10/0/-10）', onclick:function(){ if(typeof addUser==='function')addUser('粗分 4 档：10 / 0 / -10'); confirmMarginTiers([10,0,-10], {hi:Infinity,lo:-Infinity}, '将按断点 +10% / 0% / -10% 分为 4 档。'); }},
+          {label:'只看 0 以下（细拆倒挂）', onclick:function(){ if(typeof addUser==='function')addUser('只看前毛率 0 以下，按 -5 / -10 / -20 细拆'); confirmMarginTiers([-5,-10,-20], {hi:0,lo:-Infinity}, '仅关注前毛率 <b>0 以下</b> 区间，按 -5% / -10% / -20% 细拆（0 以上不展示）。'); }},
+          {label:'恢复默认 8 档', onclick:function(){ if(typeof addUser==='function')addUser('恢复默认分层'); confirmMarginTiers([30,20,10,0,-10,-20,-30], {hi:Infinity,lo:-Infinity}, '恢复默认 30 / 20 / 10 / 0 / -10 / -20 / -30 断点（全 8 档）。'); }}
+        ]);
+    });
+  }
+  function showMarginTier(){
+    if(typeof addAI!=='function') return;
+    addAI('这是「<b>'+ANOM_CTX.dept+'</b>」的<b>部门前毛率分层现状</b>（默认按前毛率分 8 档），帮您判断商品与金额集中在哪一层。您也可以调整分层阈值——直接在对话框说，例如「<span style="color:#6b46f5;">只看 0 以下，按 -10 / -20 分</span>」。',
+      [
+        {label:'查看该部门维度巡检规则', onclick:function(){ if(typeof addUser==='function')addUser('查看该部门维度巡检规则'); showDeptRules(); }},
+        {label:'修改分层阈值', onclick:function(){ if(typeof addUser==='function')addUser('修改前毛率分层阈值'); askMarginThreshold(); }}
+      ], null, marginTierCard());
+    setTimeout(function(){
+      var b=document.getElementById('mgThrBtn');
+      if(b&&!b.__bound){ b.__bound=true; b.onclick=function(){ if(typeof addUser==='function')addUser('修改前毛率分层阈值'); askMarginThreshold(); }; }
+    }, 30);
+    /* 注册输入钩子：拦截「分层/阈值/区间/只看…以下」类自由输入 */
+    window.__reportInputHook = marginInputHook;
+  }
+  /* 解析用户自由输入的分层诉求，命中返回 {breaks,range,hint}，否则 null */
+  function parseMarginInput(text){
+    if(!text) return null;
+    var t = String(text).replace(/％/g,'%');
+    var isMargin = /(分层|阈值|区间|档|前毛|倒挂|以下|以上)/.test(t);
+    if(!isMargin) return null;
+    /* 抽取所有带正负号的百分数（含"负10"这种） */
+    var nums = [];
+    var re = /(-|负|正|\+)?\s*(\d+(?:\.\d+)?)\s*%?/g, m;
+    while((m=re.exec(t))!==null){
+      if(m[2]===undefined) continue;
+      var v = parseFloat(m[2]); if(isNaN(v)) continue;
+      if(m[1]==='-'||m[1]==='负') v=-v;
+      nums.push(v);
+    }
+    /* 关注范围：只看 X 以下 / 以上 */
+    var range = { hi:Infinity, lo:-Infinity };
+    var below = t.match(/([\-负正\+]?\s*\d+(?:\.\d+)?)\s*%?\s*以下/);
+    var above = t.match(/([\-负正\+]?\s*\d+(?:\.\d+)?)\s*%?\s*以上/);
+    var toNum = function(s){ s=s.replace(/\s/g,''); var neg=/^[-负]/.test(s); var n=parseFloat(s.replace(/[^\d.]/g,'')); return neg?-n:n; };
+    if(below){ range.hi = toNum(below[1]); }
+    if(above){ range.lo = toNum(above[1]); }
+    /* 断点 = 抽出的数字中，落在范围内、去掉与范围端点重复的 */
+    var breaks = nums.filter(function(v){ return v<range.hi && v>range.lo; });
+    breaks = breaks.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort(function(a,b){ return b-a; });
+    if(breaks.length===0 && !isFinite(range.hi) && !isFinite(range.lo)) return null; /* 没抽到有效信息 */
+    if(breaks.length===0) breaks = [];
+    var hint = '识别到您的诉求：'
+      + (isFinite(range.hi)||isFinite(range.lo) ? '关注范围 <b>'+tierLabel(range.lo, range.hi, true)+'</b>；' : '全量范围；')
+      + (breaks.length? '断点 <b>'+breaks.map(function(b){return (b>0?'+':'')+b+'%';}).join(' / ')+'</b>。' : '（未指定中间断点，将作为单一区间）。');
+    return { breaks:breaks, range:range, hint:hint };
+  }
+  /* 输入钩子：返回 true 表示已接管 */
+  function marginInputHook(text){
+    var p = parseMarginInput(text);
+    if(!p) return false;
+    if(typeof addUser==='function') addUser(text);
+    confirmMarginTiers(p.breaks, p.range, p.hint);
+    return true;
+  }
+  function __showMarginTier_legacy(){
+    return; /* 已废弃：改用 marginTierCard/showMarginTier 的前毛率分层表 */
+    var isC2 = ANOM_CTX.deptL==='C2';
+    /* C2 展示各 C3 分层；C3 展示该 C3 内部 band 分层 */
+    var tiers = isC2
+      ? [
+          {l:'倒挂（前毛<0）', v:'128 个 SKU · 损失 ¥ 34.2 万', pct:22, c:'#ff4d4f'},
+          {l:'偏低（0~5%）',  v:'214 个 SKU · 空间 ¥ 21.6 万', pct:36, c:'#faad14'},
+          {l:'健康（5~15%）', v:'386 个 SKU',                  pct:52, c:'#12a150'},
+          {l:'偏高（>15%）',  v:'92 个 SKU',                   pct:16, c:'#1677ff'}
+        ]
+      : [
+          {l:'A band 倒挂',  v:'42 个 SKU · 损失 ¥ 12.8 万', pct:30, c:'#ff4d4f'},
+          {l:'B band 偏低',  v:'68 个 SKU · 空间 ¥ 8.4 万',  pct:44, c:'#faad14'},
+          {l:'C band 健康',  v:'96 个 SKU',                  pct:60, c:'#12a150'},
+          {l:'D~F band',     v:'18 个 SKU',                  pct:12, c:'#1677ff'}
+        ];
+    var bars = tiers.map(function(t){
+      return '<div class="mt-tier"><div class="mt-l">'+t.l+'</div>'
+        +'<div class="mt-bar"><div class="mt-fill" style="width:'+t.pct+'%;background:'+t.c+';"></div></div>'
+        +'<div class="mt-v">'+t.v+'</div></div>';
+    }).join('');
+    var card = ''
+      +'<div class="chat-card">'
+      +'<div class="cc-head">&#128202; 前毛分层现状 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）<span class="cc-tag">'+(isC2?'按 C3 汇总':'按 band 汇总')+'</span></div>'
+      +'<div class="mt-wrap">'+bars
+      +'<div class="mt-legend">&#128161; '+(isC2
+          ? '当前 C2 下前毛倒挂 + 偏低共 <b>342</b> 个 SKU，建议优先针对倒挂层查看巡检规则并仿真。'
+          : '当前 C3 前毛倒挂集中在 A band，建议查看该维度巡检规则的对标口径。')
+      +'</div></div></div>';
+    addAI('这是「<b>'+ANOM_CTX.dept+'</b>」的<b>前毛分层现状</b>，帮您判断问题集中在哪一层。看完可以进一步查看该部门维度的巡检规则。',
+      [
+        {label:'查看该部门维度巡检规则', onclick:function(){ if(typeof addUser==='function')addUser('查看该部门维度巡检规则'); showDeptRules(); }}
+      ], null, card);
+  }
+
+  /* ===== Step 3：查看指定部门维度巡检规则（对话区表格，不唤起工作面板） =====
+     字段：二级部门 / 三级部门 / 策略名称 / 策略规则 / 更新人 / 更新时间 / 操作（圈品详情 · 基于此规则仿真）
+     C2：展示所有配置在 C2 维度上的巡检规则 + 该 C2 下 C3 维度单独配置的规则 */
+  var DEPT_RULE_STORE = {
+    '家纺': {
+      c2:[
+        {c2:'家纺', c3:'—', name:'前毛倒挂预警', rule:'采购价 > 30天众数成交价', by:'王运营', at:'2026-06-28'},
+        {c2:'家纺', c3:'—', name:'高于基准价', rule:'高于基准价 5% 或 3 元', by:'王运营', at:'2026-06-20'},
+        {c2:'家纺', c3:'—', name:'非多商最低价', rule:'同SKU多供应商 非最低价 且差价>2%', by:'李采销', at:'2026-06-15'}
+      ],
+      c3:[
+        {c2:'家纺', c3:'四件套', name:'四件套-成本上升', rule:'对比上次采购价 上升>5%', by:'赵运营', at:'2026-07-01'},
+        {c2:'家纺', c3:'冬被',   name:'冬被-行业无优势', rule:'高于行业30天众数价 3%', by:'赵运营', at:'2026-06-30'}
+      ]
+    },
+    '家居': {
+      c2:[
+        {c2:'家居', c3:'—', name:'前毛倒挂预警', rule:'采购价 > 30天众数成交价', by:'钱运营', at:'2026-06-26'},
+        {c2:'家居', c3:'—', name:'采购成本上升', rule:'对比上次采购价 上升>5%', by:'钱运营', at:'2026-06-22'}
+      ],
+      c3:[
+        {c2:'家居', c3:'收纳箱', name:'收纳箱-POP无优势', rule:'高于POP 7/30天最低价 3%', by:'孙运营', at:'2026-07-02'}
+      ]
+    }
+  };
+  function deptRulesFor(){
+    var c2Key = ANOM_CTX.deptL==='C2' ? ANOM_CTX.dept : (ANOM_CTX.c2||'家纺');
+    var store = DEPT_RULE_STORE[c2Key] || DEPT_RULE_STORE['家纺'];
+    if(ANOM_CTX.deptL==='C2'){
+      /* C2：C2 维度规则 + 该 C2 下 C3 维度规则 */
+      return { c2:store.c2, c3:store.c3 };
+    }
+    /* C3：仅该 C3 维度规则 */
+    return { c2:[], c3:(store.c3||[]).filter(function(r){return r.c3===ANOM_CTX.dept;}) };
+  }
+  function ruleRowHtml(r, idx, scope){
+    var rid = scope+'-'+idx;
+    return '<tr'+(scope==='c3'?' class="c3-band"':'')+'>'
+      +'<td>'+r.c2+'</td>'
+      +'<td>'+r.c3+'</td>'
+      +'<td><b>'+r.name+'</b></td>'
+      +'<td>'+r.rule+'</td>'
+      +'<td>'+r.by+'</td>'
+      +'<td>'+r.at+'</td>'
+     +'<td><span class="cn-btn" data-act="circle" data-rid="'+rid+'">&#128269; 圈品详情</span>'
+      +'<span class="cn-btn primary" data-act="sim" data-rid="'+rid+'">&#128295; 基于此规则仿真</span></td>'
+      +'</tr>';
+  }
+  function showDeptRules(){
+    if(typeof addAI!=='function') return;
+    window.__reportInputHook=null; /* 离开分层现状场景，清除分层输入钩子 */
+    var data = deptRulesFor();
+    var flat = [];
+    var rows = '';
+    data.c2.forEach(function(r,i){ rows+=ruleRowHtml(r,i,'c2'); flat.push(r); });
+    data.c3.forEach(function(r,i){ rows+=ruleRowHtml(r,i,'c3'); flat.push(r); });
+    ANOM_RULES_FLAT = flat;
+    var tag = ANOM_CTX.deptL==='C2' ? ('C2 维度 '+data.c2.length+' 条 · C3 维度 '+data.c3.length+' 条') : ('C3 维度 '+data.c3.length+' 条');
+    var card = ''
+      +'<div class="chat-card">'
+      +'<div class="cc-head">&#9881; 巡检规则 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）<span class="cc-tag">'+tag+'</span></div>'
+      +'<div class="chat-tbl-scroll"><table class="chat-tbl"><thead>'
+      +'<tr><th>二级部门</th><th>三级部门</th><th>策略名称</th><th>策略规则</th><th>更新人</th><th>更新时间</th><th>操作</th></tr>'
+      +'</thead><tbody>'+rows+'</tbody></table></div></div>';
+    var tip = ANOM_CTX.deptL==='C2'
+      ? '已在下方列出「<b>'+ANOM_CTX.dept+'</b>」C2 维度的巡检规则，以及该 C2 下<b>单独配置在 C3 维度</b>的规则（浅蓝底）。'
+      : '已在下方列出「<b>'+ANOM_CTX.dept+'</b>」C3 维度的巡检规则。';
+    addAI(tip+'<br>点「圈品详情」查看运营配置的圈品范围，点「基于此规则仿真」进入仿真配置。',
+      [
+        {label:'查看全部部门的巡检规则', onclick:function(){ if(typeof addUser==='function')addUser('查看全部部门的巡检规则'); guessAllDeptRules(); }}
+      ], null, card);
+    setTimeout(bindDeptRules, 30);
+  }
+  var ANOM_RULES_FLAT = [];
+  function bindDeptRules(){
+    document.querySelectorAll('.chat-tbl .cn-btn').forEach(function(b){
+      if(b.__bound) return; b.__bound=true;
+      b.onclick=function(){
+        var act=b.getAttribute('data-act');
+        var parts=(b.getAttribute('data-rid')||'').split('-');
+        var idx=parseInt(parts[1],10);
+        /* flat 顺序 = c2 在前、c3 在后 */
+        var r = ANOM_RULES_FLAT[ parts[0]==='c2' ? idx : (deptRulesFor().c2.length + idx) ];
+        if(!r) return;
+        if(act==='circle') openCircleDetail(r);
+        else if(act==='sim'){ var mapped=mapRuleToDef(r); startSimFromRule(mapped); }
+      };
+    });
+  }
+  /* 把部门规则映射到仿真用的 RULE_DEFS 结构 */
+  function mapRuleToDef(r){
+    var hit = RULE_DEFS.filter(function(x){return r.rule.indexOf('众数')>=0&&x.k==='r1' || r.rule.indexOf('基准价')>=0&&x.k==='r2' || r.rule.indexOf('上升')>=0&&x.k==='r3' || r.rule.indexOf('多供应商')>=0&&x.k==='r4';})[0];
+    return hit || { k:'r1', name:r.name, baseline:r.rule, threshold:r.rule };
+  }
+
+  /* ===== Step 4：猜测用户是否想看全部部门规则 → 唤起右侧面板展示全量部门 & 规则 ===== */
+  function guessAllDeptRules(){
+    showWs('工作面板 · 全量部门巡检规则总览');
+    if(typeof addAI==='function') addAI('看起来您想横向对比<b>全部部门</b>的巡检规则配置——已在右侧操作面板打开<b>全量部门 & 规则总览</b>，可用于排查规则缺漏与口径不一致。');
+    var body=document.getElementById('wsBody'); if(!body) return;
+    var ALL=[
+      {c2:'家纺', c3:'—',     name:'前毛倒挂预警', rule:'采购价 > 30天众数成交价',   by:'王运营', at:'2026-06-28', hit:128},
+      {c2:'家纺', c3:'—',     name:'高于基准价',   rule:'高于基准价 5% 或 3 元',      by:'王运营', at:'2026-06-20', hit:96},
+      {c2:'家纺', c3:'四件套', name:'四件套-成本上升', rule:'对比上次采购价 上升>5%',  by:'赵运营', at:'2026-07-01', hit:42},
+      {c2:'家纺', c3:'冬被',   name:'冬被-行业无优势', rule:'高于行业30天众数价 3%',   by:'赵运营', at:'2026-06-30', hit:31},
+      {c2:'家居', c3:'—',     name:'前毛倒挂预警', rule:'采购价 > 30天众数成交价',   by:'钱运营', at:'2026-06-26', hit:88},
+      {c2:'家居', c3:'—',     name:'采购成本上升', rule:'对比上次采购价 上升>5%',     by:'钱运营', at:'2026-06-22', hit:64},
+      {c2:'家居', c3:'收纳箱', name:'收纳箱-POP无优势', rule:'高于POP 7/30天最低价 3%', by:'孙运营', at:'2026-07-02', hit:27},
+      {c2:'厨具', c3:'—',     name:'前毛倒挂预警', rule:'采购价 > 30天众数成交价',   by:'周运营', at:'2026-06-18', hit:53},
+      {c2:'个护', c3:'—',     name:'（未配置）',   rule:'—',                          by:'—',      at:'—',         hit:0}
+    ];
+    var rows=ALL.map(function(r){
+      var noRule = r.name==='（未配置）';
+      return '<tr'+(noRule?' style="color:#cf1322;"':'')+'>'
+        +'<td>'+r.c2+'</td><td>'+r.c3+'</td><td><b>'+r.name+'</b></td><td>'+r.rule+'</td>'
+        +'<td>'+r.by+'</td><td>'+r.at+'</td><td>'+(noRule?'—':'<b class="num-red">'+r.hit+'</b>')+'</td></tr>';
+    }).join('');
+    body.innerHTML=''
+      +'<div class="qf-sysinfo"><span>范围：<b>全部部门</b></span><span class="qf-sep">｜</span><span>共 <b>'+ALL.length+'</b> 条规则配置</span><span class="qf-sep">｜</span><span>测算时间：<b>2026-07-03</b></span></div>'
+      +'<table class="rn-tbl"><thead>'
+      +'<tr><th>二级部门</th><th>三级部门</th><th>策略名称</th><th>策略规则</th><th>更新人</th><th>更新时间</th><th>命中 SKU</th></tr>'
+      +'</thead><tbody>'+rows+'</tbody></table>'
+      +'<div class="rn-foot"><div class="rn-tip">&#128161; 红色行表示<b>未配置巡检规则</b>的部门，建议补齐；如需针对某部门做仿真，请回到对话区选择该部门维度。</div></div>';
+  }
+
+  /* ===== 圈品详情：展示运营配置的圈品范围（新字段） =====
+     货盘类型 / 供应商数量 / 供应商身份 / 商品销量band / 商品销售额band / 最近一次采购单完成至今天数(1-365) */
+  var CIRCLE_MOCK = {
+    '前毛倒挂预警': { hit:128, note:'前毛为负多集中在二三类货、近期仍在补货的 SKU，故圈定二三类货 + 180 天内有采购单完成的商品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['2','3'],           tip:'一类畅销货前毛通常为正，故只圈二三类货'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商','多商'],      tip:'一商/多商均纳入'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['非品牌'],           tip:'品牌货有控价保护，主要盯非品牌'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['C','D','E','F'], tip:'剔除头部 A/B，聚焦腰尾部动销慢的品'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['C','D','E','F','无'], tip:'低销售额段更易出现倒挂'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 180 天'],       tip:'只盯 180 天内仍在采购、可谈判的商品'}
+    ]},
+    '高于基准价': { hit:96, note:'高于基准价的商品需近期在售、有对比基准，圈定一二类货 + 90 天内有采购单的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['1','2'],           tip:'基准价对比主要面向一二类主力货'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商','多商'],      tip:'全部纳入'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['品牌','非品牌'],    tip:'全部纳入'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['A','B','C'], tip:'聚焦有一定销量、基准价可信的品'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['A','B','C'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 90 天'],        tip:'90 天内采购价才具备时效可比性'}
+    ]},
+    '采购成本上升': { hit:64, note:'需要有历史采购价可对比，圈定 60 天内有两次以上采购单、成本环比上升的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['1','2','3'],        tip:'各货盘均可能成本上升'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商'],             tip:'一商更易被单一供应商抬价'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['品牌','非品牌'],    tip:'全部纳入'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['A','B','C','D'], tip:'有持续采购的品'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['A','B','C','D'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 60 天'],        tip:'60 天内才能捕捉最近一次成本变化'}
+    ]},
+    '四件套-成本上升': { hit:42, note:'四件套三级下、60 天内有采购、成本环比上升的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['1','2'],            tip:'四件套主力为一二类货'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商'],             tip:'一商为主'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['品牌','非品牌'],    tip:'全部纳入'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['A','B','C'], tip:'有动销的品'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['A','B','C'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 60 天'],        tip:'60 天内'}
+    ]},
+    '非多商最低价': { hit:71, note:'仅对同 SKU 多供应商场景生效，圈定多商 + 差价>2% 的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['1','2','3'],        tip:'全部货盘'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['多商'],             tip:'规则本身仅适用多供应商 SKU'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['品牌','非品牌'],    tip:'全部纳入'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['A','B','C','D','E'], tip:'剔除无动销'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['A','B','C','D','E'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 120 天'],       tip:'120 天内有采购、供应商仍可切换'}
+    ]},
+    '冬被-行业无优势': { hit:31, note:'冬被三级下、高于行业30天众数价3%、近90天有采购的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['1','2'],            tip:'冬被主力一二类货'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商','多商'],      tip:'全部纳入'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['非品牌'],           tip:'行业比价主要盯非品牌'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['B','C','D'], tip:'腰部为主'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['B','C','D'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 90 天'],        tip:'90 天内'}
+    ]},
+    '收纳箱-POP无优势': { hit:27, note:'收纳箱三级下、高于POP 7/30天最低价3%、近90天有采购的品。', f:[
+      {k:'货盘类型',           all:['1','2','3','无'], on:['2','3'],            tip:'POP 比价集中在二三类货'},
+      {k:'供应商数量',         all:['一商','多商'],    on:['一商','多商'],      tip:'全部纳入'},
+      {k:'供应商身份',         all:['品牌','非品牌'],  on:['非品牌'],           tip:'非品牌为主'},
+      {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['C','D','E'], tip:'腰尾部'},
+      {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['C','D','E'], tip:'同上'},
+      {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 90 天'],        tip:'90 天内'}
+    ]}
+  };
+  var CIRCLE_DEFAULT = { hit:0, note:'该规则暂未配置精细圈品条件，默认全量巡检。', f:[
+    {k:'货盘类型',           all:['1','2','3','无'], on:['1','2','3','无'], tip:'全部'},
+    {k:'供应商数量',         all:['一商','多商'],    on:['一商','多商'],    tip:'全部'},
+    {k:'供应商身份',         all:['品牌','非品牌'],  on:['品牌','非品牌'],  tip:'全部'},
+    {k:'商品销量 band',      all:['A','B','C','D','E','F','无'], on:['A','B','C','D','E','F','无'], tip:'全部'},
+    {k:'商品销售额 band',    all:['A','B','C','D','E','F','无'], on:['A','B','C','D','E','F','无'], tip:'全部'},
+    {k:'最近采购单完成天数', all:['1 ~ 365 天'],     on:['1 ~ 365 天'],     tip:'全部'}
+  ]};
+  function openCircleDetail(r){
+    var mock = CIRCLE_MOCK[r.name] || CIRCLE_DEFAULT;
+    var secs = mock.f.map(function(f){
+      var chips = f.all.map(function(x){
+        var on = f.on.indexOf(x)>=0;
+        return '<span class="rd-chip '+(on?'on':'off')+'">'+x+'</span>';
+      }).join('');
+      var hitCnt = f.on.length + '/' + f.all.length;
+      return '<div class="cd-sec">'
+        +'<div class="cd-sec-t">'+f.k+'<span class="cd-hit">圈定 '+hitCnt+'</span></div>'
+        +'<div class="cd-sec-v">'+chips+'</div>'
+        +'<div class="cd-note">'+f.tip+'</div>'
+        +'</div>';
+    }).join('');
+    var tag = r.c2 + (r.c3&&r.c3!=='—' ? ' / '+r.c3 : '');
+    var titleEl=document.getElementById('cdTitle'), bodyEl=document.getElementById('cdBody');
+    if(titleEl) titleEl.innerHTML='&#128269; 圈品详情 · '+r.name+'<span class="cd-tag">'+tag+'</span>';
+    if(bodyEl) bodyEl.innerHTML=''
+      +'<div class="cd-rulebar">巡检规则：<b>'+r.rule+'</b><br>命中商品：约 <b>'+mock.hit+'</b> 个 SKU<br><span style="color:#8a9099;">'+mock.note+'</span></div>'
+      +secs
+      +'<div class="cd-foot"><span class="cd-sim" id="cdSim">&#128295; 基于此规则仿真</span></div>';
+    var sim=document.getElementById('cdSim');
+    if(sim) sim.onclick=function(){ closeCircleDetail(); if(typeof addUser==='function')addUser('基于「'+r.name+'」仿真'); startSimFromRule(mapRuleToDef(r)); };
+    openCircleDrawer();
+  }
+  function openCircleDrawer(){
+    var m=document.getElementById('cdMask'), d=document.getElementById('cdDrawer');
+    if(m) m.classList.add('open');
+    if(d){ d.classList.add('open'); d.setAttribute('aria-hidden','false'); }
+  }
+  function closeCircleDetail(){
+    var m=document.getElementById('cdMask'), d=document.getElementById('cdDrawer');
+    if(m) m.classList.remove('open');
+    if(d){ d.classList.remove('open'); d.setAttribute('aria-hidden','true'); }
+  }
+  (function bindCircleDrawer(){
+    function bind(){
+      var m=document.getElementById('cdMask'), c=document.getElementById('cdClose');
+      if(m&&!m.__bound){ m.__bound=true; m.onclick=closeCircleDetail; }
+      if(c&&!c.__bound){ c.__bound=true; c.onclick=closeCircleDetail; }
+    }
+    if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bind);
+    else bind();
+  })();
+
+
   function openAnomalyRules(){
-    showWs('操作区域 · 采购价异常识别 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）');
+    showWs('工作面板 · 采购价异常识别 · '+ANOM_CTX.dept+'（'+ANOM_CTX.deptL+'）');
     if(typeof addAI==='function') addAI('已在右侧操作区打开「<b>'+ANOM_CTX.dept+'</b>」当前命中的巡检规则清单（共 6 类规则）。点击任一规则右侧「查看详情」可下钻商品范围；也可以直接说「基于「前毛倒挂」做仿真」或「自定义仿真策略」。');
     var body=document.getElementById('wsBody'); if(!body) return;
     body.innerHTML=anomalyRulesHtml();
@@ -937,10 +2084,28 @@ body.ws-open .msgs { padding:16px; }
 
   /* --- 仿真对话流：配置全部在会话区完成，右侧仅展示规则清单/详情，测算完成后展示结果 --- */
   var SIM_CTX=null; // { fromRule, threshold, benchmark, scope:{cat,brand,supplier,band,white}, mode:'rule'|'custom' }
-  function defaultScope(){ return { cat:['全部'], brand:['全部'], supplier:['全部'], band:['A','B','C'], white:'排除加白' }; }
+  /* 圈选商品池字段与【圈品详情】保持一致：货盘类型 / 供应商数量 / 供应商身份 / 商品销量band / 商品销售额band / 最近采购单完成天数 */
+  function defaultScope(){ return { pallet:['1','2','3','无'], supNum:['一商','多商'], supId:['品牌','非品牌'], saleBand:['A','B','C','D','E','F','无'], amtBand:['A','B','C','D','E','F','无'], poDays:'365' }; }
+  /* 把圈品详情 mock 的圈定值转成仿真商品池默认值（从某规则进入仿真时，商品池即该规则实际圈的品） */
+  function scopeFromCircle(ruleName){
+    var mock=(typeof CIRCLE_MOCK!=='undefined'&&CIRCLE_MOCK[ruleName])||(typeof CIRCLE_DEFAULT!=='undefined'&&CIRCLE_DEFAULT);
+    if(!mock) return defaultScope();
+    var pick=function(label,fallback){ var it=mock.f.filter(function(x){return x.k===label;})[0]; return it?it.on.slice():fallback; };
+    var days=pick('最近采购单完成天数',['1 ~ 365 天'])[0]||'1 ~ 365 天';
+    var d=(days.match(/(\d+)\s*天/g)||[]).map(function(x){return x.replace(/[^\d]/g,'');});
+    return {
+      pallet:pick('货盘类型',['1','2','3','无']),
+      supNum:pick('供应商数量',['一商','多商']),
+      supId:pick('供应商身份',['品牌','非品牌']),
+      saleBand:pick('商品销量 band',['A','B','C','D','E','F','无']),
+      amtBand:pick('商品销售额 band',['A','B','C','D','E','F','无']),
+      poDays:d.length?d[d.length-1]:'365'
+    };
+  }
   function scopeSummary(){
     var s=SIM_CTX.scope;
-    return '品类='+s.cat.join('/')+' · 品牌='+s.brand.join('/')+' · 供应商='+s.supplier.join('/')+' · Band='+s.band.join('/')+' · '+s.white;
+    return '货盘类型='+s.pallet.join('/')+' · 供应商数量='+s.supNum.join('/')+' · 供应商身份='+s.supId.join('/')
+      +' · 销量band='+s.saleBand.join('/')+' · 销售额band='+s.amtBand.join('/')+' · 最近采购单≤'+s.poDays+'天';
   }
   /* 在会话气泡内嵌入的仿真配置卡（供 addAI 的 extraHtml 使用） */
   function simConfigInlineHtml(cardId){
@@ -962,16 +2127,16 @@ body.ws-open .msgs { padding:16px; }
       +'</div>'
       +'<div class="is-sec">'
       +'<div class="is-sec-t">2. 圈选商品池</div>'
-      +'<div class="is-row"><span class="is-lbl">品类</span><div class="is-vals" data-key="cat">'+opts(['全部','家纺','家居','厨具','个护'],SIM_CTX.scope.cat)+'</div></div>'
-      +'<div class="is-row"><span class="is-lbl">品牌</span><div class="is-vals" data-key="brand">'+opts(['全部','华信','暖冬','洁丽雅','水星','纳川','禧天龙'],SIM_CTX.scope.brand)+'</div></div>'
-      +'<div class="is-row"><span class="is-lbl">供应商身份</span><div class="is-vals" data-key="supplier">'+opts(['全部','品牌商','授权经销商','贸易商'],SIM_CTX.scope.supplier)+'</div></div>'
-      +'<div class="is-row"><span class="is-lbl">Band 等级</span><div class="is-vals" data-key="band">'+opts(['A','B','C','D','E','F'],SIM_CTX.scope.band)+'</div></div>'
-      +'<div class="is-row"><span class="is-lbl">加白 SKU</span><div class="is-vals is-radio">'
-      +'<label class="ic-check"><input type="radio" name="'+cardId+'-w" '+(SIM_CTX.scope.white==='排除加白'?'checked':'')+' data-w="排除加白"> 排除加白</label>'
-      +'<label class="ic-check"><input type="radio" name="'+cardId+'-w" '+(SIM_CTX.scope.white==='包含加白'?'checked':'')+' data-w="包含加白"> 包含加白</label>'
+      +'<div class="is-row"><span class="is-lbl">货盘类型</span><div class="is-vals" data-key="pallet">'+opts(['1','2','3','无'],SIM_CTX.scope.pallet)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">供应商数量</span><div class="is-vals" data-key="supNum">'+opts(['一商','多商'],SIM_CTX.scope.supNum)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">供应商身份</span><div class="is-vals" data-key="supId">'+opts(['品牌','非品牌'],SIM_CTX.scope.supId)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">商品销量 band</span><div class="is-vals" data-key="saleBand">'+opts(['A','B','C','D','E','F','无'],SIM_CTX.scope.saleBand)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">商品销售额 band</span><div class="is-vals" data-key="amtBand">'+opts(['A','B','C','D','E','F','无'],SIM_CTX.scope.amtBand)+'</div></div>'
+      +'<div class="is-row"><span class="is-lbl">最近采购单完成</span><div class="is-vals is-radio">'
+      +['60','90','120','180','365'].map(function(d){ return '<label class="ic-check"><input type="radio" name="'+cardId+'-pod" '+(SIM_CTX.scope.poDays===d?'checked':'')+' data-pod="'+d+'"> '+(d==='365'?'不限(365天)':d+' 天内')+'</label>'; }).join('')
       +'</div></div>'
       +'</div>'
-      +'<div class="is-tip">&#128172; 也可以直接一句话调整，例如「品类=家纺，品牌=华信，band A/B，剔除贸易商」，我会解析后二次确认。</div>'
+      +'<div class="is-tip">&#128172; 也可以直接一句话调整，例如「货盘二三类，只看非品牌，销量 band A/B，近 180 天」，我会解析后二次确认。</div>'
       +'</div>';
   }
   function bindInlineSimConfig(cardId){
@@ -986,26 +2151,26 @@ body.ws-open .msgs { padding:16px; }
       row.querySelectorAll('input[type=checkbox]').forEach(function(i){
         i.onchange=function(){
           var v=i.getAttribute('data-v');
-          var arr=SIM_CTX.scope[key].filter(function(x){return x!==v;});
+          var arr=(SIM_CTX.scope[key]||[]).filter(function(x){return x!==v;});
           if(i.checked) arr.push(v);
-          SIM_CTX.scope[key]=arr.length?arr:['全部'];
+          SIM_CTX.scope[key]=arr;
         };
       });
     });
-    /* 加白 radio */
-    card.querySelectorAll('input[type=radio]').forEach(function(i){
-      i.onchange=function(){ if(i.checked) SIM_CTX.scope.white=i.getAttribute('data-w'); };
+    /* 最近采购单完成天数 radio */
+    card.querySelectorAll('input[type=radio][data-pod]').forEach(function(i){
+      i.onchange=function(){ if(i.checked) SIM_CTX.scope.poDays=i.getAttribute('data-pod'); };
     });
   }
   function startSimFromRule(r){
-    SIM_CTX={ mode:'rule', fromRule:r, threshold:r.threshold, scope:defaultScope() };
+    SIM_CTX={ mode:'rule', fromRule:r, threshold:r.threshold, scope:scopeFromCircle(r.name) };
     /* 右侧保留在规则清单/详情画面，配置改在会话区做 */
     if(typeof addAI!=='function') return;
     var cardId='simcfg-'+Date.now();
-    addAI('已进入「<b>'+r.name+'</b>」的仿真配置，我把<b>规则要求</b>与<b>商品池</b>都放在下面这张卡片里，您可以直接勾选调整，也可以一句话告诉我要改什么（例如「只保留 A/B band，剔除贸易商」）。参数调整完请点「确认并开始仿真」。',
+    addAI('已进入「<b>'+r.name+'</b>」的仿真配置，我把<b>规则要求</b>与<b>商品池</b>都放在下面这张卡片里，商品池已默认按该规则实际圈定的范围预填，您可以直接勾选调整，也可以一句话告诉我要改什么（例如「只保留 A/B 销量 band，只看非品牌」）。参数调整完请点「确认并开始仿真」。',
       [
-        {label:'只保留 A/B band', onclick:function(){ SIM_CTX.scope.band=['A','B']; if(typeof addUser==='function')addUser('只保留 A/B band'); reAskConfirm(); }},
-        {label:'剔除贸易商供应商', onclick:function(){ SIM_CTX.scope.supplier=['品牌商','授权经销商']; if(typeof addUser==='function')addUser('剔除贸易商供应商'); reAskConfirm(); }},
+        {label:'只保留 A/B 销量 band', onclick:function(){ SIM_CTX.scope.saleBand=['A','B']; if(typeof addUser==='function')addUser('只保留 A/B 销量 band'); reAskConfirm(); }},
+        {label:'只看非品牌供应商', onclick:function(){ SIM_CTX.scope.supId=['非品牌']; if(typeof addUser==='function')addUser('只看非品牌供应商'); reAskConfirm(); }},
         {label:'确认并开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); runSimulation(); }}
       ], null, simConfigInlineHtml(cardId));
     setTimeout(function(){ bindInlineSimConfig(cardId); },20);
@@ -1017,7 +2182,7 @@ body.ws-open .msgs { padding:16px; }
     addAI('已进入<b>自定义仿真策略</b>配置。请在下方卡片中设置规则要求（对标口径 + 阈值）与商品池范围，或直接用自然语言描述，我会解析后二次确认。',
       [
         {label:'规则改为「偏离度 > 10%」', onclick:function(){ SIM_CTX.threshold='偏离度 > 10%'; if(typeof addUser==='function')addUser('规则改为偏离度 > 10%'); reAskConfirm(); }},
-        {label:'商品池加上品牌=华信', onclick:function(){ SIM_CTX.scope.brand=['华信']; if(typeof addUser==='function')addUser('商品池加品牌=华信'); reAskConfirm(); }},
+        {label:'商品池只看货盘二三类', onclick:function(){ SIM_CTX.scope.pallet=['2','3']; if(typeof addUser==='function')addUser('商品池只看货盘二三类'); reAskConfirm(); }},
         {label:'确认并开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); runSimulation(); }}
       ], null, simConfigInlineHtml(cardId));
     setTimeout(function(){ bindInlineSimConfig(cardId); },20);
@@ -1036,177 +2201,563 @@ body.ws-open .msgs { padding:16px; }
     });
   }
 
-  /* --- 综毛目标拆解与仿真 --- */
-  var GT_CTX=null; // { target, base, dim, coverage:['前毛','销售差','广告','返利'] }
+  /* ==================================================================
+   * --- 综毛目标拆解与仿真（V1 方案）---
+   * 场景：综毛/广告不变，把返利降至 X% → 前毛/采购成本如何补 → 拆到 SKU/供应商/一二三类货
+   * 三级流程：
+   *   L1  返利目标 → 前毛缺口 → 采购降本目标（部门/C3 拆分）
+   *   L2  SKU × 供应商 打两张分：可让度 Δp_max + 谈判概率 s_neg
+   *   L3  分层贪心把降本额拆到 SKU/供应商，输出 P0/P1/P2 供应商作业清单
+   * 参数澄清 7 步：部门 / 综毛口径 / 返利目标 / 分摊 / 分层配额 / 弹性 / 二次确认
+   * ================================================================ */
+  var GT_CTX=null;
+  var GT_TAB='A';               // 右侧结果 Tab: A=财务换算  B=货盘拆解  C=SKU明细
+  var GT_L1=null, GT_L3=null;   // 当前仿真结果缓存
+  var GT_CUR_C3=null;           // 当前 L3 聚焦 C3
+
+  function _num(n){ return Number(n).toLocaleString('zh-CN',{maximumFractionDigits:0}); }
+  function _pct(x,d){ d=(d==null?2:d); return (x*100).toFixed(d)+'%'; }
+  function _wan(n){ return (n/1).toFixed(0)+' 万'; }        // baseline 已是万元
+  function _wan元(n){ return (n/10000).toFixed(1)+' 万'; }  // 从"元"折算万元
+
   function startGrossTarget(){
-    GT_CTX={ target:12.5, base:9.6, dim:'C2', coverage:['前毛','销售差','广告','返利'] };
-    if(typeof addUser==='function') addUser('我想做综毛目标拆解与仿真');
+    /* 默认取家纺家居事业部作为演示部门 */
+    GT_CTX={
+      dept:'家纺家居事业部',
+      grossKey:'IN0118 可控综毛',
+      rTarget:null,           // 由用户输入（小数）
+      alpha:0.5,              // 分摊权重
+      quota:{one:0.40, two:0.30, three:0.20},
+      elastic:false,          // 量价弹性假设
+      K:20,                   // 同供应商 SKU 上限
+      step:1
+    };
+    GT_L1=null; GT_L3=null; GT_CUR_C3=null; GT_TAB='A';
+    if(typeof addUser==='function') addUser('综毛目标拆解与仿真');
     if(typeof delay!=='function') return;
     delay(function(){
       if(typeof addAI!=='function') return;
-      addAI('好的，先明确综毛目标与拆解口径。当前部门综毛率为 <b>9.6%</b>，请设定目标：',
+      addAI('好的。这个场景我用「<b>综毛不变 · 广告不变 · 返利下调 → 前毛补齐 → 拆到货盘</b>」的思路推。<br>先做<b>7 步参数澄清</b>，都填齐我再一次性算清并出结果面板。<br><br><b>Step 1 / 7 · 部门粒度</b>：默认按您登录权限对应的 C2，如需要切换请选择：',
         [
-          {label:'目标 12.5%（默认）', onclick:function(){ GT_CTX.target=12.5; if(typeof addUser==='function')addUser('综毛目标 12.5%'); askGtDim(); }},
-          {label:'目标 11.0%（稳健）', onclick:function(){ GT_CTX.target=11.0; if(typeof addUser==='function')addUser('综毛目标 11.0%'); askGtDim(); }},
-          {label:'目标 14.0%（激进）', onclick:function(){ GT_CTX.target=14.0; if(typeof addUser==='function')addUser('综毛目标 14.0%'); askGtDim(); }}
+          {label:'家纺家居事业部（默认）', onclick:function(){ GT_CTX.dept='家纺家居事业部'; if(typeof addUser==='function')addUser('部门：家纺家居事业部'); gtStep2(); }},
+          {label:'厨卫生活事业部', onclick:function(){ GT_CTX.dept='厨卫生活事业部'; if(typeof addUser==='function')addUser('部门：厨卫生活事业部'); gtStep2(); }},
+          {label:'个护清洁事业部', onclick:function(){ GT_CTX.dept='个护清洁事业部'; if(typeof addUser==='function')addUser('部门：个护清洁事业部'); gtStep2(); }}
         ], null,
         '<div class="fold intent" onclick="tgl(this)">&#129504; 意图理解 <span class="arrow">&#9662;</span></div>'
-        +'<div class="fold-content" style="display:none">意图分类：综毛目标拆解与仿真（置信 94%）\n参数澄清：\n · 综毛目标（默认沿用部门 H2 目标）\n · 拆解维度（C2 / C3 / 品类 / 品牌 / 采销）\n · 贡献口径 = 前毛 + 销售差 + 广告 + 返利</div>');
+        +'<div class="fold-content" style="display:none">意图分类：综毛目标拆解与仿真（置信 96%）\n场景细化：在综毛/广告锁死的前提下，做「返利→前毛→采购价」的等量转移，并按供应商可谈判性拆到 SKU 与货盘。\n锁死项：IN0118 综毛_可控、IN0117 广告毛利、IN0116+IN0595 其他\n变动项：IN0115 返利（用户设目标）→ IN0125 前毛（等量补）→ IN0081 采购成本（等量降）\n参数澄清共 7 步：部门 / 综毛口径 / 返利目标 / 分摊 / 分层配额 / 弹性 / 二次确认</div>');
     });
   }
-  function askGtDim(){
+
+  function gtStep2(){
     if(typeof delay!=='function') return;
+    var bl=GT_BASELINE[GT_CTX.dept];
     delay(function(){
-      if(typeof addAI!=='function') return;
-      addAI('目标锁定：综毛 <b class="num-green">'+GT_CTX.target+'%</b>（当前 '+GT_CTX.base+'%，缺口 '+(GT_CTX.target-GT_CTX.base).toFixed(1)+'pt）。<br>接下来您想按哪个维度拆解？',
+      addAI('<b>Step 2 / 7 · 综毛口径</b>：默认使用 <code>IN0118 毛利_综合毛利_可控_不含税</code>（与《导出科目树》对齐），也可换成含税口径或财报口径。<br>' +
+        '当前部门盘子：收入 <b>'+_wan(bl.REV_0)+'元</b>，综毛率 <b>'+_pct(bl.M_综_0/bl.REV_0)+'</b>，其中前毛 <b>'+_pct(bl.M_前_0/bl.REV_0)+'</b>、返利 <b>'+_pct(bl.M_返_0/bl.REV_0)+'</b>、广告毛利 <b>'+_pct(bl.M_广_0/bl.REV_0)+'</b>。',
         [
-          {label:'按 C2 拆解（默认）', onclick:function(){ GT_CTX.dim='C2'; if(typeof addUser==='function')addUser('按 C2 拆解'); runGrossBreakdown(); }},
-          {label:'按 C3 拆解', onclick:function(){ GT_CTX.dim='C3'; if(typeof addUser==='function')addUser('按 C3 拆解'); runGrossBreakdown(); }},
-          {label:'按品牌拆解', onclick:function(){ GT_CTX.dim='品牌'; if(typeof addUser==='function')addUser('按品牌拆解'); runGrossBreakdown(); }},
-          {label:'按采销拆解', onclick:function(){ GT_CTX.dim='采销'; if(typeof addUser==='function')addUser('按采销拆解'); runGrossBreakdown(); }}
+          {label:'保持默认（IN0118 可控综毛）', onclick:function(){ GT_CTX.grossKey='IN0118 可控综毛'; if(typeof addUser==='function')addUser('用 IN0118'); gtStep3(); }},
+          {label:'切换到含税口径（IN0581）', onclick:function(){ GT_CTX.grossKey='IN0581 可控综毛_含税'; if(typeof addUser==='function')addUser('用 IN0581'); gtStep3(); }},
+          {label:'切换到财报口径广告毛利', onclick:function(){ GT_CTX.grossKey='IN0586 财报口径_可控'; if(typeof addUser==='function')addUser('用 IN0586'); gtStep3(); }}
         ]);
     });
   }
-  function runGrossBreakdown(){
+
+  function gtStep3(){
     if(typeof delay!=='function') return;
+    var bl=GT_BASELINE[GT_CTX.dept];
+    var r0=bl.M_返_0/bl.REV_0;
     delay(function(){
-      if(typeof addAI!=='function') return;
-      addAI('正在按 <b>'+GT_CTX.dim+'</b> 维度做综毛拆解…',
-        null,
-        [{type:'tool', text:'调用 Skill: gross_margin_target_split\n · target = '+GT_CTX.target+'%\n · dim = '+GT_CTX.dim+'\n · levers = 前毛 + 销售差 + 广告 + 返利'}]);
-      delay(function(){
-        var html=grossReportHtml();
-        if(typeof addAI==='function') addAI('已完成拆解，可查看下方卡片。可继续对话：<br>· 「换成按 C3 拆」<br>· 「聚焦华信品牌做仿真」<br>· 「广告贡献不动，其他项如何补齐」',
-          [
-            {label:'对华信品牌做仿真', onclick:function(){ if(typeof addUser==='function')addUser('对华信品牌做仿真'); delay(function(){ if(typeof addAI==='function')addAI('已锁定华信品牌，前毛缺口 0.8pt 中 <b>0.5pt 可通过采购价议价</b>、0.3pt 可通过返利谈判获得。是否触发采购价仿真？'); }); }},
-            {label:'换成按 C3 拆解', onclick:function(){ GT_CTX.dim='C3'; if(typeof addUser==='function')addUser('换成按 C3 拆'); runGrossBreakdown(); }},
-            {label:'导出综毛拆解报告', onclick:function(){ if(typeof addUser==='function')addUser('导出综毛拆解报告'); delay(function(){ if(typeof addAI==='function')addAI('已导出综毛拆解报告到产物区。'); }); }}
-          ], null, html);
-      });
+      addAI('<b>Step 3 / 7 · 返利目标</b>：当前返利率 <b>'+_pct(r0)+'</b>，请设定目标。<br><span style="font-size:12px;color:#8a9099;">选定后我会立刻算出「前毛需要补多少」——这是恒等式，不做建模。</span>',
+        [
+          {label:'降到 2.5%（-'+((r0-0.025)*100).toFixed(1)+'pt）', onclick:function(){ GT_CTX.rTarget=0.025; if(typeof addUser==='function')addUser('返利目标 2.5%'); gtStep4(); }},
+          {label:'降到 2.8%（-'+((r0-0.028)*100).toFixed(1)+'pt）', onclick:function(){ GT_CTX.rTarget=0.028; if(typeof addUser==='function')addUser('返利目标 2.8%'); gtStep4(); }},
+          {label:'降到 3.0%（-'+((r0-0.030)*100).toFixed(1)+'pt）', onclick:function(){ GT_CTX.rTarget=0.030; if(typeof addUser==='function')addUser('返利目标 3.0%'); gtStep4(); }},
+          {label:'自定义…', onclick:function(){
+            var v=prompt('请输入目标返利率（%）', '2.5');
+            if(v==null) return;
+            var pct=parseFloat(v)/100; if(!(pct>0 && pct<r0)){ if(typeof addAI==='function')addAI('无效的目标返利率，需要 0 < r < 当前 '+_pct(r0)+'。'); return; }
+            GT_CTX.rTarget=pct; if(typeof addUser==='function')addUser('返利目标 '+v+'%'); gtStep4();
+          }}
+        ]);
     });
   }
-  function grossReportHtml(){
-    var rows=[
-      ['家纺', '9.2%','12.4%','+3.2','+1.8','+0.6','+0.4','+0.4'],
-      ['家居', '9.8%','12.0%','+2.2','+1.2','+0.4','+0.3','+0.3'],
-      ['厨具', '10.4%','12.6%','+2.2','+1.0','+0.5','+0.4','+0.3'],
-      ['个护', '10.8%','13.0%','+2.2','+0.9','+0.5','+0.4','+0.4']
-    ];
-    var rowsHtml=rows.map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td class="num-green"><b>'+r[2]+'</b></td><td class="num-red">'+r[3]+'</td><td>'+r[4]+'</td><td>'+r[5]+'</td><td>'+r[6]+'</td><td>'+r[7]+'</td></tr>'; }).join('');
+
+  function gtStep4(){
+    if(typeof delay!=='function') return;
+    var bl=GT_BASELINE[GT_CTX.dept];
+    var ΔM=bl.M_返_0 - bl.REV_0*GT_CTX.rTarget;
+    delay(function(){
+      addAI('目标锁定后，本部门返利需少收 <b class="num-red">'+_wan(ΔM)+'元</b>，前毛需补齐同额 <b class="num-green">+'+_wan(ΔM)+'元</b>（前毛率 '+_pct(bl.M_前_0/bl.REV_0)+' → <b>'+_pct((bl.M_前_0+ΔM)/bl.REV_0)+'</b>）。<br><br>'+
+        '<b>Step 4 / 7 · 分摊口径</b>：这笔缺口要按哪种口径拆到 C3？<br>'+
+        '<span style="font-size:12px;color:#8a9099;">口径 A = 按当前<b>返利额占比</b>；口径 B = 按当前<b>采购金额占比</b>；口径 C = 加权（默认 α=0.5）。</span>',
+        [
+          {label:'加权 α=0.5（默认）', onclick:function(){ GT_CTX.alpha=0.5; if(typeof addUser==='function')addUser('加权分摊 α=0.5'); gtStep5(); }},
+          {label:'按返利额占比（α=1.0）', onclick:function(){ GT_CTX.alpha=1.0; if(typeof addUser==='function')addUser('按返利额占比分摊'); gtStep5(); }},
+          {label:'按采购金额占比（α=0）', onclick:function(){ GT_CTX.alpha=0.0; if(typeof addUser==='function')addUser('按采购金额占比分摊'); gtStep5(); }}
+        ]);
+    });
+  }
+
+  function gtStep5(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      addAI('<b>Step 5 / 7 · 一二三类货配额</b>：把 SKU 侧的降本额按 <b>一/二/三类货</b> 分层——与"降低三类货负前毛占比"战略挂钩。',
+        [
+          {label:'40 / 30 / 20 / 10（默认）', onclick:function(){ GT_CTX.quota={one:0.40,two:0.30,three:0.20}; if(typeof addUser==='function')addUser('配额 40/30/20/10'); gtStep6(); }},
+          {label:'50 / 30 / 15 / 5（偏一类）', onclick:function(){ GT_CTX.quota={one:0.50,two:0.30,three:0.15}; if(typeof addUser==='function')addUser('配额 50/30/15/5'); gtStep6(); }},
+          {label:'30 / 30 / 30 / 10（均衡）',  onclick:function(){ GT_CTX.quota={one:0.30,two:0.30,three:0.30}; if(typeof addUser==='function')addUser('配额 30/30/30/10'); gtStep6(); }}
+        ]);
+    });
+  }
+
+  function gtStep6(){
+    if(typeof delay!=='function') return;
+    delay(function(){
+      addAI('<b>Step 6 / 7 · 弹性假设</b>：本次仿真是否开启「量价弹性」（采购价降 → 售价跟降 → 销量上升）？<br>' +
+        '<span style="font-size:12px;color:#8a9099;">默认<b>关闭</b>——即量价不变，仿真结果最保守；开启后广告/综毛会正向偏移，作为面板健康度提示，不作为求解约束。</span>',
+        [
+          {label:'关闭弹性（默认，量价不变）', onclick:function(){ GT_CTX.elastic=false; if(typeof addUser==='function')addUser('关闭弹性'); gtStep7(); }},
+          {label:'开启弹性（附健康度提示）',   onclick:function(){ GT_CTX.elastic=true;  if(typeof addUser==='function')addUser('开启弹性'); gtStep7(); }}
+        ]);
+    });
+  }
+
+  function gtStep7(){
+    if(typeof delay!=='function') return;
+    var bl=GT_BASELINE[GT_CTX.dept];
+    var summary=''
+      +'<div class="mini-card"><div class="mini-title">&#128203; 仿真参数二次确认</div>'
+      +'<div style="font-size:13px;line-height:2;color:#3d424b">'
+      +'· 部门：<b>'+GT_CTX.dept+'</b>（'+bl.c2+'，'+bl.period+'）<br>'
+      +'· 综毛口径：<b>'+GT_CTX.grossKey+'</b>（锁死不变）<br>'
+      +'· 广告毛利：<b>'+_pct(bl.M_广_0/bl.REV_0)+'</b>（锁死不变）<br>'
+      +'· 返利目标：<b class="num-red">'+_pct(GT_CTX.rTarget)+'</b>（当前 '+_pct(bl.M_返_0/bl.REV_0)+'）<br>'
+      +'· 分摊口径：<b>加权 α='+GT_CTX.alpha+'</b>（返利占比×'+GT_CTX.alpha+' + 采购金额占比×'+(1-GT_CTX.alpha).toFixed(2)+'）<br>'
+      +'· 分层配额：<b>一类 '+Math.round(GT_CTX.quota.one*100)+'% / 二类 '+Math.round(GT_CTX.quota.two*100)+'% / 三类 '+Math.round(GT_CTX.quota.three*100)+'%</b>（余下为缓冲）<br>'
+      +'· 弹性假设：<b>'+(GT_CTX.elastic?'开启（附提示）':'关闭（量价不变）')+'</b><br>'
+      +'· 供应商单轮 SKU 上限：<b>K = '+GT_CTX.K+'</b>'
+      +'</div></div>';
+    delay(function(){
+      addAI('<b>Step 7 / 7 · 二次确认</b>：以下参数一旦确认，我会依次跑 L1 财务恒等换算、L2 SKU 可让度打分、L3 分层贪心组合，结果会在右侧「工作面板」以 3 个 Tab 呈现。'+summary,
+        [
+          {label:'确认，开始仿真', onclick:function(){ if(typeof addUser==='function')addUser('确认，开始仿真'); gtRunSim(); }},
+          {label:'调整返利目标', onclick:function(){ if(typeof addUser==='function')addUser('调整返利目标'); gtStep3(); }},
+          {label:'调整分摊口径', onclick:function(){ if(typeof addUser==='function')addUser('调整分摊口径'); gtStep4(); }}
+        ]);
+    });
+  }
+
+  function gtRunSim(){
+    if(typeof delay!=='function') return;
+    addAI('正在运行三级仿真…',
+      null,
+      [
+        {type:'tool', text:'调用 Skill: S14 rebate_to_frontgm_transfer\n · dept = '+GT_CTX.dept+'\n · r_target = '+GT_CTX.rTarget+'\n · alpha = '+GT_CTX.alpha+'\n\n调用 Tool: T24 supplier_negotiability_scorer\n · model = M7 supplier_negotiability_model (5-feature logistic)\n\n调用 Skill: S3 poc_simulation → L3 layered greedy\n · quota = '+JSON.stringify(GT_CTX.quota)+'\n · K = '+GT_CTX.K}
+      ]);
+    delay(function(){
+      /* --- L1 换算 --- */
+      GT_L1 = gtRunL1(GT_CTX.dept, GT_CTX.rTarget, GT_CTX.alpha);
+      /* --- L2/L3：默认在最大缺口的 C3 上聚焦 --- */
+      var focus = GT_L1.rows.slice().sort(function(a,b){ return b.ΔC_采 - a.ΔC_采; })[0];
+      GT_CUR_C3 = focus.code;
+      GT_L3 = gtRunL3(focus.code, focus.ΔC_采 * 10000, GT_CTX.quota, GT_CTX.K);   // 单位：万元→元
+      /* --- 唤起右侧 3 Tab --- */
+      gtOpenWs();
+      /* --- 回执 --- */
+      var bl=GT_BASELINE[GT_CTX.dept];
+      var l1sum=''
+        +'恒等式校核：综毛率 '+_pct(GT_L1.综毛率)+' ✅ 不变；广告毛利 '+_pct(bl.M_广_0/bl.REV_0)+' ✅ 不变。<br>'
+        +'返利率 '+_pct(GT_L1.r_0)+' → <b class="num-red">'+_pct(GT_L1.r_target)+'</b>（-'+((GT_L1.r_0-GT_L1.r_target)*100).toFixed(2)+'pt）<br>'
+        +'⇒ 返利额少收 <b class="num-red">'+_wan(GT_L1.ΔM_返_total)+' 元</b> = 前毛需补 <b class="num-green">'+_wan(GT_L1.ΔM_前_total)+' 元</b> = 采购成本需降 <b class="num-red">'+_wan(GT_L1.ΔC_采_total)+' 元</b><br>'
+        +'新前毛率：<b class="num-green">'+_pct(GT_L1.new_前毛率)+'</b>（+'+((GT_L1.new_前毛率-GT_L1.old_前毛率)*100).toFixed(2)+'pt）';
+      var l3sum='最大缺口 C3 = <b>'+focus.name+'</b>（'+focus.code+'，目标 <b>'+_wan(focus.ΔC_采)+' 元</b>）<br>'
+        +'货盘拆解：选中 <b>'+GT_L3.selected.length+' 个 SKU</b> / <b>'+GT_L3.suppliers.length+' 家供应商</b>；'
+        +'覆盖 <b>'+_wan元(GT_L3.total)+'</b>（达成率 '+((GT_L3.total/GT_L3.target)*100).toFixed(1)+'%）'
+        +(GT_L3.gap>0?'，缺口 <b class="num-red">'+_wan元(GT_L3.gap)+'</b>':'')+'。<br>'
+        +'供应商分层：<b class="num-red">P0 必谈 '+(GT_L3.supTierCount.P0||0)+'</b> / P1 优先 '+(GT_L3.supTierCount.P1||0)+' / P2 试探 '+(GT_L3.supTierCount.P2||0);
+      addAI('&#9989; 仿真完成。<br><br><b>L1 财务恒等换算</b>：<br>'+l1sum+'<br><br><b>L3 货盘拆解（当前聚焦 '+focus.name+'）</b>：<br>'+l3sum+'<br><br>右侧已展开 3 个 Tab，可切换查看，也可在这里对话调整。',
+        [
+          {label:'切到其他 C3 看拆解',   onclick:function(){ if(typeof addUser==='function')addUser('切到其他 C3'); gtAskSwitchC3(); }},
+          {label:'放宽 s_neg 阈值补 gap', onclick:function(){ if(typeof addUser==='function')addUser('放宽 s_neg 阈值'); gtLoosen(); }},
+          {label:'去掉贸易商（refine）',  onclick:function(){ if(typeof addUser==='function')addUser('去掉贸易商'); gtRefineNoTrader(); }},
+          {label:'把 P0 供应商推给采销',   onclick:function(){ if(typeof addUser==='function')addUser('推送 P0 供应商'); gtPushP0(); }},
+          {label:'导出 SKU 明细 EXCEL',   onclick:function(){ if(typeof addUser==='function')addUser('导出 SKU 明细'); if(typeof addAI==='function') addAI('已导出仿真 SKU 明细 EXCEL（15 字段）到产物区。'); }}
+        ]);
+    });
+  }
+
+  /* refine：切 C3 */
+  function gtAskSwitchC3(){
+    if(!GT_L1) return;
+    var opts = GT_L1.rows.map(function(r){
+      return { label: r.name+'（'+_wan(r.ΔC_采)+' 元）', onclick: function(){
+        GT_CUR_C3 = r.code;
+        GT_L3 = gtRunL3(r.code, r.ΔC_采*10000, GT_CTX.quota, GT_CTX.K);
+        gtRenderWs();
+        if(typeof addAI==='function') addAI('已切到 <b>'+r.name+'</b>：选中 <b>'+GT_L3.selected.length+' 个 SKU</b> / <b>'+GT_L3.suppliers.length+' 家供应商</b>，覆盖 <b>'+_wan元(GT_L3.total)+'</b>。');
+      }};
+    });
+    if(typeof addAI==='function') addAI('请选择要聚焦的 C3：', opts);
+  }
+  function gtLoosen(){
+    /* 通过对 K 与 quota 缓冲的调整，模拟放宽阈值 */
+    if(!GT_CUR_C3||!GT_L1) return;
+    var row=GT_L1.rows.find(function(r){return r.code===GT_CUR_C3;});
+    var loose={ one:GT_CTX.quota.one*0.9, two:GT_CTX.quota.two*0.9, three:GT_CTX.quota.three*0.9 };
+    GT_L3 = gtRunL3(GT_CUR_C3, row.ΔC_采*10000, loose, GT_CTX.K+10);
+    gtRenderWs();
+    if(typeof addAI==='function') addAI('已放宽阈值（s_neg 隐含下调 ~0.15，供应商上限 K→'+ (GT_CTX.K+10) +'），当前覆盖 <b>'+_wan元(GT_L3.total)+'</b>，达成率 '+((GT_L3.total/GT_L3.target)*100).toFixed(1)+'%。');
+  }
+  function gtRefineNoTrader(){
+    if(!GT_L3) return;
+    var before = GT_L3.selected.length;
+    GT_L3.selected = GT_L3.selected.filter(function(p){ return p.supType!=='贸易商'; });
+    GT_L3.total = GT_L3.selected.reduce(function(a,p){return a+p.E_ΔC;},0);
+    GT_L3.gap = Math.max(0, GT_L3.target - GT_L3.total);
+    /* 重建供应商聚合 */
+    var supMap={};
+    GT_L3.selected.forEach(function(p){
+      var s=supMap[p.supCode]||(supMap[p.supCode]={code:p.supCode,name:p.supName,type:p.supType,skus:0,save:0,snegSum:0});
+      s.skus++; s.save+=p.E_ΔC; s.snegSum+=p.s_neg;
+    });
+    GT_L3.suppliers = Object.keys(supMap).map(function(k){
+      var s=supMap[k]; s.avgSneg=+(s.snegSum/s.skus).toFixed(2);
+      s.tier=(s.avgSneg>=0.6&&s.save>=1000000)?'P0':(s.avgSneg>=0.4?'P1':'P2');
+      return s;
+    }).sort(function(a,b){return b.save-a.save;});
+    GT_L3.supTierCount = GT_L3.suppliers.reduce(function(o,s){o[s.tier]=(o[s.tier]||0)+1; return o;},{});
+    gtRenderWs();
+    if(typeof addAI==='function') addAI('已过滤贸易商：SKU '+before+' → <b>'+GT_L3.selected.length+'</b>，覆盖 <b>'+_wan元(GT_L3.total)+'</b>，达成率 '+((GT_L3.total/GT_L3.target)*100).toFixed(1)+'%'+ (GT_L3.gap>0?'，出现缺口 '+_wan元(GT_L3.gap)+'。可继续对话「放宽 s_neg 阈值」':'。'));
+  }
+  function gtPushP0(){
+    if(!GT_L3) return;
+    var p0 = GT_L3.suppliers.filter(function(s){return s.tier==='P0';});
+    if(typeof addAI==='function') addAI('已生成 <b>P0 必谈供应商推送包</b>：共 <b>'+p0.length+' 家</b>供应商，涉及 <b>'+p0.reduce(function(a,s){return a+s.skus;},0)+' 个 SKU</b>，预计降本 <b class="num-red">'+_wan元(p0.reduce(function(a,s){return a+s.save;},0))+'</b>。<br>产物已推送到对应采销的京Me机器人，也可在产物区查看 HTML/图片版本。');
+  }
+
+  /* ==================================================================
+   * 右侧操作区：3 Tab
+   *   A · 财务换算（L1）
+   *   B · 货盘拆解（L3 汇总）
+   *   C · SKU 明细（L3 明细）
+   * ================================================================ */
+  function gtOpenWs(){
+    showWs('工作面板 · 综毛目标拆解仿真 · '+GT_CTX.dept);
+    gtRenderWs();
+  }
+  function gtRenderWs(){
+    var body=document.getElementById('wsBody'); if(!body||!GT_L1) return;
+    body.innerHTML = gtWsShellHtml() + gtTabContentHtml();
+    var tabs=document.getElementById('gtTabs');
+    if(tabs) tabs.querySelectorAll('.gt-tab').forEach(function(t){
+      t.onclick=function(){ GT_TAB=t.getAttribute('data-t'); gtRenderWs(); };
+    });
+    var ex=document.getElementById('gtExport'); if(ex) ex.onclick=function(){ if(typeof addAI==='function')addAI('已导出仿真 SKU 明细 EXCEL（15 字段）到产物区。'); };
+    /* C3 切换点击 */
+    document.querySelectorAll('.gtb-c3-row').forEach(function(row){
+      row.onclick=function(){
+        var code=row.getAttribute('data-code'); if(!code) return;
+        var r=GT_L1.rows.find(function(x){return x.code===code;}); if(!r) return;
+        GT_CUR_C3=code;
+        GT_L3 = gtRunL3(code, r.ΔC_采*10000, GT_CTX.quota, GT_CTX.K);
+        GT_TAB='B';
+        gtRenderWs();
+        if(typeof addAI==='function') addAI('已聚焦 <b>'+r.name+'</b>：SKU '+GT_L3.selected.length+' 个、供应商 '+GT_L3.suppliers.length+' 家，覆盖 <b>'+_wan元(GT_L3.total)+'</b>。');
+      };
+    });
+  }
+  function gtWsShellHtml(){
+    var bl=GT_BASELINE[GT_CTX.dept];
     return ''
-      +'<div class="in-report">'
-      +'<div class="ir-head"><div class="ir-title">&#127919; 综毛目标拆解与仿真</div>'
-      +'<div class="ir-meta">目标 '+GT_CTX.target+'% · 当前 '+GT_CTX.base+'% · 按 <b>'+GT_CTX.dim+'</b> 维度 · 四杠杆：前毛 + 销售差 + 广告 + 返利</div></div>'
-      +'<div class="ir-sec"><div class="ir-sec-t">目标拆解表</div>'
-      +'<table class="ir-tbl"><thead><tr><th>'+GT_CTX.dim+'</th><th>当前综毛</th><th>目标综毛</th><th>缺口 (pt)</th><th>前毛贡献</th><th>销售差贡献</th><th>广告贡献</th><th>返利贡献</th></tr></thead>'
-      +'<tbody>'+rowsHtml+'</tbody></table></div>'
-      +'<div class="ir-sec"><div class="ir-sec-t">仿真洞察</div>'
-      +'<div class="ir-hint">&#128200; 前毛贡献最大（占比 45%），建议优先启动采购价议价场景；返利谈判需与供应商合同挂钩，落地周期较长。</div>'
+      +'<div class="qf-sysinfo">'
+      +'<span>部门：<b>'+GT_CTX.dept+'</b></span>'
+      +'<span class="qf-sep">｜</span><span>综毛：<b>'+_pct(GT_L1.综毛率)+'</b> 锁死 &#9989;</span>'
+      +'<span class="qf-sep">｜</span><span>广告：<b>'+_pct(bl.M_广_0/bl.REV_0)+'</b> 锁死 &#9989;</span>'
+      +'<span class="qf-sep">｜</span><span>返利：<b class="num-red">'+_pct(GT_L1.r_0)+' → '+_pct(GT_L1.r_target)+'</b></span>'
+      +'<span class="qf-sep">｜</span><span>前毛：<b class="num-green">'+_pct(GT_L1.old_前毛率)+' → '+_pct(GT_L1.new_前毛率)+'</b></span>'
       +'</div>'
-      +'<div class="ir-foot">&#128101; 由 gross_margin_target_split Skill 拆解 · 数据源 dwd_gross_margin_daily</div>'
+      +'<div class="prog-tabs" id="gtTabs">'
+      +'<div class="prog-tab gt-tab'+(GT_TAB==='A'?' active':'')+'" data-t="A">&#128200; Tab A · 财务换算</div>'
+      +'<div class="prog-tab gt-tab'+(GT_TAB==='B'?' active':'')+'" data-t="B">&#128101; Tab B · 货盘拆解</div>'
+      +'<div class="prog-tab gt-tab'+(GT_TAB==='C'?' active':'')+'" data-t="C">&#128203; Tab C · SKU 明细</div>'
       +'</div>';
+  }
+  function gtTabContentHtml(){
+    if(GT_TAB==='A') return gtTabAHtml();
+    if(GT_TAB==='B') return gtTabBHtml();
+    return gtTabCHtml();
+  }
+
+  /* Tab A · L1 财务换算 */
+  function gtTabAHtml(){
+    var bl=GT_BASELINE[GT_CTX.dept];
+    var rows = GT_L1.rows.map(function(r){
+      return '<tr class="gtb-c3-row" data-code="'+r.code+'" style="cursor:pointer">'
+        +'<td><b>'+r.name+'</b><div class="c-sub">'+r.code+'</div></td>'
+        +'<td>'+_wan(r.REV)+'</td>'
+        +'<td>'+_wan(r.M_返_0)+' <span class="c-sub">('+_pct(r.r_0)+')</span></td>'
+        +'<td>'+_pct(GT_CTX.rTarget)+'</td>'
+        +'<td>'+_wan(r.M_返_new)+'</td>'
+        +'<td class="num-red"><b>'+_wan(r.ΔM_返)+'</b></td>'
+        +'<td class="num-green"><b>+'+_wan(r.ΔM_前)+'</b></td>'
+        +'<td class="num-red"><b>'+_wan(r.ΔC_采)+'</b></td>'
+        +'<td>'+_pct(r.r_前_0)+' <span class="c-sub">→</span> <b class="num-green">'+_pct(r.r_前_new)+'</b></td>'
+        +'</tr>';
+    }).join('');
+    var kpis=''
+      +'<div class="sim-kpis">'
+      +'<div class="sm-k"><div class="sm-l">返利率变化</div><div class="sm-v"><span class="num-red">'+_pct(GT_L1.r_0)+' → '+_pct(GT_L1.r_target)+'</span></div></div>'
+      +'<div class="sm-k"><div class="sm-l">返利少收（ΔM_返）</div><div class="sm-v num-red">'+_wan(GT_L1.ΔM_返_total)+' 元</div></div>'
+      +'<div class="sm-k"><div class="sm-l">前毛需补（ΔM_前）</div><div class="sm-v num-green">+'+_wan(GT_L1.ΔM_前_total)+' 元</div></div>'
+      +'<div class="sm-k"><div class="sm-l">采购降本目标（ΔC_采）</div><div class="sm-v num-red">'+_wan(GT_L1.ΔC_采_total)+' 元</div></div>'
+      +'<div class="sm-k"><div class="sm-l">新前毛率</div><div class="sm-v num-green">'+_pct(GT_L1.new_前毛率)+'</div></div>'
+      +'</div>';
+    var identity=''
+      +'<div class="mini-card" style="border-color:#d3f0df;background:#f6fef9;">'
+      +'<div class="mini-title" style="color:#12a150;">&#9989; 恒等式自检</div>'
+      +'<div style="font-size:12.5px;line-height:2;color:#3d424b">'
+      +'综毛_可控 IN0118 = 前毛_可控 IN0125 + 后台毛利 IN0115（返利） + 广告毛利 IN0117 + 其他（IN0116+IN0595）<br>'
+      +'&nbsp;&nbsp;'+_pct(bl.M_综_0/bl.REV_0)+' &nbsp;=&nbsp; '+_pct(GT_L1.new_前毛率)+' + '+_pct(GT_CTX.rTarget)+' + '+_pct(bl.M_广_0/bl.REV_0)+' + '+_pct(bl.M_其_0/bl.REV_0)+' &nbsp;<b class="num-green">✅ 校核通过</b>'
+      +'</div></div>';
+    return ''
+      +kpis
+      +identity
+      +'<div class="strat-section"><div class="strat-h">&#128203; 按 C3 拆解（口径 α='+GT_CTX.alpha+'，点击行切换到该 C3 的货盘拆解）<span class="strat-tag">L1</span></div>'
+      +'<div class="tbl-wrap tbl-scroll"><table style="min-width:1000px">'
+      +'<thead><tr><th>C3</th><th>收入（万）</th><th>当前返利额（返利率）</th><th>目标返利率</th><th>目标返利额</th><th>返利缺口 ΔM_返</th><th>前毛需补 ΔM_前</th><th>采购降本 ΔC_采</th><th>前毛率变化</th></tr></thead>'
+      +'<tbody>'+rows+'</tbody></table></div></div>'
+      +(GT_CTX.elastic?'<div class="prog-note"><b>健康度提示（弹性开启）：</b>若采购价下调 ΔC_采 后前台售价按 60% 幅度跟降、量价弹性系数 -1.2，预计销量上升 ~7.4%，综毛率将向上偏移 <b>+0.3~+0.5pt</b>；实际落地建议采销与运营对齐后再启用。</div>':'');
+  }
+
+  /* Tab B · L3 货盘拆解 */
+  function gtTabBHtml(){
+    if(!GT_L3) return '<div class="ws-empty"><div class="we-ic">&#128203;</div><div class="we-t">请在 Tab A 中点击 C3 行进入货盘拆解</div></div>';
+    var focus=GT_L1.rows.find(function(r){return r.code===GT_CUR_C3;});
+    var buckets = GT_L3.buckets;
+    var q=GT_CTX.quota;
+    var quotaRows=[
+      { name:'一类货', got:buckets['一类货'], quota: GT_L3.target*q.one },
+      { name:'二类货', got:buckets['二类货'], quota: GT_L3.target*q.two },
+      { name:'三类货', got:buckets['三类货'], quota: GT_L3.target*q.three }
+    ];
+    var qHtml = quotaRows.map(function(x){
+      var pct = x.quota>0 ? (x.got/x.quota*100) : 100;
+      var col = pct>=100?'#12a150':(pct>=80?'#faad14':'#cf1322');
+      return '<tr><td>'+x.name+'</td><td>'+_wan元(x.quota)+'</td><td>'+_wan元(x.got)+'</td><td style="color:'+col+';font-weight:700">'+pct.toFixed(0)+'%</td></tr>';
+    }).join('');
+
+    var supRows = GT_L3.suppliers.slice(0,15).map(function(s){
+    var tierCol=s.tier==='P0'?'tag-red':(s.tier==='P1'?'tag-purple':'tag-gray');
+      return '<tr>'
+        +'<td><b>'+s.name+'</b><div class="c-sub">'+s.code+' · '+s.type+'</div></td>'
+        +'<td>'+s.skus+'</td>'
+        +'<td class="num-red"><b>'+_wan元(s.save)+'</b></td>'
+        +'<td>'+s.avgSneg+'</td>'
+        +'<td><span class="tag '+tierCol+'">'+s.tier+'</span></td>'
+        +'<td>'+(s.tier==='P0'?'本周内启动线下谈判':(s.tier==='P1'?'月内批量拉齐':'季度巡检'))+'</td>'
+        +'</tr>';
+    }).join('');
+
+    var kpis=''
+      +'<div class="sim-kpis">'
+      +'<div class="sm-k"><div class="sm-l">聚焦 C3</div><div class="sm-v">'+focus.name+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">采购降本目标</div><div class="sm-v num-red">'+_wan(focus.ΔC_采)+' 元</div></div>'
+      +'<div class="sm-k"><div class="sm-l">入选 SKU / 供应商</div><div class="sm-v">'+GT_L3.selected.length+' / '+GT_L3.suppliers.length+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">预计降本 Σ E[ΔC]</div><div class="sm-v num-green">'+_wan元(GT_L3.total)+'</div></div>'
+      +'<div class="sm-k"><div class="sm-l">达成率</div><div class="sm-v '+(GT_L3.total>=GT_L3.target?'num-green':'num-red')+'">'+((GT_L3.total/GT_L3.target)*100).toFixed(1)+'%'+(GT_L3.gap>0?' <span class="c-sub">gap '+_wan元(GT_L3.gap)+'</span>':'')+'</div></div>'
+      +'</div>';
+
+    var tierChips=''
+      +'<div style="display:flex;gap:10px;margin:6px 0 12px;flex-wrap:wrap;">'
+      +'<span class="tag tag-red">P0 必谈 &times; '+(GT_L3.supTierCount.P0||0)+'</span>'
+      +'<span class="tag tag-purple">P1 优先 &times; '+(GT_L3.supTierCount.P1||0)+'</span>'
+      +'<span class="tag tag-gray">P2 试探 &times; '+(GT_L3.supTierCount.P2||0)+'</span>'
+      +'<span class="c-sub">分层规则：s_neg ≥ 0.6 &amp; 降本 ≥ 50 万 → P0；s_neg ∈ [0.4, 0.6) → P1；其余 P2</span>'
+      +'</div>';
+
+    return ''
+      +kpis
+      +'<div class="strat-section"><div class="strat-h">&#127919; 分层配额达成 <span class="strat-tag">L3 · 分层贪心</span></div>'
+      +'<div class="tbl-wrap"><table>'
+      +'<thead><tr><th>层</th><th>配额（万）</th><th>实际（万）</th><th>达成率</th></tr></thead>'
+      +'<tbody>'+qHtml+'</tbody></table></div>'
+      +(GT_L3.gap>0?'<div class="prog-note"><b class="num-red">gap = '+_wan元(GT_L3.gap)+'</b>：当前 s_neg 阈值下无法覆盖全部目标。建议 ① 对话中说「放宽 s_neg 阈值」→ 补 ~50%；或 ② 调高目标返利率（例如把 '+_pct(GT_CTX.rTarget)+' 调到 '+_pct(GT_CTX.rTarget+0.001)+'）</div>':'')
+      +'</div>'
+      +'<div class="strat-section"><div class="strat-h">&#128101; 供应商作业清单（按累计降本降序 · Top 15）<span class="strat-tag">L3</span></div>'
+      +tierChips
+      +'<div class="tbl-wrap"><table>'
+      +'<thead><tr><th>供应商</th><th>SKU 数</th><th>累计降本</th><th>平均 s_neg</th><th>档位</th><th>建议开谈时点</th></tr></thead>'
+      +'<tbody>'+supRows+'</tbody></table></div></div>';
+  }
+
+  /* Tab C · SKU 明细 */
+  function gtTabCHtml(){
+    if(!GT_L3) return '<div class="ws-empty"><div class="we-ic">&#128203;</div><div class="we-t">请在 Tab A 中点击 C3 行进入货盘拆解</div></div>';
+    var focus=GT_L1.rows.find(function(r){return r.code===GT_CUR_C3;});
+    var rows = GT_L3.selected.slice(0,80).map(function(p){
+      var bandTag=p.band==='一类货'?'tag-red':(p.band==='二类货'?'tag-purple':'tag-gray');
+      return '<tr>'
+        +'<td class="freeze"><div class="cell-goods">'
+        +'<div class="cg-img">&#128230;</div>'
+        +'<div class="cg-info"><div class="cg-name">'+p.name+'</div>'
+        +'<div class="cg-meta">'+p.id+' · '+p.brand+' · <span class="tag '+bandTag+'">'+p.band+'</span></div>'
+        +'</div></div></td>'
+        +'<td><div>'+p.supName+'</div><div class="c-sub">'+p.supCode+' · '+p.supType+(p.isBrand?' <span class="c-default">品牌商</span>':'')+'</div></td>'
+        +'<td>'+p.c3Name+' <span class="c-sub">'+p.c3+'</span></td>'
+        +'<td>¥ '+p.pCur.toFixed(2)+'</td>'
+        +'<td>多商:'+p.pModeMin.toFixed(2)+'<br>行业:'+p.pInd.toFixed(2)+'<br>POP:'+p.pPOP.toFixed(2)+'<br>历史:'+p.pHisMin.toFixed(2)+'</td>'
+        +'<td><b>¥ '+p.pRef.toFixed(2)+'</b></td>'
+        +'<td class="num-red"><b>-¥ '+p.Δp_max.toFixed(2)+'</b></td>'
+        +'<td><b class="num-green">¥ '+p.pTarget.toFixed(2)+'</b></td>'
+        +'<td>'+_num(p.Q28)+'</td>'
+        +'<td><b>'+p.s_neg+'</b><div class="c-sub">替代'+p.replace+' · 独占'+(p.exclusive*100).toFixed(0)+'%</div></td>'
+        +'<td class="num-red"><b>¥ '+_num(p.E_ΔC)+'</b><div class="c-sub">保:'+_num(p.E_ΔC_low)+' / 乐:'+_num(p.E_ΔC_high)+'</div></td>'
+        +'<td>'+p.talkTag+'</td>'
+        +'</tr>';
+    }).join('');
+    var head=''
+      +'<tr>'
+      +'<th class="freeze">SKU / 品牌 / 层级</th>'
+      +'<th>供应商</th>'
+      +'<th>C3</th>'
+      +'<th>当前采购价</th>'
+      +'<th>4 参考价<br><span class="c-sub">多商/行业/POP/历史</span></th>'
+      +'<th>参考价 p_ref<br><span class="c-sub">中位数</span></th>'
+      +'<th>Δp_max</th>'
+      +'<th>建议采购价</th>'
+      +'<th>Q_28d</th>'
+      +'<th>s_neg</th>'
+      +'<th>E[ΔC]<br><span class="c-sub">保守/乐观</span></th>'
+      +'<th>建议话术</th>'
+      +'</tr>';
+    return ''
+      +'<div class="qf-sysinfo" style="background:#f6fef9;border-color:#d3f0df;color:#12a150"><span>聚焦 C3：<b>'+focus.name+'</b>（目标 '+_wan(focus.ΔC_采)+' 元）</span>'
+      +'<span class="qf-sep">｜</span><span>共 <b>'+GT_L3.selected.length+' 个入选 SKU</b>，当前展示前 '+Math.min(80, GT_L3.selected.length)+' 条</span></div>'
+      +'<div class="sim-tbl-wrap"><table class="sim-tbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'
+      +'<div class="rn-foot"><div class="rn-tip">&#128190; 明细共 '+GT_L3.selected.length+' 条 · 15 字段可全量导出</div>'
+      +'<button class="rn-custom" id="gtExport">&#8595; 导出 EXCEL</button></div>'
+      +'<div class="prog-note" style="margin-top:12px"><b>字段口径：</b><br>'
+      +'· <b>参考价 p_ref</b> = median(多商最低价, 行业基准价, POP 最低价, 历史最低采购价)<br>'
+      +'· <b>Δp_max</b> = max(当前采购价 − p_ref, 0)<br>'
+      +'· <b>s_neg</b> = σ(-1.2 + 1.8·历史降价成功率 + 0.12·距上次降价月数/12 + 0.20·可替代供应商数 − 1.4·独占度 − 0.9·是否品牌商)<br>'
+      +'· <b>E[ΔC]</b> = Δp_max × s_neg × Q_28d ；保守/乐观区间 = s_neg ± 0.15<br>'
+      +'· <b>建议话术</b>：贸易商→替代威胁 / 品牌商→季度联合谈判 / 经销商→返利拆解</div>';
   }
 
   /* --- 仿真结果：Tab（原策略 / 当前策略），自定义模式仅一份结果 --- */
   var SIM_TAB='current';
   function runSimulation(){
-    showWs('操作区域 · 仿真结果 · '+(SIM_CTX.mode==='rule'?'基于「'+SIM_CTX.fromRule.name+'」':'自定义策略'));
+    showWs('工作面板 · 仿真结果 · '+(SIM_CTX.mode==='rule'?'基于「'+SIM_CTX.fromRule.name+'」':'自定义策略'));
     var body=document.getElementById('wsBody'); if(!body) return;
     body.innerHTML=simResultHtml();
     bindSimResult();
-    if(typeof addAI==='function') addAI('仿真测算完成。当前策略下预计影响 <b class="num-red">324 个 SKU / 68 家供应商</b>，预计降本 <b class="num-red">¥ 42.8 万</b>。可在右侧切换「原策略 vs 当前策略」查看差异，或导出商品明细 EXCEL。');
+    if(typeof addAI==='function') addAI('仿真测算完成。右侧工作面板已把<b>原策略</b>与<b>新策略</b>的圈品、规则及各项指标放在同一页对比，预计节降 <b class="num-red">¥ 42.8 万</b>、采购价降幅 <b class="num-red">-5.4%</b>。可分别导出原策略 / 新策略 / 两策略差异的商品清单 EXCEL。');
   }
+  /* 原策略 / 新策略 完整指标（单页对比，不再拆 Tab、不展示商品明细） */
   function simMetrics(which){
-    if(which==='orig') return { skus:458, sups:86, purBefore:'¥ 780.4 万', purAfter:'¥ 728.5 万', save:'¥ 51.9 万' };
-    return { skus:324, sups:68, purBefore:'¥ 615.2 万', purAfter:'¥ 572.4 万', save:'¥ 42.8 万' };
+    if(which==='orig') return {
+      skus:458, sku1:126, sku23:332,
+      c3pct:'18.6%', c2pct:'9.2%',
+      sups:86, supBrand:34, supNonBrand:52,
+      sale30:'¥ 2,860 万', sale1:'¥ 1,120 万', sale23:'¥ 1,740 万',
+      purQty:'86.4 万个',
+      save:'¥ 51.9 万', rate:'-6.7%'
+    };
+    return {
+      skus:324, sku1:78, sku23:246,
+      c3pct:'13.2%', c2pct:'6.5%',
+      sups:68, supBrand:25, supNonBrand:43,
+      sale30:'¥ 2,140 万', sale1:'¥ 820 万', sale23:'¥ 1,320 万',
+      purQty:'62.8 万个',
+      save:'¥ 42.8 万', rate:'-5.4%'
+    };
   }
-  function simRows(){
-    return [
-      { id:'100010023', img:'&#127907;', name:'华信 纯棉四件套 200×230cm', pool:'一品多商', stop:false,
-        supplier:'华信官方旗舰', supCode:'HX001', supType:'品牌商', defaultSup:true, cur:'CNY 128.00',
-        brand:'华信家纺（BR20031）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'四件套（100121）', cat4:'',
-        chan:'C 采购渠道', dc:'北京大兴中心仓', whQuote:'CNY 125.00', rmb:'¥ 128.00', margin:'-2.4%',
-        forecast:'月均 1,240 件', target:'¥ 112.00', save:'¥ 4,960' },
-      { id:'100010047', img:'&#127907;', name:'暖冬 冬被加厚 220×240', pool:'一品一商', stop:false,
-        supplier:'暖冬直营', supCode:'ND003', supType:'授权经销商', defaultSup:true, cur:'CNY 268.00',
-        brand:'暖冬（BR20087）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'冬被（100122）', cat4:'',
-        chan:'C 采购渠道', dc:'上海嘉定中心仓', whQuote:'CNY 265.00', rmb:'¥ 268.00', margin:'+1.2%',
-        forecast:'月均 620 件', target:'¥ 245.00', save:'¥ 3,542' },
-      { id:'100010061', img:'&#127793;', name:'洁丽雅 毛巾 3 条装', pool:'一品多商', stop:true,
-        supplier:'洁丽雅旗舰', supCode:'JLY002', supType:'品牌商', defaultSup:false, cur:'CNY 58.00',
-        brand:'洁丽雅（BR20015）', cat1:'家居家纺（1001）', cat2:'家纺（10012）', cat3:'毛巾（100123）', cat4:'纯棉（1001231）',
-        chan:'B 采购渠道', dc:'广州白云中心仓', whQuote:'CNY 56.50', rmb:'¥ 58.00', margin:'-3.8%',
-        forecast:'月均 1,860 件', target:'¥ 52.50', save:'¥ 1,023' }
-    ];
+  /* 取原/新策略的圈品条件与规则要求 */
+  function stratCircle(which){
+    var isRule=SIM_CTX.mode==='rule';
+    if(which==='orig'){
+      var mock=(isRule&&typeof CIRCLE_MOCK!=='undefined'&&CIRCLE_MOCK[SIM_CTX.fromRule.name])||(typeof CIRCLE_DEFAULT!=='undefined'&&CIRCLE_DEFAULT)||{f:[]};
+      return {
+        rule: isRule? (SIM_CTX.fromRule.baseline+' · '+SIM_CTX.fromRule.threshold) : '采购价 > 30 天众数成交价',
+        chips: (mock.f||[]).map(function(f){ return f.k+'：'+f.on.join('/'); })
+      };
+    }
+    var s=SIM_CTX.scope;
+    return {
+      rule: SIM_CTX.threshold,
+      chips: [
+        '货盘类型：'+(s.pallet.length?s.pallet.join('/'):'不限'),
+        '供应商数量：'+(s.supNum.length?s.supNum.join('/'):'不限'),
+        '供应商身份：'+(s.supId.length?s.supId.join('/'):'不限'),
+        '销量 band：'+(s.saleBand.length?s.saleBand.join('/'):'不限'),
+        '销售额 band：'+(s.amtBand.length?s.amtBand.join('/'):'不限'),
+        '最近采购单：≤ '+s.poDays+' 天'
+      ]
+    };
+  }
+  function stratCardHtml(which){
+    var c=stratCircle(which);
+    var isNew=which==='new';
+    var chips=c.chips.map(function(x){ return '<span class="sc-chip">'+x+'</span>'; }).join('');
+    return ''
+      +'<div class="sc-card'+(isNew?' new':'')+'">'
+      +'<div class="sc-hd">'+(isNew?'新策略（当前调整后）':'原策略')+'<span class="sc-badge">'+(isNew?'NEW':'原')+'</span></div>'
+      +'<div class="sc-bd">'
+      +'<div class="sc-lbl">策略规则</div><div class="sc-rule"><b>'+c.rule+'</b></div>'
+      +'<div class="sc-lbl">圈品条件</div><div class="sc-chips">'+chips+'</div>'
+      +'</div></div>';
+  }
+  function cmpTableHtml(){
+    var o=simMetrics('orig'), n=simMetrics('new');
+    function row(label,ov,nv,sub){
+      return '<tr'+(sub?' class="sub-row"':(' class="head-metric"'))+'>'
+        +'<td class="metric">'+(sub?'<span class="sub">'+label+'</span>':label)+'</td>'
+        +'<td class="val">'+ov+'</td>'
+        +'<td class="val new">'+nv+'</td></tr>';
+    }
+    return '<table class="sc-cmp"><thead><tr>'
+      +'<th>指标</th><th style="text-align:right;">原策略</th><th style="text-align:right;color:#6b46f5;">新策略</th>'
+      +'</tr></thead><tbody>'
+      +row('命中 SKU 数',o.skus,n.skus,false)
+      +row('一类',o.sku1,n.sku1,true)
+      +row('二三类',o.sku23,n.sku23,true)
+      +row('SKU 占部门比例','—','—',false)
+      +row('C3 内',o.c3pct,n.c3pct,true)
+      +row('C2 内',o.c2pct,n.c2pct,true)
+      +row('涉及供应商数',o.sups,n.sups,false)
+      +row('品牌商数',o.supBrand,n.supBrand,true)
+      +row('非品牌商数',o.supNonBrand,n.supNonBrand,true)
+      +row('近 30 天总销售额',o.sale30,n.sale30,false)
+      +row('一类',o.sale1,n.sale1,true)
+      +row('二三类',o.sale23,n.sale23,true)
+      +row('未来 30 天预估采购量',o.purQty,n.purQty,false)
+      +'</tbody></table>';
   }
   function simResultHtml(){
     var isRule=SIM_CTX.mode==='rule';
-    var tabs=isRule?
-      '<div class="sim-tabs" id="simTabs">'
-      +'<div class="sim-tab'+(SIM_TAB==='orig'?' active':'')+'" data-t="orig">原策略</div>'
-      +'<div class="sim-tab'+(SIM_TAB==='current'?' active':'')+'" data-t="current">当前策略</div>'
-      +'</div>':'';
-    var m=simMetrics(isRule?SIM_TAB:'current');
-    var rows=simRows().map(function(r){
-      return ''
-        +'<tr>'
-        +'<td class="freeze"><div class="cell-goods">'
-        +'<div class="cg-img">'+r.img+'</div>'
-        +'<div class="cg-info"><div class="cg-name">'+r.name+'</div>'
-        +'<div class="cg-meta">SKU '+r.id+' · '+r.pool+(r.stop?' <span class="tag-stop">售止</span>':'')+'</div>'
-        +'</div></div></td>'
-        +'<td><div>'+r.supplier+'</div><div class="c-sub">'+r.supCode+' · '+r.supType+(r.defaultSup?' · <span class="c-default">默认</span>':'')+'</div></td>'
-        +'<td>'+r.cur+'</td>'
-        +'<td>'+r.brand+'</td>'
-        +'<td><div>一级：'+r.cat1+'</div><div>二级：'+r.cat2+'</div><div>三级：'+r.cat3+'</div><div>四级：'+(r.cat4||'-')+'</div></td>'
-        +'<td>'+r.chan+'</td>'
-        +'<td>'+r.dc+'</td>'
-        +'<td>'+r.whQuote+'</td>'
-        +'<td>'+r.rmb+'</td>'
-        +'<td><b>'+r.margin+'</b><div class="c-sub" title="（众数成交价 - 采购价）/ 众数成交价"><u>释义</u></div></td>'
-        +'<td>'+r.forecast+'</td>'
-        +'<td><b class="num-green">'+r.target+'</b></td>'
-        +'<td class="num-red">'+r.save+'</td>'
-        +'</tr>';
-    }).join('');
-    var head=''
-      +'<tr>'
-      +'<th class="freeze">商品基础信息</th>'
-      +'<th>供应商</th>'
-      +'<th>生效中采购价</th>'
-      +'<th>品牌</th>'
-      +'<th>品类（一/二/三/四）</th>'
-      +'<th>采购渠道</th>'
-      +'<th>配送中心</th>'
-      +'<th>仓报价</th>'
-      +'<th>生效中 RMB 采购价</th>'
-      +'<th>前毛率</th>'
-      +'<th>补货量预测<br><span class="c-sub">未来 30 天 · 全国</span></th>'
-      +'<th>建议采购价</th>'
-      +'<th>预计降本</th>'
-      +'</tr>';
+    var n=simMetrics('new');
     return ''
-      +'<div class="qf-sysinfo"><span>模式：<b>'+(isRule?'基于「'+SIM_CTX.fromRule.name+'」（含原策略对比）':'自定义策略')+'</b></span>'
-      +'<span class="qf-sep">｜</span><span>规则要求：<b>'+SIM_CTX.threshold+'</b></span>'
-      +'<span class="qf-sep">｜</span><span>商品池：<b>品牌 '+SIM_CTX.scope.brand.join('/')+' · Band '+SIM_CTX.scope.band.join('/')+' · '+SIM_CTX.scope.white+'</b></span></div>'
-      +tabs
-      +'<div class="sim-kpis">'
-      +'<div class="sm-k"><div class="sm-l">涉及 SKU · 商数</div><div class="sm-v">'+m.skus+'</div></div>'
-      +'<div class="sm-k"><div class="sm-l">涉及供应商数</div><div class="sm-v">'+m.sups+'</div></div>'
-      +'<div class="sm-k"><div class="sm-l">预计当前下采金额</div><div class="sm-v">'+m.purBefore+'</div></div>'
-      +'<div class="sm-k"><div class="sm-l">预计议价后下采金额</div><div class="sm-v num-green">'+m.purAfter+'</div></div>'
-      +'<div class="sm-k"><div class="sm-l">预计可降本</div><div class="sm-v num-red">'+m.save+'</div></div>'
+      +'<div class="qf-sysinfo"><span>模式：<b>'+(isRule?'基于「'+SIM_CTX.fromRule.name+'」':'自定义策略')+'（原策略 vs 新策略对比）</b></span>'
+      +'<span class="qf-sep">｜</span><span>测算时间：<b>2026-07-03</b></span></div>'
+      +'<div class="sc-strat">'+stratCardHtml('orig')+stratCardHtml('new')+'</div>'
+      +'<div class="sc-lbl" style="font-weight:700;color:#3c4149;font-size:12.5px;margin:2px 0 6px;">原策略 vs 新策略 · 指标对比</div>'
+      +cmpTableHtml()
+      +'<div class="sc-hl">'
+      +'<div class="sc-hl-k save"><div class="sc-hl-l">预计节降金额</div><div class="sc-hl-v">'+n.save+'</div></div>'
+      +'<div class="sc-hl-k rate"><div class="sc-hl-l">预计采购价降幅</div><div class="sc-hl-v">'+n.rate+'</div></div>'
       +'</div>'
-      +'<div class="sim-tbl-wrap"><table class="sim-tbl"><thead>'+head+'</thead><tbody>'+rows+'</tbody></table></div>'
-      +'<div class="rn-foot"><div class="rn-tip">&#128190; 明细共 '+m.skus+' 条，当前展示前 3 条</div>'
-      +'<button class="rn-custom" id="simExport">&#8595; 导出 EXCEL</button></div>';
+      +'<div class="sc-lbl" style="font-weight:700;color:#3c4149;font-size:12.5px;margin:8px 0 6px;">导出商品清单（EXCEL）</div>'
+      +'<div class="sc-exports">'
+      +'<button class="sc-exp" id="expOrig">&#8595; 原策略商品清单</button>'
+      +'<button class="sc-exp" id="expNew">&#8595; 新策略商品清单</button>'
+      +'<button class="sc-exp" id="expDiff">&#8595; 两策略差异商品</button>'
+      +'</div>';
   }
   function bindSimResult(){
-    var tabs=document.getElementById('simTabs');
-    if(tabs) tabs.querySelectorAll('.sim-tab').forEach(function(t){
-      t.onclick=function(){ SIM_TAB=t.getAttribute('data-t'); document.getElementById('wsBody').innerHTML=simResultHtml(); bindSimResult(); };
-    });
-    var ex=document.getElementById('simExport'); if(ex) ex.onclick=function(){ if(typeof addAI==='function') addAI('已导出仿真商品明细 EXCEL 到产物区（含 13 个字段）。'); };
+    var bindExp=function(id,txt){ var b=document.getElementById(id); if(b) b.onclick=function(){ if(typeof addAI==='function') addAI(txt); }; };
+    bindExp('expOrig','已导出「原策略商品清单」EXCEL 到产物区（共 458 个 SKU · 含品类/供应商/采购价/建议价/降本等字段）。');
+    bindExp('expNew','已导出「新策略商品清单」EXCEL 到产物区（共 324 个 SKU · 含品类/供应商/采购价/建议价/降本等字段）。');
+    bindExp('expDiff','已导出「两策略差异商品」EXCEL 到产物区（原策略命中但新策略未命中 / 新增命中的差异 SKU 清单）。');
   }
 
   function progressShellHtml(){
@@ -1432,7 +2983,7 @@ body.ws-open .msgs { padding:16px; }
   var SCEN='hit'; // hit | benefit | change | query
   var STRAT_STATE='overview'; // overview | config
   function openStrategy(){
-    showWs('操作区域 · 诊断策略仿真');
+    showWs('工作面板 · 诊断策略仿真');
     STRAT_STATE='overview';
     var b=document.getElementById('wsBody'); if(!b)return;
     b.innerHTML=stratOverviewHtml();
