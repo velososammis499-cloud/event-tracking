@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>采购降本业务流程&价值说明</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #f2f7fc; color: #2b3a4a; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  section { padding: 60px 0; border-bottom: 1px solid #e3edf6; }
+  .hero {
+    background: linear-gradient(180deg, #e6f1fb 0%, #f2f7fc 100%);
+    text-align: center; padding: 88px 24px 72px;
+  }
+  .hero .badge {
+    display: inline-block; padding: 6px 16px; border-radius: 999px;
+    background: #dceaf8; color: #4a86c5; font-size: 13px;
+    letter-spacing: 2px; margin-bottom: 24px; border: 1px solid #c4dcf2;
+  }
+  .hero h1 { font-size: 42px; font-weight: 800; letter-spacing: 1px; margin-bottom: 18px; color: #26405c; }
+  .hero h1 .grad { color: #4a90d9; }
+  .hero p { font-size: 17px; color: #5a6b7d; max-width: 760px; margin: 0 auto; }
+  .hero p b { color: #4a86c5; font-weight: 700; }
+  .hero .metrics { display: flex; justify-content: center; gap: 48px; margin-top: 40px; flex-wrap: wrap; }
+  .hero .metric b { display: block; font-size: 34px; color: #4a90d9; font-weight: 800; }
+  .hero .metric span { font-size: 13px; color: #7d8a99; }
+  h2.title { font-size: 28px; font-weight: 700; margin-bottom: 8px; color: #26405c; }
+  h2.title .num { color: #4a90d9; margin-right: 10px; }
+  .subtitle { color: #6b7a8a; font-size: 15px; margin-bottom: 36px; }
+  .grid { display: grid; gap: 20px; }
+  .g3 { grid-template-columns: repeat(3, 1fr); }
+  .g2 { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: #ffffff;
+    border: 1px solid #e0ebf5; border-radius: 16px; padding: 26px;
+    box-shadow: 0 2px 12px rgba(74,144,217,.05);
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .card:hover { transform: translateY(-4px); border-color: #a9cef0; box-shadow: 0 8px 24px rgba(74,144,217,.12); }
+  .card .ico { font-size: 28px; margin-bottom: 14px; }
+  .card h3 { font-size: 19px; margin-bottom: 10px; color: #2b3a4a; }
+  .card p, .card li { font-size: 14px; color: #5a6b7d; }
+  .card ul { list-style: none; margin-top: 10px; }
+  .card li { padding: 5px 0 5px 20px; position: relative; }
+  .card li::before { content: "▸"; position: absolute; left: 0; color: #6aaae0; }
+  .card li b { color: #2b3a4a; }
+  .tag { display: inline-block; font-size: 12px; padding: 3px 10px; border-radius: 6px; margin-bottom: 12px; }
+  .tag-sx { background: #e3f0fb; color: #4a86c5; }
+  .tag-yy { background: #e8f4f3; color: #3f9b90; }
+  .tag-boss { background: #eef2f7; color: #6b7fa0; }
+  .flow-badge { color:#4a90d9; font-weight:700; }
+
+  /* 运营链路步骤条 */
+  .chain { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-top: 12px; }
+  .step {
+    background: #ffffff;
+    border: 1px solid #e0ebf5; border-radius: 14px; padding: 18px 16px;
+    box-shadow: 0 2px 10px rgba(74,144,217,.05);
+    position: relative; transition: border-color .2s, transform .2s, box-shadow .2s;
+  }
+  .step:hover { border-color: #a9cef0; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(74,144,217,.12); }
+  .step .no {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 30px; height: 30px; border-radius: 9px; font-weight: 800; font-size: 15px;
+    background: #e3f0fb; color: #4a86c5; margin-bottom: 10px;
+  }
+  .step h4 { font-size: 15px; margin-bottom: 6px; color: #2b3a4a; }
+  .step p { font-size: 12.5px; color: #6b7a8a; }
+  .step.hl { border-color: #7cb6e8; background: #eef6fd; }
+  .step.hl .no { background: #cfe4f7; color: #3a7bc0; }
+  .phase-row { display: flex; gap: 10px; margin: 8px 0 16px; flex-wrap: wrap; }
+  .phase-chip { font-size: 12px; padding: 4px 12px; border-radius: 999px; border: 1px solid #cfe0f0; color: #5a6b7d; background: #f4f9fd; }
+
+  /* 降本飞轮 · 环形循环 */
+  .flywheel { display: flex; flex-direction: column; align-items: center; gap: 0; margin-top: 8px; }
+  .fw-loop { display: flex; align-items: stretch; justify-content: center; flex-wrap: wrap; gap: 0; }
+  .fw-node {
+    flex: 1 1 0; min-width: 150px; max-width: 210px; background: #ffffff;
+    border: 1px solid #e0ebf5; border-radius: 16px; padding: 22px 18px; text-align: center;
+    box-shadow: 0 2px 12px rgba(74,144,217,.05); position: relative;
+    transition: transform .2s, box-shadow .2s, border-color .2s;
+  }
+  .fw-node:hover { transform: translateY(-4px); border-color: #a9cef0; box-shadow: 0 10px 26px rgba(74,144,217,.14); }
+  .fw-node .fw-no {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 40px; height: 40px; border-radius: 50%; font-weight: 800; font-size: 17px;
+    background: linear-gradient(135deg, #6aaae0, #4a90d9); color: #fff; margin-bottom: 12px;
+    box-shadow: 0 4px 12px rgba(74,144,217,.3);
+  }
+  .fw-node h4 { font-size: 16px; color: #26405c; margin-bottom: 6px; }
+  .fw-node p { font-size: 12.5px; color: #6b7a8a; }
+  .fw-arrow { display: flex; align-items: center; color: #9cc5ec; font-size: 22px; padding: 0 4px; }
+  .fw-return {
+    margin-top: 18px; display: inline-flex; align-items: center; gap: 10px;
+    font-size: 13.5px; color: #4a86c5; font-weight: 600;
+    background: #eef6fd; border: 1px dashed #9cc5ec; border-radius: 999px; padding: 8px 22px;
+  }
+  @media (max-width: 900px) { .fw-arrow { transform: rotate(90deg); } }
+
+  .vtable { width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 13.5px; }
+  .vtable th, .vtable td { text-align: left; padding: 12px 14px; border-bottom: 1px solid #e3edf6; vertical-align: top; }
+  .vtable th { color: #4a86c5; font-weight: 600; background: #eef5fc; }
+  .vtable td { color: #5a6b7d; }
+  .vtable td b { color: #2b3a4a; }
+  @media (max-width: 900px) { .chain { grid-template-columns: repeat(2, 1fr); } .g3, .g2 { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">采购降本业务流程 &amp; 价值说明</div>
+  <h1>让京东利润结构<span class="grad">持续变健康</span>的降本飞轮</h1>
+  <p>采销主动降采购价动力不足，需要运营从<b>事前巡检预警、事中管控、事后通晒</b>三段发力推动，联动 BOSS 定方向，形成「发现问题 → 圈品定目标 → 议价处置 → 通晒归因」的可持续降本飞轮。</p>
+  <div class="metrics">
+    <div class="metric"><b>3</b><span>核心角色协同</span></div>
+    <div class="metric"><b>事前·事中·事后</b><span>全周期能力</span></div>
+    <div class="metric"><b>6h→1h</b><span>周操盘效率</span></div>
+    <div class="metric"><b>可归因</b><span>降本金额到人到品</span></div>
+  </div>
+</div>
+
+<!-- 01 核心矛盾 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">01</span>核心矛盾：采销主动降价动力不足</h2>
+  <p class="subtitle">降采购价是提升前毛、优化利润结构的核心杠杆，但对采销个人而言缺少内生动力，需要运营牵引、BOSS 定调。</p>
+  <div class="grid g3">
+    <div class="card">
+      <div class="ico">😐</div>
+      <h3>采销：动力小、被动</h3>
+      <p>主动谈降采购价费力不讨好——供应商关系压力大、短期无直接激励、"能维持就维持"，缺乏主动降价的内生动力。</p>
+    </div>
+    <div class="card">
+      <div class="ico">🔍</div>
+      <h3>问题：看不准、推不动</h3>
+      <p>采购价异常散落各系统、历史价失真难识别；运营想推降价却缺抓手，"谈不了"真伪难辨，容易陷入反复扯皮。</p>
+    </div>
+    <div class="card">
+      <div class="ico">📉</div>
+      <h3>结果：利润结构承压</h3>
+      <p>二三类货负毛、前毛倒挂长期存在，缺乏持续、分批、可归因的优化机制，利润健康度提升缓慢。</p>
+    </div>
+  </div>
+</div></section>
+
+<!-- 02 三角色定位 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">02</span>三角色协同定位</h2>
+  <p class="subtitle">运营是降本飞轮的发动机，采销是执行主体，BOSS 定方向、给势能——三者缺一不可。</p>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag tag-sx">执行主体</span>
+      <h3>采销</h3>
+      <p>掌握供应商谈判关系，是采购价下调的最终执行者。目标：在工具与目标价加持下，把"被动应付"变成"高效达成"。</p>
+      <ul>
+        <li>承接高优商品目标采购价</li>
+        <li>用批量议价工具提效</li>
+        <li>对"谈不了"给出合理反馈</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag tag-yy">发动机 / 牵引</span>
+      <h3>运营（事业部 BP + 平台解决方案运营）</h3>
+      <p>全局视角发现问题、圈选高优、下发目标、追踪进度、通晒结果，持续 push 采销降价、提升前毛。</p>
+      <ul>
+        <li>事前巡检预警 · 事中管控 · 事后通晒</li>
+        <li>圈选高优预警品、设定目标采购价</li>
+        <li>建设触达与反馈机制</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag tag-boss">定方向 / 给势能</span>
+      <h3>BOSS</h3>
+      <p>下发前毛/综毛目标、拆解到品类与人，参与降价通晒、调整利润结构，为运营推动提供组织势能。</p>
+      <ul>
+        <li>前毛/综毛目标拆解到人</li>
+        <li>联合通晒、施加达成压力</li>
+        <li>看周报月报、追踪收益</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- 03 事前事中事后 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">03</span>运营推动的三段能力：事前 · 事中 · 事后</h2>
+  <p class="subtitle">运营依托巡检管控现状与采购价插件能力，从发现、强制、复盘三个阶段闭环推动降价。</p>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag tag-yy">事前 · 发现</span>
+      <h3>巡检 · 预警</h3>
+      <p>提供采购价巡检、异常预警能力，主动告知采销"哪些采购价有问题"，让降价从"无从下手"变成"清单化处置"。</p>
+      <ul>
+        <li>12 类巡检规则识别异常</li>
+        <li>前毛倒挂 / 高于 POP / 高于历史</li>
+        <li>异常清单推送采销</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag tag-yy">事中 · 强制</span>
+      <h3>管控 · 强制优化</h3>
+      <p>通过下单管控体系强制约束不合理采购价，让"该降的必须降"，把管控转化为实际降价动作。</p>
+      <ul>
+        <li>下单管控（前毛管控 / 其他管控）</li>
+        <li>处置动作：自动/手动单拦截、自动单换商</li>
+        <li>一类货 / 二三类货分层管控</li>
+      </ul>
+    </div>
+    <div class="card">
+      <span class="tag tag-yy">事后 · 复盘</span>
+      <h3>通晒 · 归因</h3>
+      <p>对采购价降价实际情况进行通晒与归因，量化谁降了多少、靠什么降的，形成正向循环与考核依据。</p>
+      <ul>
+        <li>降价三归因（管控 / 巡检 / 业务自主）</li>
+        <li>降本金额到品类、到运营、到采销个人</li>
+        <li>周报月报、达成率通晒</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- 04 运营完整业务链路 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">04</span>运营完整业务链路：10 步闭环</h2>
+  <p class="subtitle">上文三段能力里，<b>事中就是「管控」——系统对超标商品自动拦截/换商，强制兜底</b>。而运营手上的 10 步链路，本质都是<b>事前发现</b>与<b>事后攻坚复盘</b>的手段：从看数据到周度通晒，把「看数据、定目标、定规则、拉名单、圈品定价、下发任务、追踪改善、打标留痕、识别时机、通晒」从「手动完成」变成「系统自动完成 + 运营确认」，运营聚焦判断与决策。</p>
+  <div class="phase-row">
+    <span class="phase-chip">事前 · 发现：① 看数据 ② 定目标 ③ 定规则 ④ 拉名单 ⑤ 圈品定价 ⑥ 下发任务</span>
+    <span class="phase-chip">事中 · 管控：系统对超标商品自动拦截 / 换商，强制兜底</span>
+    <span class="phase-chip">事后 · 攻坚复盘：⑦ 追踪改善 ⑧ 打标留痕 ⑨ 识别时机 ⑩ 周度通晒</span>
+  </div>
+  <div class="chain">
+    <div class="step"><div class="no">①</div><h4>看数据</h4><p>一句话查返利/前毛，自动高亮异常，掌握部门整体状态。</p></div>
+    <div class="step"><div class="no">②</div><h4>定目标</h4><p>锁定重点品类/品牌，定前毛与返利目标，拆到每个 SKU 议价目标价。</p></div>
+    <div class="step"><div class="no">③</div><h4>定规则</h4><p>对话式配置问题商品识别规则，把目标拆解为具体规则条件。</p></div>
+    <div class="step"><div class="no">④</div><h4>拉名单</h4><p>运行规则拉出采购价有问题的商品名单，自动标注价差。</p></div>
+    <div class="step hl"><div class="no">⑤</div><h4>圈品 + 定价</h4><p>从名单圈出高优商品并自动打标，基于品类目标推荐目标采购价。</p></div>
+    <div class="step hl"><div class="no">⑥</div><h4>下发任务</h4><p>一键下发至采销待办，附目标价、归因结论与议价建议。</p></div>
+    <div class="step"><div class="no">⑦</div><h4>追踪改善</h4><p>可调价商品周度更新名单，自动生成改善对比、高亮状态变化。</p></div>
+    <div class="step"><div class="no">⑧</div><h4>打标留痕</h4><p>无法调价商品自动分类打标（供应商不配合/体系固化/战略品），归入待跟踪池。</p></div>
+    <div class="step"><div class="no">⑨</div><h4>识别时机</h4><p>跟踪行业价变化，「XX 品行业价已降 X%」主动 Push 采销再次议价。</p></div>
+    <div class="step"><div class="no">⑩</div><h4>周度通晒</h4><p>周报自动生成，含改善进度、排名变化、前毛/返利优化，配合管理层通晒。</p></div>
+  </div>
+</div></section>
+
+<!-- 04b 圈品定价详解 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">05</span>链路核心：圈品打标 · 目标采购价（步骤 ⑤⑥）</h2>
+  <p class="subtitle">10 步链路里最关键的价值拐点——把「一句话目标」拆成「具体哪些 SKU 要降多少」，采销拿到的是明确任务卡而非模糊 KPI，落地才有抓手。</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="ico">🎯</div>
+      <h3>高优预警圈品打标</h3>
+      <p>在已识别的预警池上做多维加权提级，把重点商品标为高优，分批攻坚，而非一次性对全量商品下手。</p>
+      <ul>
+        <li><b>高优</b>：运营多维圈中的重点商品（本轮攻坚核心，配目标采购价）</li>
+        <li><b>中优</b>：命中采购价规则但本轮未圈中的商品</li>
+        <li><b>低优</b>：仅命中非采购价类预警的商品</li>
+        <li>健康商品不入池，不占用精力</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ico">📐</div>
+      <h3>目标采购价下发与督促</h3>
+      <p>给高优商品设定目标采购价，作为采销谈判的明确锚点。采销「看不见、躲不掉、拖不了」——不做则系统自动催办、自动升级。</p>
+      <ul>
+        <li>三种定价：毛利反算 / 基准最低价 / AI 推荐</li>
+        <li>正式下发采销待办 + 明确完成时间 + 自动催办升级</li>
+        <li>周度追踪改善，进度可见、可排名、可问责</li>
+        <li>降本金额 = 降价幅度 × 年采购量，可测算</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- 06 反馈机制 + 合理采购价诊断 -->
+<section><div class="wrap">
+  <h2 class="title"><span class="num">06</span>"谈不了"不是终点：打标留痕 · 识别时机 · 合理性诊断（步骤 ⑧⑨）</h2>
+  <p class="subtitle">链路第 ⑧⑨ 步的落地机制——采销说"谈不了"不代表放弃：系统自动打标留痕、持续跟踪行业价，时机成熟再主动 Push；同时用能力建设判定"谈不了"是否成立，让机会品被反复触达激活。</p>
+  <div class="grid g2">
+    <div class="card">
+      <div class="ico">🔁</div>
+      <h3>打标留痕 + 识别时机（步骤 ⑧⑨）</h3>
+      <p>无法调价的商品不丢弃：自动分类打标归入待跟踪池，系统持续跟踪行业价变化，一旦"XX 品行业价已降 X%"便主动 Push 采销再次议价，让机会品被反复触达激活。</p>
+      <ul>
+        <li>自动打标：供应商不配合 / 体系固化 / 战略品</li>
+        <li>归入待跟踪池，不占用当轮攻坚精力</li>
+        <li>跟踪行业价，时机成熟自动触发再议价</li>
+        <li>拒绝超时决策分支：限采 / 售止 / 找新商 / 升级</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="ico">⚖️</div>
+      <h3>合理采购价 + 前毛诊断归因</h3>
+      <p>通过合理采购价能力与前毛诊断归因能力，客观评估采销"谈不了"是否成立，把主观博弈变成数据判断——判定是合理约束还是动力不足。</p>
+      <ul>
+        <li>合理采购价基准：识别真实议价空间</li>
+        <li>前毛诊断归因：采购价 vs 销售价、短期 vs 结构性</li>
+        <li>判定"谈不了"是合理约束还是动力不足</li>
+        <li>为 BOSS 决策与考核提供依据</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- 07 降本飞轮 + 三方价值 -->
+<section style="border-bottom:none;"><div class="wrap">
+  <h2 class="title"><span class="num">07</span>可持续降本飞轮 · 三方价值兑现</h2>
+  <p class="subtitle">发现 → 圈品定目标 → 议价处置 → 通晒归因 → 效率反哺，五环首尾相扣、越转越快；飞轮每转一圈，采销、运营、BOSS 三方价值随之兑现。</p>
+
+  <div class="flywheel">
+    <div class="fw-loop">
+      <div class="fw-node">
+        <div class="fw-no">1</div>
+        <h4>巡检发现</h4>
+        <p>事前巡检预警识别采购价异常，输出问题清单。</p>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-node">
+        <div class="fw-no">2</div>
+        <h4>圈品定目标</h4>
+        <p>运营圈选高优商品、设定目标采购价，分批下发。</p>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-node">
+        <div class="fw-no">3</div>
+        <h4>议价处置</h4>
+        <p>采销高效谈判，事中管控兜底强制。</p>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-node">
+        <div class="fw-no">4</div>
+        <h4>通晒归因</h4>
+        <p>事后量化降本、归因到人到品，BOSS联合通晒。</p>
+      </div>
+      <div class="fw-arrow">→</div>
+      <div class="fw-node">
+        <div class="fw-no">5</div>
+        <h4>效率反哺</h4>
+        <p>周操盘 6h→1h，能力沉淀，越用越强。</p>
+      </div>
+    </div>
+    <div class="fw-return">♻️ 反哺下一轮 · 利润结构持续变健康</div>
+  </div>
+
+  <h3 style="font-size:18px;color:#26405c;margin:44px 0 18px;">飞轮转动 · 三方价值兑现</h3>
+  <div class="grid g3">
+    <div class="card">
+      <span class="tag tag-sx">对采销</span>
+      <h3>从被动到高效</h3>
+      <p>批量议价 + 目标价锚点 + 合理性诊断，降低谈判负担，周操盘效率 6h→1h，让降价可执行、可交代。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-yy">对运营</span>
+      <h3>从推不动到有抓手</h3>
+      <p>事前事中事后全链路能力 + 高优圈品 + 目标价下发 + 通晒归因，push 有据、进度可控、效果可量化。</p>
+    </div>
+    <div class="card">
+      <span class="tag tag-boss">对 BOSS / 京东</span>
+      <h3>利润结构持续健康</h3>
+      <p>前毛/综毛目标层层达成，负毛占比阶梯下降，降本金额可归因、可持续，整体利润结构越来越健康。</p>
+    </div>
+  </div>
+</div></section>
+
+</body>
+</html>
